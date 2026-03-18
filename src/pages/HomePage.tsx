@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { ArrowRight, ShieldCheck, Truck, RotateCcw, Star, Sparkles, Crown, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-cosmetics.jpg";
@@ -8,12 +8,12 @@ import catSkincare from "@/assets/cat-skincare.jpg";
 import catCabelos from "@/assets/cat-cabelos.jpg";
 import catPerfumaria from "@/assets/cat-perfumaria.jpg";
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: "easeOut" },
+    transition: { delay: i * 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
   }),
 };
 
