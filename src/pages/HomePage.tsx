@@ -21,7 +21,7 @@ const fadeUp: Variants = {
 };
 
 const categoryImages: Record<string, string> = {
-  maquiagem: catMaquiagem, skincare: catSkincare, cabelos: catCabelos, perfumaria: catPerfumaria,
+  maquiagem: catMaquiagem, skincare: catSkincare, cabelos: catCabelos, perfumaria: catPerfumaria, perfumes: catPerfumaria,
 };
 
 const benefits = [
@@ -33,9 +33,10 @@ const benefits = [
 
 const faqs = [
   { q: "Quanto tempo leva para meu pedido chegar?", a: "O prazo de entrega varia de 3 a 10 dias úteis, dependendo da sua região. Pedidos acima de R$ 199 têm frete grátis." },
-  { q: "Posso trocar ou devolver um produto?", a: "Sim! Você tem até 30 dias para solicitar troca ou devolução de produtos não utilizados e na embalagem original." },
+  { q: "Posso trocar ou devolver um produto?", a: "Sim! Você tem até 30 dias para solicitar troca ou devolução de produtos lacrados e na embalagem original." },
   { q: "Quais formas de pagamento vocês aceitam?", a: "Aceitamos PIX, cartão de crédito e boleto bancário. Parcele em até 3x sem juros no cartão." },
-  { q: "Os produtos são originais?", a: "Sim, todos os produtos da Esdra Cosméticos são 100% originais, adquiridos diretamente de distribuidores autorizados." },
+  { q: "Os perfumes são originais?", a: "Sim, todos os perfumes da Esdra Cosméticos são 100% originais, adquiridos diretamente de distribuidores autorizados." },
+  { q: "Qual a diferença entre os frascos de 15ml e 100ml?", a: "O frasco de 15ml é ideal para experimentar a fragrância ou levar na bolsa. O de 100ml é o tamanho padrão, perfeito para uso diário com melhor custo-benefício." },
 ];
 
 interface Product {
@@ -58,15 +59,25 @@ export default function HomePage() {
   useEffect(() => {
     const cols = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, short_description";
     Promise.all([
-      supabase.from("products").select(cols).eq("active", true).eq("featured", true).limit(4),
-      supabase.from("products").select(cols).eq("active", true).eq("new_arrival", true).limit(4),
-      supabase.from("products").select(cols).eq("active", true).eq("bestseller", true).limit(4),
+      supabase.from("products").select(cols).eq("active", true).eq("featured", true).gt("inventory_count", 0).limit(4),
+      supabase.from("products").select(cols).eq("active", true).eq("new_arrival", true).gt("inventory_count", 0).limit(4),
+      supabase.from("products").select(cols).eq("active", true).eq("bestseller", true).gt("inventory_count", 0).limit(4),
       supabase.from("categories").select("id, name, slug, image_url").eq("active", true).order("sort_order").limit(6),
       supabase.from("reviews").select("rating, comment, created_at").eq("approved", true).order("created_at", { ascending: false }).limit(6),
-    ]).then(([f, n, b, c, r]) => {
-      setFeatured((f.data as Product[]) ?? []);
-      setNewArrivals((n.data as Product[]) ?? []);
-      setBestsellers((b.data as Product[]) ?? []);
+    ]).then(async ([f, n, b, c, r]) => {
+      // If not enough in-stock featured, fall back to any active
+      let featuredData = (f.data as Product[]) ?? [];
+      let newData = (n.data as Product[]) ?? [];
+      let bestData = (b.data as Product[]) ?? [];
+      
+      if (featuredData.length < 4) {
+        const { data: fallback } = await supabase.from("products").select(cols).eq("active", true).gt("inventory_count", 0).limit(4);
+        featuredData = featuredData.length > 0 ? featuredData : ((fallback as Product[]) ?? []);
+      }
+      
+      setFeatured(featuredData);
+      setNewArrivals(newData);
+      setBestsellers(bestData);
       setCategories((c.data as Category[]) ?? []);
       setReviews((r.data as any) ?? []);
     });
@@ -176,16 +187,16 @@ export default function HomePage() {
         </div>
         <div className="relative container mx-auto px-4 py-20">
           <motion.div className="max-w-xl" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
-            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Nova Coleção 2026</motion.span>
+            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Perfumaria Selecionada</motion.span>
             <motion.h1 variants={fadeUp} custom={1} className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl italic leading-[1.08] tracking-tight text-primary-foreground mb-6">
-              Realce sua beleza com produtos <span className="text-gold">selecionados</span>
+              Fragrâncias que traduzem <span className="text-gold">personalidade</span>
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="font-body text-sm sm:text-base text-primary-foreground/75 max-w-md leading-relaxed mb-8">
-              Cosméticos premium com curadoria exclusiva. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
+              Perfumes inspirados nas maiores grifes do mundo. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
             </motion.p>
             <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3 sm:gap-4">
               <Link to="/loja"><Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-body text-sm tracking-wide px-8">Explorar Coleção <ArrowRight className="w-4 h-4 ml-2" /></Button></Link>
-              <Link to="/lancamentos"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body text-sm tracking-wide px-8">Novidades</Button></Link>
+              <Link to="/lancamentos"><Button size="lg" className="bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/40 hover:bg-primary-foreground/30 font-body text-sm tracking-wide px-8">Novidades</Button></Link>
             </motion.div>
           </motion.div>
         </div>
@@ -212,9 +223,9 @@ export default function HomePage() {
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
+             <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Explore por Categoria</h2>
-            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre exatamente o que sua rotina de beleza precisa</p>
+            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre a fragrância perfeita para cada ocasião</p>
           </motion.div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {categories.filter(c => categoryImages[c.slug]).map((cat, i) => (
@@ -307,9 +318,9 @@ export default function HomePage() {
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-primary-foreground mb-3">Precisa de ajuda para escolher?</h2>
             <p className="font-body text-sm text-primary-foreground/75 mb-8 max-w-md mx-auto leading-relaxed">
-              Nossa equipe está pronta para recomendar os produtos ideais para sua rotina de beleza. Atendimento rápido e personalizado.
+              Nossa equipe está pronta para ajudar você a encontrar o perfume ideal. Atendimento rápido e personalizado pelo WhatsApp.
             </p>
-            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20recomendação%20de%20produtos%20da%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20ajuda%20para%20escolher%20um%20perfume%20na%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body text-sm tracking-wide px-8 hover:-translate-y-0.5 transition-all duration-300">Falar no WhatsApp</Button>
             </a>
           </motion.div>
