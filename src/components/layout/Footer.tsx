@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck, Check } from "lucide-react";
 
 export function Footer() {
   return (
