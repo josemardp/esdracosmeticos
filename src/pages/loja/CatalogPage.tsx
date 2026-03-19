@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
 import { Input } from "@/components/ui/input";
@@ -183,6 +183,7 @@ const FilterSidebar = memo(function FilterSidebar({
 /* ─── main ─── */
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const { addItem } = useCart();
 
   /* raw data */
@@ -587,6 +588,7 @@ export default function CatalogPage() {
                       product={p}
                       onQuickAdd={handleQuickAdd}
                       justAdded={addedIds.has(p.id)}
+                      catalogUrl={location.pathname + location.search}
                     />
                   ))}
                 </AnimatePresence>
@@ -604,10 +606,12 @@ const ProductCard = memo(function ProductCard({
   product: p,
   onQuickAdd,
   justAdded,
+  catalogUrl,
 }: {
   product: Product;
   onQuickAdd: (p: Product) => void;
   justAdded: boolean;
+  catalogUrl: string;
 }) {
   const finalPrice = p.sale_price ?? p.price;
   const img = getProductImage(p.slug, p.cover_image);
@@ -623,7 +627,7 @@ const ProductCard = memo(function ProductCard({
       transition={{ duration: 0.2 }}
     >
       <div className={`group bg-card border rounded-xl overflow-hidden card-lift ${outOfStock ? "opacity-70" : ""}`}>
-        <Link to={`/produto/${p.slug}`} className="block">
+        <Link to={`/produto/${p.slug}`} state={{ from: catalogUrl }} className="block">
           <div className="aspect-square bg-secondary relative overflow-hidden">
             {img ? (
               <img
@@ -673,7 +677,7 @@ const ProductCard = memo(function ProductCard({
         </Link>
 
         <div className="p-3 lg:p-4">
-          <Link to={`/produto/${p.slug}`}>
+          <Link to={`/produto/${p.slug}`} state={{ from: catalogUrl }}>
             <h3 className="font-body text-sm text-foreground font-medium line-clamp-2 mb-1.5 group-hover:text-primary transition-colors leading-snug min-h-[2.5em]">
               {p.name}
             </h3>

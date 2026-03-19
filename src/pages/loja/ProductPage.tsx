@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
@@ -23,6 +23,8 @@ interface Review { id: string; rating: number; comment: string | null; created_a
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
+  const backUrl = (location.state as { from?: string })?.from || "/loja";
   const { addItem } = useCart();
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
@@ -87,7 +89,7 @@ export default function ProductPage() {
     <div className="container mx-auto px-4 py-20 text-center">
       <h2 className="font-display text-2xl text-foreground mb-3">Produto não encontrado</h2>
       <p className="font-body text-sm text-muted-foreground mb-6">O produto que você está buscando pode ter sido removido ou não está disponível.</p>
-      <Link to="/loja"><Button>Voltar à loja</Button></Link>
+      <Link to={backUrl}><Button>Voltar à loja</Button></Link>
     </div>
   );
 
@@ -102,7 +104,7 @@ export default function ProductPage() {
   return (
     <div className="py-4 lg:py-10">
       <div className="container mx-auto px-4">
-        <Link to="/loja" className="inline-flex items-center gap-1 font-body text-sm text-muted-foreground hover:text-primary mb-5 transition-colors">
+        <Link to={backUrl} className="inline-flex items-center gap-1 font-body text-sm text-muted-foreground hover:text-primary mb-5 transition-colors">
           <ChevronLeft className="w-4 h-4" /> Voltar à loja
         </Link>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
