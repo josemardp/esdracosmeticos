@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { fetchCep } from "@/lib/viacep";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
@@ -22,9 +23,27 @@ export default function CheckoutPage() {
   });
   const [payment, setPayment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [loadingCep, setLoadingCep] = useState(false);
   const [orderCode, setOrderCode] = useState<string | null>(null);
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
+
+  const handleCepBlur = useCallback(async () => {
+    const clean = form.zip.replace(/\D/g, "");
+    if (clean.length !== 8) return;
+    setLoadingCep(true);
+    const result = await fetchCep(clean);
+    if (result) {
+      setForm(prev => ({
+        ...prev,
+        street: result.logradouro || prev.street,
+        neighborhood: result.bairro || prev.neighborhood,
+        city: result.localidade || prev.city,
+        state: result.uf || prev.state,
+      }));
+    }
+    setLoadingCep(false);
+  }, [form.zip]);
 
   const handleSubmit = async () => {
     // Validations
@@ -176,7 +195,7 @@ export default function CheckoutPage() {
             <div className="bg-card border rounded-xl p-6">
               <h2 className="font-body text-sm font-semibold text-foreground mb-4">Endereço de Entrega</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div><Label className="font-body text-xs">CEP *</Label><Input value={form.zip} onChange={e => set("zip", e.target.value)} placeholder="00000-000" /></div>
+                <div><Label className="font-body text-xs">CEP *</Label><Input value={form.zip} onChange={e => set("zip", e.target.value)} onBlur={handleCepBlur} placeholder="00000-000" />{loadingCep && <span className="font-body text-xs text-muted-foreground">Buscando...</span>}</div>
                 <div className="sm:col-span-2"><Label className="font-body text-xs">Rua *</Label><Input value={form.street} onChange={e => set("street", e.target.value)} /></div>
                 <div><Label className="font-body text-xs">Número *</Label><Input value={form.number} onChange={e => set("number", e.target.value)} /></div>
                 <div><Label className="font-body text-xs">Complemento</Label><Input value={form.complement} onChange={e => set("complement", e.target.value)} /></div>

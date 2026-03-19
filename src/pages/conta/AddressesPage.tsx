@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Plus, Trash2, Star } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { fetchCep } from "@/lib/viacep";
 
 interface Address {
   id: string; street: string; number: string; complement: string | null;
@@ -78,7 +79,7 @@ export default function AddressesPage() {
       {showForm && (
         <div className="bg-card border rounded-xl p-5 mb-6 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><Label className="font-body text-xs">CEP *</Label><Input value={form.zip} onChange={e => setForm({ ...form, zip: e.target.value })} placeholder="00000-000" /></div>
+            <div><Label className="font-body text-xs">CEP *</Label><Input value={form.zip} onChange={e => setForm({ ...form, zip: e.target.value })} onBlur={async () => { const r = await fetchCep(form.zip); if (r) setForm(prev => ({ ...prev, street: r.logradouro || prev.street, neighborhood: r.bairro || prev.neighborhood, city: r.localidade || prev.city, state: r.uf || prev.state })); }} placeholder="00000-000" /></div>
             <div className="sm:col-span-2"><Label className="font-body text-xs">Rua *</Label><Input value={form.street} onChange={e => setForm({ ...form, street: e.target.value })} /></div>
             <div><Label className="font-body text-xs">Número *</Label><Input value={form.number} onChange={e => setForm({ ...form, number: e.target.value })} /></div>
             <div><Label className="font-body text-xs">Complemento</Label><Input value={form.complement} onChange={e => setForm({ ...form, complement: e.target.value })} /></div>
