@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { getProductImage } from "@/lib/product-images";
 import { Heart, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -39,22 +40,23 @@ export default function FavoritesPage() {
       {favs.length === 0 ? (
         <div className="bg-card border rounded-xl p-12 text-center">
           <Heart className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="font-body text-sm text-muted-foreground">Nenhum favorito adicionado.</p>
+          <p className="font-body text-sm text-muted-foreground mb-2">Nenhum favorito adicionado.</p>
+          <Link to="/loja" className="font-body text-sm text-primary hover:underline">Explorar produtos</Link>
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {favs.map(f => f.products && (
-            <div key={f.id} className="bg-card border rounded-xl overflow-hidden relative">
+            <div key={f.id} className="bg-card border rounded-xl overflow-hidden relative group">
               <Link to={`/produto/${f.products.slug}`}>
-                <div className="aspect-square bg-secondary">
-                  {f.products.cover_image && <img src={f.products.cover_image} alt={f.products.name} className="w-full h-full object-cover" />}
+                <div className="aspect-square bg-secondary overflow-hidden">
+                  {(() => { const img = getProductImage(f.products.slug, f.products.cover_image); return img ? <img src={img} alt={f.products.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
                 </div>
                 <div className="p-3">
-                  <h3 className="font-body text-sm text-foreground line-clamp-2">{f.products.name}</h3>
+                  <h3 className="font-body text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">{f.products.name}</h3>
                   <p className="font-body text-sm font-semibold text-foreground mt-1">R$ {f.products.price.toFixed(2)}</p>
                 </div>
               </Link>
-              <button onClick={() => removeFav(f.id)} className="absolute top-2 right-2 bg-card/80 rounded-full p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors">
+              <button onClick={() => removeFav(f.id)} className="absolute top-2 right-2 bg-card/80 backdrop-blur-sm rounded-full p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>

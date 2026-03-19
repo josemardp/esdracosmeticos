@@ -47,13 +47,20 @@ export function Footer() {
           <div>
             <h5 className="font-body text-sm font-semibold tracking-wide uppercase mb-4">Loja</h5>
             <ul className="space-y-2.5">
-              {["Maquiagem", "Skincare", "Cabelos", "Perfumaria", "Kits", "Promoções"].map((item) => (
-                <li key={item}>
+              {[
+                { label: "Maquiagem", href: "/loja?categoria=maquiagem" },
+                { label: "Skincare", href: "/loja?categoria=skincare" },
+                { label: "Cabelos", href: "/loja?categoria=cabelos" },
+                { label: "Perfumaria", href: "/loja?categoria=perfumaria" },
+                { label: "Lançamentos", href: "/lancamentos" },
+                { label: "Promoções", href: "/promocoes" },
+              ].map((item) => (
+                <li key={item.label}>
                   <Link
-                    to="/loja"
+                    to={item.href}
                     className="font-body text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors"
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -66,10 +73,9 @@ export function Footer() {
             <ul className="space-y-2.5">
               {[
                 { label: "Meus Pedidos", href: "/conta/pedidos" },
-                { label: "Trocas e Devoluções", href: "/contato" },
-                { label: "Perguntas Frequentes", href: "/contato" },
-                { label: "Fale Conosco", href: "/contato" },
-                { label: "Política de Privacidade", href: "/privacidade" },
+                { label: "Trocas e Devoluções", href: "/suporte" },
+                { label: "Perguntas Frequentes", href: "/suporte" },
+                { label: "Fale Conosco", href: "/suporte" },
               ].map((item) => (
                 <li key={item.label}>
                   <Link
