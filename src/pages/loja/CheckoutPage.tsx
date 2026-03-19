@@ -28,6 +28,23 @@ export default function CheckoutPage() {
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
 
+  const handleCepBlur = useCallback(async () => {
+    const clean = form.zip.replace(/\D/g, "");
+    if (clean.length !== 8) return;
+    setLoadingCep(true);
+    const result = await fetchCep(clean);
+    if (result) {
+      setForm(prev => ({
+        ...prev,
+        street: result.logradouro || prev.street,
+        neighborhood: result.bairro || prev.neighborhood,
+        city: result.localidade || prev.city,
+        state: result.uf || prev.state,
+      }));
+    }
+    setLoadingCep(false);
+  }, [form.zip]);
+
   const handleSubmit = async () => {
     // Validations
     if (!form.name || !form.email || !form.phone) {
