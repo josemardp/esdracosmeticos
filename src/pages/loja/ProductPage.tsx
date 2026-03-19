@@ -38,6 +38,7 @@ export default function ProductPage() {
       const { data } = await supabase.from("products").select("*").eq("slug", slug).eq("active", true).maybeSingle();
       setProduct(data as Product | null);
       if (data) {
+        trackViewItem({ id: data.id, name: data.name, price: data.sale_price ?? data.price });
         const { data: revs } = await supabase.from("reviews").select("id, rating, comment, created_at").eq("product_id", data.id).eq("approved", true).order("created_at", { ascending: false }).limit(10);
         setReviews((revs as Review[]) ?? []);
       }
