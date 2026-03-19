@@ -7,10 +7,9 @@ import logoEsdra from "@/assets/logo-esdra.png";
 const navLinks = [
   { label: "Início", href: "/" },
   { label: "Loja", href: "/loja" },
-  { label: "Categorias", href: "/categorias" },
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Promoções", href: "/promocoes" },
-  { label: "Contato", href: "/contato" },
+  { label: "Suporte", href: "/suporte" },
 ];
 
 export function Header() {
@@ -38,15 +37,7 @@ export function Header() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <img src={logoEsdra} alt="Esdra Cosméticos" className="h-8 lg:h-10 w-auto" />
-              <div className="hidden sm:block">
-                <h1 className="font-display text-xl lg:text-2xl font-semibold tracking-tight text-foreground leading-none">
-                  Esdra
-                </h1>
-                <span className="font-body text-[10px] lg:text-xs text-muted-foreground tracking-[0.2em] uppercase">
-                  Cosméticos
-                </span>
-              </div>
+              <img src={logoEsdra} alt="Esdra Cosméticos" className="h-10 lg:h-12 w-auto" />
             </Link>
 
             {/* Desktop Nav */}
