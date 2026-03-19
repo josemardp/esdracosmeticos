@@ -23,6 +23,7 @@ export default function CheckoutPage() {
   });
   const [payment, setPayment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [loadingCep, setLoadingCep] = useState(false);
   const [orderCode, setOrderCode] = useState<string | null>(null);
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
