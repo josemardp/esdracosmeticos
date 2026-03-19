@@ -49,7 +49,7 @@ export default function CartPage() {
             return (
               <motion.div key={item.id} layout className="bg-card border rounded-xl p-4 flex gap-4">
                 <div className="w-20 h-20 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                  {item.cover_image && <img src={item.cover_image} alt={item.name} className="w-full h-full object-cover" />}
+                  {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt={item.name} className="w-full h-full object-cover" /> : null; })()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link to={`/produto/${item.slug}`} className="font-body text-sm font-medium text-foreground truncate block hover:text-primary transition-colors">{item.name}</Link>
