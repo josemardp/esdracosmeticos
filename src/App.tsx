@@ -85,7 +85,7 @@ const App = () => (
                 <Route path="/conta" element={<OrdersPage />} />
                 <Route path="/conta/pedidos" element={<OrdersPage />} />
                 <Route path="/conta/dados" element={<ProfilePage />} />
-                <Route path="/conta/enderecos" element={<AccountPlaceholder title="Meus Endereços" />} />
+                <Route path="/conta/enderecos" element={<AddressesPage />} />
                 <Route path="/conta/favoritos" element={<FavoritesPage />} />
               </Route>
             </Route>
