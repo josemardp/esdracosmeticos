@@ -79,7 +79,7 @@ export default function AddressesPage() {
       {showForm && (
         <div className="bg-card border rounded-xl p-5 mb-6 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><Label className="font-body text-xs">CEP *</Label><Input value={form.zip} onChange={e => setForm({ ...form, zip: e.target.value })} placeholder="00000-000" /></div>
+            <div><Label className="font-body text-xs">CEP *</Label><Input value={form.zip} onChange={e => setForm({ ...form, zip: e.target.value })} onBlur={async () => { const r = await fetchCep(form.zip); if (r) setForm(prev => ({ ...prev, street: r.logradouro || prev.street, neighborhood: r.bairro || prev.neighborhood, city: r.localidade || prev.city, state: r.uf || prev.state })); }} placeholder="00000-000" /></div>
             <div className="sm:col-span-2"><Label className="font-body text-xs">Rua *</Label><Input value={form.street} onChange={e => setForm({ ...form, street: e.target.value })} /></div>
             <div><Label className="font-body text-xs">Número *</Label><Input value={form.number} onChange={e => setForm({ ...form, number: e.target.value })} /></div>
             <div><Label className="font-body text-xs">Complemento</Label><Input value={form.complement} onChange={e => setForm({ ...form, complement: e.target.value })} /></div>
