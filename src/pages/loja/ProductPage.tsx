@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getProductImage } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -88,7 +89,8 @@ export default function ProductPage() {
     </div>
   );
 
-  const images = [product.cover_image, ...(product.gallery || [])].filter(Boolean) as string[];
+  const fallbackImg = getProductImage(product.slug, product.cover_image);
+  const images = [product.cover_image || fallbackImg, ...(product.gallery || [])].filter(Boolean) as string[];
   const outOfStock = product.inventory_count <= 0;
   const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
   const whatsappMsg = encodeURIComponent(`Olá, tenho interesse no produto "${product.name}" da Esdra Cosméticos.`);
