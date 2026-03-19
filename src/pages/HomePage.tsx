@@ -77,7 +77,7 @@ export default function HomePage() {
       <div className="group bg-card border rounded-xl overflow-hidden hover:shadow-elegant transition-all">
         <Link to={`/produto/${p.slug}`}>
           <div className="aspect-square bg-secondary relative overflow-hidden">
-            {p.cover_image ? <img src={p.cover_image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>}
+            {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
             {p.new_arrival && <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-body font-medium px-2 py-0.5 rounded-full">Novo</span>}
             {p.sale_price && <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-medium px-2 py-0.5 rounded-full">Oferta</span>}
             {p.inventory_count <= 0 && <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center"><span className="bg-foreground text-primary-foreground font-body text-xs font-medium px-3 py-1 rounded-full">Esgotado</span></div>}
