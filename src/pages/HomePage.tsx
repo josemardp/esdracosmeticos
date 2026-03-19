@@ -187,16 +187,16 @@ export default function HomePage() {
         </div>
         <div className="relative container mx-auto px-4 py-20">
           <motion.div className="max-w-xl" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
-            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Nova Coleção 2026</motion.span>
+            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Perfumaria Selecionada</motion.span>
             <motion.h1 variants={fadeUp} custom={1} className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl italic leading-[1.08] tracking-tight text-primary-foreground mb-6">
-              Realce sua beleza com produtos <span className="text-gold">selecionados</span>
+              Fragrâncias que traduzem <span className="text-gold">personalidade</span>
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="font-body text-sm sm:text-base text-primary-foreground/75 max-w-md leading-relaxed mb-8">
-              Cosméticos premium com curadoria exclusiva. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
+              Perfumes inspirados nas maiores grifes do mundo. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
             </motion.p>
             <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3 sm:gap-4">
               <Link to="/loja"><Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-body text-sm tracking-wide px-8">Explorar Coleção <ArrowRight className="w-4 h-4 ml-2" /></Button></Link>
-              <Link to="/lancamentos"><Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body text-sm tracking-wide px-8">Novidades</Button></Link>
+              <Link to="/lancamentos"><Button size="lg" className="bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/40 hover:bg-primary-foreground/30 font-body text-sm tracking-wide px-8">Novidades</Button></Link>
             </motion.div>
           </motion.div>
         </div>
