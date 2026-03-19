@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Heart, MessageCircle, ChevronLeft, Star, Minus, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { trackViewItem, trackAddToCart, trackWhatsAppClick } from "@/lib/analytics";
 
 interface Product {
   id: string; name: string; slug: string; sku: string | null;
