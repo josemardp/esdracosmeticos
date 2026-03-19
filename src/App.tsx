@@ -85,6 +85,7 @@ const App = () => (
               <Route element={<AccountLayout />}>
                 <Route path="/conta" element={<OrdersPage />} />
                 <Route path="/conta/pedidos" element={<OrdersPage />} />
+                <Route path="/conta/pedidos/:id" element={<OrderDetailPage />} />
                 <Route path="/conta/dados" element={<ProfilePage />} />
                 <Route path="/conta/enderecos" element={<AddressesPage />} />
                 <Route path="/conta/favoritos" element={<FavoritesPage />} />
