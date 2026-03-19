@@ -183,6 +183,7 @@ const FilterSidebar = memo(function FilterSidebar({
 /* ─── main ─── */
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const { addItem } = useCart();
 
   /* raw data */
