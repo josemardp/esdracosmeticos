@@ -3,6 +3,17 @@ import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck, Check } from "lucide-react";
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleNewsletter = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim() || !email.includes("@")) return;
+    setSubscribed(true);
+    setEmail("");
+    setTimeout(() => setSubscribed(false), 4000);
+  };
+
   return (
     <footer className="bg-foreground text-primary-foreground">
       {/* Newsletter */}
@@ -14,19 +25,29 @@ export function Footer() {
           <p className="font-body text-xs sm:text-sm text-primary-foreground/60 mb-6 max-w-md mx-auto">
             Cadastre-se e seja a primeira a saber sobre lançamentos, promoções e dicas de beleza.
           </p>
-          <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="Seu melhor e-mail"
-              className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <button
-              type="submit"
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              Inscrever-se
-            </button>
-          </form>
+          {subscribed ? (
+            <div className="flex items-center justify-center gap-2 text-primary font-body text-sm font-medium animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <Check className="w-5 h-5" />
+              <span>Inscrito com sucesso! Obrigado por se inscrever.</span>
+            </div>
+          ) : (
+            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={handleNewsletter}>
+              <input
+                type="email"
+                placeholder="Seu melhor e-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <button
+                type="submit"
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                Inscrever-se
+              </button>
+            </form>
+          )}
         </div>
       </div>
 
