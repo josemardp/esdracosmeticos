@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
 import { Input } from "@/components/ui/input";
