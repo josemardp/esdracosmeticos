@@ -95,8 +95,8 @@ export default function CatalogPage() {
               className="pl-10"
             />
           </div>
-          <Button variant="outline" className="sm:hidden" onClick={() => setShowFilters(!showFilters)}>
-            <SlidersHorizontal className="w-4 h-4 mr-2" /> Filtros
+          <Button variant="outline" className="lg:hidden" onClick={() => setShowFilters(!showFilters)}>
+            <SlidersHorizontal className="w-4 h-4 mr-2" /> Filtros {showFilters && <X className="w-3 h-3 ml-1" />}
           </Button>
           <select
             value={sortBy}
