@@ -72,18 +72,18 @@ export default function HomePage() {
     });
   }, []);
 
-  const handleQuickAdd = (p: Product) => {
+  const handleQuickAdd = useCallback((p: Product) => {
     if (p.inventory_count <= 0) return;
     addItem({
       id: p.id, name: p.name, slug: p.slug, price: p.price,
       sale_price: p.sale_price, cover_image: p.cover_image, inventory_count: p.inventory_count,
     });
-  };
+  }, [addItem]);
 
-  const formatInstallment = (price: number) => {
+  const formatInstallment = useCallback((price: number) => {
     const installment = price / 3;
     return `3x de R$ ${installment.toFixed(2)} sem juros`;
-  };
+  }, []);
 
   const ProductCard = useCallback(({ p, i }: { p: Product; i: number }) => {
     const finalPrice = p.sale_price ?? p.price;
