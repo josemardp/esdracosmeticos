@@ -4,6 +4,7 @@ import { motion, type Variants } from "framer-motion";
 import { ArrowRight, ShieldCheck, Truck, RotateCcw, Star, Sparkles, Crown, Gift, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { getProductImage } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
 import heroImg from "@/assets/hero-cosmetics.jpg";
 import catMaquiagem from "@/assets/cat-maquiagem.jpg";
