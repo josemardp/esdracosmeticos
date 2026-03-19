@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef, memo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
@@ -667,4 +667,4 @@ const ProductCard = memo(function ProductCard({
   );
 });
 
-import { memo } from "react";
+
