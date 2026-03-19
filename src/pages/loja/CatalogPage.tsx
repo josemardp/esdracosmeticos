@@ -626,7 +626,7 @@ const ProductCard = memo(function ProductCard({
       transition={{ duration: 0.2 }}
     >
       <div className={`group bg-card border rounded-xl overflow-hidden card-lift ${outOfStock ? "opacity-70" : ""}`}>
-        <Link to={`/produto/${p.slug}`} className="block">
+        <Link to={`/produto/${p.slug}`} state={{ from: catalogUrl }} className="block">
           <div className="aspect-square bg-secondary relative overflow-hidden">
             {img ? (
               <img
