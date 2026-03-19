@@ -443,6 +443,7 @@ export type Database = {
           benefits: string | null
           bestseller: boolean
           category_id: string | null
+          cost: number | null
           cover_image: string | null
           created_at: string
           featured: boolean
@@ -467,6 +468,7 @@ export type Database = {
           benefits?: string | null
           bestseller?: boolean
           category_id?: string | null
+          cost?: number | null
           cover_image?: string | null
           created_at?: string
           featured?: boolean
@@ -491,6 +493,7 @@ export type Database = {
           benefits?: string | null
           bestseller?: boolean
           category_id?: string | null
+          cost?: number | null
           cover_image?: string | null
           created_at?: string
           featured?: boolean
