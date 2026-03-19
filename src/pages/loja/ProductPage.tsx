@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Heart, MessageCircle, ChevronLeft, Star, Minus, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -19,6 +21,8 @@ interface Review { id: string; rating: number; comment: string | null; created_a
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
+  const { addItem } = useCart();
+  const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +32,7 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (!slug) return;
-    const fetch = async () => {
+    const fetchData = async () => {
       const { data } = await supabase.from("products").select("*").eq("slug", slug).eq("active", true).maybeSingle();
       setProduct(data as Product | null);
       if (data) {
@@ -37,18 +41,41 @@ export default function ProductPage() {
       }
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, [slug]);
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    addItem({
+      id: product.id, name: product.name, slug: product.slug,
+      price: product.price, sale_price: product.sale_price,
+      cover_image: product.cover_image, inventory_count: product.inventory_count,
+    }, qty);
+  };
+
+  const handleFavorite = async () => {
+    if (!user || !product) {
+      toast({ title: "Faça login para favoritar", variant: "destructive" });
+      return;
+    }
+    const { data: customer } = await supabase.from("customers").select("id").eq("user_id", user.id).maybeSingle();
+    if (!customer) { toast({ title: "Complete seu cadastro primeiro", variant: "destructive" }); return; }
+    // Check if already favorited
+    const { data: existing } = await supabase.from("favorites").select("id").eq("customer_id", customer.id).eq("product_id", product.id).maybeSingle();
+    if (existing) {
+      await supabase.from("favorites").delete().eq("id", existing.id);
+      toast({ title: "Removido dos favoritos" });
+    } else {
+      await supabase.from("favorites").insert({ customer_id: customer.id, product_id: product.id });
+      toast({ title: "Adicionado aos favoritos!" });
+    }
+  };
 
   if (loading) return (
     <div className="container mx-auto px-4 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="aspect-square bg-secondary rounded-xl animate-pulse" />
-        <div className="space-y-4">
-          <div className="h-8 bg-secondary rounded animate-pulse w-3/4" />
-          <div className="h-6 bg-secondary rounded animate-pulse w-1/4" />
-          <div className="h-20 bg-secondary rounded animate-pulse" />
-        </div>
+        <div className="space-y-4"><div className="h-8 bg-secondary rounded animate-pulse w-3/4" /><div className="h-6 bg-secondary rounded animate-pulse w-1/4" /><div className="h-20 bg-secondary rounded animate-pulse" /></div>
       </div>
     </div>
   );
@@ -72,16 +99,10 @@ export default function ProductPage() {
         <Link to="/loja" className="inline-flex items-center gap-1 font-body text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
           <ChevronLeft className="w-4 h-4" /> Voltar à loja
         </Link>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Images */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="aspect-square bg-secondary rounded-xl overflow-hidden mb-3">
-              {images.length > 0 ? (
-                <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body">Sem imagem</div>
-              )}
+              {images.length > 0 ? <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body">Sem imagem</div>}
             </div>
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto">
@@ -94,7 +115,6 @@ export default function ProductPage() {
             )}
           </motion.div>
 
-          {/* Info */}
           <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <div className="flex items-center gap-2 mb-2">
               {product.new_arrival && <span className="bg-primary/10 text-primary font-body text-[10px] font-medium px-2 py-0.5 rounded-full">Lançamento</span>}
@@ -123,7 +143,6 @@ export default function ProductPage() {
 
             {product.short_description && <p className="font-body text-sm text-muted-foreground leading-relaxed mb-6">{product.short_description}</p>}
 
-            {/* Qty + Add to cart */}
             {outOfStock ? (
               <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-4">
                 <p className="font-body text-sm text-destructive font-medium">Produto indisponível</p>
@@ -139,14 +158,14 @@ export default function ProductPage() {
                   </div>
                   <span className="font-body text-xs text-muted-foreground">{product.inventory_count} em estoque</span>
                 </div>
-                <Button className="w-full" size="lg" onClick={() => toast({ title: "Adicionado ao carrinho!", description: `${qty}x ${product.name}` })}>
+                <Button className="w-full" size="lg" onClick={handleAddToCart}>
                   <ShoppingBag className="w-4 h-4 mr-2" /> Adicionar ao Carrinho
                 </Button>
               </div>
             )}
 
             <div className="flex gap-3">
-              <Button variant="outline" size="sm" onClick={() => toast({ title: "Adicionado aos favoritos!" })}>
+              <Button variant="outline" size="sm" onClick={handleFavorite}>
                 <Heart className="w-4 h-4 mr-1" /> Favoritar
               </Button>
               <a href={`https://wa.me/5518991459429?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer">
@@ -154,17 +173,10 @@ export default function ProductPage() {
               </a>
             </div>
 
-            {/* Tabs */}
             <div className="mt-8 border-t pt-6">
               <div className="flex gap-4 border-b mb-4">
                 {[{ key: "desc", label: "Descrição" }, { key: "use", label: "Modo de Uso" }, { key: "ingredients", label: "Ingredientes" }].map(tab => (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key as any)}
-                    className={`font-body text-sm pb-2 border-b-2 transition-colors ${activeTab === tab.key ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-                  >
-                    {tab.label}
-                  </button>
+                  <button key={tab.key} onClick={() => setActiveTab(tab.key as any)} className={`font-body text-sm pb-2 border-b-2 transition-colors ${activeTab === tab.key ? 'border-primary text-primary font-medium' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{tab.label}</button>
                 ))}
               </div>
               <div className="font-body text-sm text-foreground leading-relaxed whitespace-pre-wrap">
@@ -176,7 +188,6 @@ export default function ProductPage() {
           </motion.div>
         </div>
 
-        {/* Reviews section */}
         {reviews.length > 0 && (
           <div className="mt-16">
             <h2 className="font-display text-2xl text-foreground mb-6">Avaliações</h2>
