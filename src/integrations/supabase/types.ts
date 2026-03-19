@@ -665,6 +665,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_coupon_usage: {
+        Args: { p_coupon_id: string }
+        Returns: undefined
+      }
       validate_coupon: {
         Args: { p_code: string; p_order_total: number }
         Returns: {
