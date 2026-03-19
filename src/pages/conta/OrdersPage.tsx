@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Package } from "lucide-react";
+import { Package, ChevronRight } from "lucide-react";
 
 interface Order {
   id: string; order_code: string; status: string; payment_status: string; total: number; created_at: string;
