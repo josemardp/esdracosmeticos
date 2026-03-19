@@ -223,9 +223,9 @@ export default function HomePage() {
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
+             <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Explore por Categoria</h2>
-            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre exatamente o que sua rotina de beleza precisa</p>
+            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre a fragrância perfeita para cada ocasião</p>
           </motion.div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {categories.filter(c => categoryImages[c.slug]).map((cat, i) => (
