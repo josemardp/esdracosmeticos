@@ -97,6 +97,7 @@ export function Header() {
           </div>
         )}
       </header>
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }
