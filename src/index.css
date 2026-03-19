@@ -165,7 +165,8 @@ html {
   box-shadow: var(--shadow-card);
 }
 
-/* Logo enhance — make faint pink logo more visible */
+/* Logo enhance — darken the pink without affecting white background */
 .logo-enhance {
-  filter: brightness(0.75) saturate(1.8);
+  filter: saturate(2.5) contrast(1.15);
+  mix-blend-mode: multiply;
 }
