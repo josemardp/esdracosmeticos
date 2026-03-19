@@ -164,3 +164,8 @@ html {
   transform: translateY(-4px);
   box-shadow: var(--shadow-card);
 }
+
+/* Logo enhance — make faint logo more visible */
+.logo-enhance {
+  filter: contrast(1.5) saturate(1.3);
+}
