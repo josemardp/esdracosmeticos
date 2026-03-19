@@ -117,9 +117,11 @@ export default function CheckoutPage() {
 
       // 5. Increment coupon usage if used
       if (coupon) {
-        await supabase.from("coupons").update({ usage_count: undefined as any }).eq("id", coupon.coupon_id);
-        // Better: use SQL increment
-        await supabase.rpc("validate_coupon", { p_code: coupon.code, p_order_total: 0 }).then(() => {}).catch(() => {});
+        try {
+          await supabase.rpc("validate_coupon", { p_code: coupon.code, p_order_total: 0 });
+        } catch {
+          // Coupon usage tracking is best-effort
+        }
       }
 
       // 6. Success
