@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                   {items.map(item => (
                     <div key={item.id} className="flex gap-3">
                       <div className="w-12 h-12 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                        {item.cover_image && <img src={item.cover_image} alt="" className="w-full h-full object-cover" />}
+                        {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt="" className="w-full h-full object-cover" /> : null; })()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-body text-xs text-foreground truncate">{item.name}</p>
