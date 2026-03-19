@@ -85,10 +85,10 @@ export default function HomePage() {
     return `3x de R$ ${installment.toFixed(2)} sem juros`;
   };
 
-  const ProductCard = ({ p, i }: { p: Product; i: number }) => {
+  const ProductCard = useCallback(({ p, i }: { p: Product; i: number }) => {
     const finalPrice = p.sale_price ?? p.price;
     return (
-      <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
         <div className="group bg-card border rounded-xl overflow-hidden card-lift">
           <Link to={`/produto/${p.slug}`}>
             <div className="aspect-square bg-secondary relative overflow-hidden">
@@ -124,7 +124,14 @@ export default function HomePage() {
               {formatInstallment(finalPrice)}
             </p>
             {p.inventory_count > 0 && (
-              <Button size="sm" className="w-full text-xs font-medium" onClick={() => handleQuickAdd(p)}>
+              <Button
+                size="sm"
+                className="w-full text-xs font-medium"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleQuickAdd(p);
+                }}
+              >
                 <ShoppingBag className="w-3.5 h-3.5 mr-1.5" /> Adicionar
               </Button>
             )}
@@ -132,7 +139,7 @@ export default function HomePage() {
         </div>
       </motion.div>
     );
-  };
+  }, [handleQuickAdd, formatInstallment]);
 
   const ProductSection = ({ title, subtitle, products, linkTo, linkLabel }: { title: string; subtitle: string; products: Product[]; linkTo: string; linkLabel: string }) => {
     if (products.length === 0) return null;
