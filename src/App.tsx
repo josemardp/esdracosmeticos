@@ -42,6 +42,7 @@ import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
+import OrderDetailPage from "@/pages/conta/OrderDetailPage";
 import FavoritesPage from "@/pages/conta/FavoritesPage";
 import AccountPlaceholder from "@/pages/conta/AccountPlaceholder";
 import AddressesPage from "@/pages/conta/AddressesPage";
