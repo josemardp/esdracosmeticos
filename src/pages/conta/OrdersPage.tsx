@@ -44,16 +44,19 @@ export default function OrdersPage() {
       ) : (
         <div className="space-y-3">
           {orders.map(o => (
-            <div key={o.id} className="bg-card border rounded-xl p-5 flex items-center justify-between">
+            <Link key={o.id} to={`/conta/pedidos/${o.id}`} className="bg-card border rounded-xl p-5 flex items-center justify-between hover:bg-secondary/50 transition-colors">
               <div>
                 <p className="font-body text-sm font-semibold text-foreground">{o.order_code}</p>
                 <p className="font-body text-xs text-muted-foreground">{new Date(o.created_at).toLocaleDateString("pt-BR")}</p>
               </div>
-              <div className="text-right">
-                <p className="font-body text-sm font-semibold text-foreground">R$ {Number(o.total).toFixed(2)}</p>
-                <p className="font-body text-xs text-muted-foreground">{statusLabels[o.status] || o.status}</p>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="font-body text-sm font-semibold text-foreground">R$ {Number(o.total).toFixed(2)}</p>
+                  <p className="font-body text-xs text-muted-foreground">{statusLabels[o.status] || o.status}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
