@@ -125,7 +125,10 @@ export function Footer() {
             © {new Date().getFullYear()} Esdra Cosméticos. Todos os direitos reservados.
           </p>
           <p className="font-body text-xs text-primary-foreground/40">
-            CNPJ: 00.000.000/0001-00
+            CNPJ: 26.744.223/0001-57
+          </p>
+          <p className="font-body text-xs text-primary-foreground/40">
+            Desde 2016 · Valparaíso/SP
           </p>
         </div>
       </div>
