@@ -605,10 +605,12 @@ const ProductCard = memo(function ProductCard({
   product: p,
   onQuickAdd,
   justAdded,
+  catalogUrl,
 }: {
   product: Product;
   onQuickAdd: (p: Product) => void;
   justAdded: boolean;
+  catalogUrl: string;
 }) {
   const finalPrice = p.sale_price ?? p.price;
   const img = getProductImage(p.slug, p.cover_image);
