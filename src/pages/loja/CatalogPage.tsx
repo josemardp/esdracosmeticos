@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback, useRef, memo } from "react";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
@@ -74,6 +74,112 @@ const SORT_OPTIONS = [
   { value: "newest", label: "Novidades" },
 ] as const;
 
+/* ─── Filter sidebar (extracted to avoid remount) ─── */
+const FilterSidebar = memo(function FilterSidebar({
+  categories,
+  urlCat,
+  priceBounds,
+  priceRange,
+  urlInStock,
+  urlOnSale,
+  urlNew,
+  activeFilterCount,
+  onCategoryChange,
+  onPriceChange,
+  onToggleFilter,
+  onClearAll,
+}: {
+  categories: Category[];
+  urlCat: string;
+  priceBounds: { min: number; max: number };
+  priceRange: [number, number];
+  urlInStock: boolean;
+  urlOnSale: boolean;
+  urlNew: boolean;
+  activeFilterCount: number;
+  onCategoryChange: (slug: string | undefined) => void;
+  onPriceChange: (range: [number, number]) => void;
+  onToggleFilter: (key: string, value: string | undefined) => void;
+  onClearAll: () => void;
+}) {
+  return (
+    <div className="space-y-6">
+      {/* Categories */}
+      <div>
+        <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Categorias</h3>
+        <div className="space-y-0.5">
+          <button
+            onClick={() => onCategoryChange(undefined)}
+            className={`block w-full text-left px-3 py-2 rounded-lg font-body text-sm transition-colors ${!urlCat ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
+          >
+            Todos os produtos
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => onCategoryChange(cat.slug)}
+              className={`block w-full text-left px-3 py-2 rounded-lg font-body text-sm transition-colors ${urlCat === cat.slug ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Price range */}
+      <div>
+        <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Faixa de preço</h3>
+        <Slider
+          min={priceBounds.min}
+          max={priceBounds.max}
+          step={5}
+          value={priceRange}
+          onValueChange={(v) => onPriceChange(v as [number, number])}
+          className="mb-3"
+        />
+        <div className="flex items-center justify-between font-body text-xs text-muted-foreground tabular-nums">
+          <span>{fmt(priceRange[0])}</span>
+          <span>{fmt(priceRange[1])}</span>
+        </div>
+      </div>
+
+      {/* Toggles */}
+      <div>
+        <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Filtrar por</h3>
+        <div className="space-y-3">
+          <label className="flex items-center gap-2.5 cursor-pointer">
+            <Checkbox
+              checked={urlInStock}
+              onCheckedChange={(c) => onToggleFilter("estoque", c ? "1" : undefined)}
+            />
+            <span className="font-body text-sm text-foreground">Em estoque</span>
+          </label>
+          <label className="flex items-center gap-2.5 cursor-pointer">
+            <Checkbox
+              checked={urlOnSale}
+              onCheckedChange={(c) => onToggleFilter("promocao", c ? "1" : undefined)}
+            />
+            <span className="font-body text-sm text-foreground">Em promoção</span>
+          </label>
+          <label className="flex items-center gap-2.5 cursor-pointer">
+            <Checkbox
+              checked={urlNew}
+              onCheckedChange={(c) => onToggleFilter("novidades", c ? "1" : undefined)}
+            />
+            <span className="font-body text-sm text-foreground">Lançamentos</span>
+          </label>
+        </div>
+      </div>
+
+      {activeFilterCount > 0 && (
+        <Button variant="outline" size="sm" className="w-full text-xs" onClick={onClearAll}>
+          Limpar todos os filtros
+        </Button>
+      )}
+    </div>
+  );
+});
+
 /* ─── main ─── */
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -84,6 +190,7 @@ export default function CatalogPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [priceInited, setPriceInited] = useState(false);
 
   /* filter state from URL */
   const urlQ = searchParams.get("q") || "";
@@ -113,31 +220,7 @@ export default function CatalogPage() {
     return { min: Math.floor(Math.min(...prices)), max: Math.ceil(Math.max(...prices)) };
   }, [allProducts]);
 
-  /* sync search input -> URL */
-  useEffect(() => {
-    updateURL({ q: debouncedSearch || undefined });
-  }, [debouncedSearch]);
-
-  /* sync price range -> URL */
-  useEffect(() => {
-    if (debouncedPrice[0] === 0 && debouncedPrice[1] === 0) return;
-    if (debouncedPrice[0] <= priceBounds.min && debouncedPrice[1] >= priceBounds.max) {
-      updateURL({ preco_min: undefined, preco_max: undefined });
-    } else {
-      updateURL({
-        preco_min: debouncedPrice[0] > priceBounds.min ? String(debouncedPrice[0]) : undefined,
-        preco_max: debouncedPrice[1] < priceBounds.max ? String(debouncedPrice[1]) : undefined,
-      });
-    }
-  }, [debouncedPrice, priceBounds]);
-
-  /* init price range from bounds */
-  useEffect(() => {
-    if (allProducts.length > 0 && priceRange[0] === 0 && priceRange[1] === 0) {
-      setPriceRange([urlMinPrice || priceBounds.min, urlMaxPrice || priceBounds.max]);
-    }
-  }, [allProducts.length, priceBounds]);
-
+  /* stable updateURL */
   const updateURL = useCallback(
     (updates: Record<string, string | undefined>) => {
       setSearchParams((prev) => {
@@ -156,6 +239,32 @@ export default function CatalogPage() {
     (key: string, value: string | undefined) => updateURL({ [key]: value }),
     [updateURL]
   );
+
+  /* sync search input -> URL */
+  useEffect(() => {
+    updateURL({ q: debouncedSearch || undefined });
+  }, [debouncedSearch, updateURL]);
+
+  /* sync price range -> URL */
+  useEffect(() => {
+    if (!priceInited) return;
+    if (debouncedPrice[0] <= priceBounds.min && debouncedPrice[1] >= priceBounds.max) {
+      updateURL({ preco_min: undefined, preco_max: undefined });
+    } else {
+      updateURL({
+        preco_min: debouncedPrice[0] > priceBounds.min ? String(debouncedPrice[0]) : undefined,
+        preco_max: debouncedPrice[1] < priceBounds.max ? String(debouncedPrice[1]) : undefined,
+      });
+    }
+  }, [debouncedPrice, priceBounds, priceInited, updateURL]);
+
+  /* init price range from bounds (once) */
+  useEffect(() => {
+    if (allProducts.length > 0 && !priceInited) {
+      setPriceRange([urlMinPrice || priceBounds.min, urlMaxPrice || priceBounds.max]);
+      setPriceInited(true);
+    }
+  }, [allProducts.length, priceBounds, priceInited, urlMinPrice, urlMaxPrice]);
 
   /* fetch data */
   const fetchData = useCallback(async () => {
@@ -182,42 +291,33 @@ export default function CatalogPage() {
     fetchData();
   }, [fetchData]);
 
-  /* filter + sort (client-side for instant UX) */
+  /* filter + sort */
   const filtered = useMemo(() => {
     let result = [...allProducts];
 
-    // search
     if (urlQ) {
       const q = urlQ.toLowerCase();
       result = result.filter((p) => p.name.toLowerCase().includes(q));
     }
 
-    // category
     if (urlCat) {
       const cat = categories.find((c) => c.slug === urlCat);
       if (cat) result = result.filter((p) => p.category_id === cat.id);
     }
 
-    // in stock
     if (urlInStock) result = result.filter((p) => p.inventory_count > 0);
-
-    // on sale
     if (urlOnSale) result = result.filter((p) => p.sale_price !== null);
-
-    // new arrivals
     if (urlNew) result = result.filter((p) => p.new_arrival);
 
-    // price range
-    const effMin = urlMinPrice || priceBounds.min;
-    const effMax = urlMaxPrice || priceBounds.max;
     if (urlMinPrice || urlMaxPrice) {
+      const effMin = urlMinPrice || priceBounds.min;
+      const effMax = urlMaxPrice || priceBounds.max;
       result = result.filter((p) => {
         const price = p.sale_price ?? p.price;
         return price >= effMin && price <= effMax;
       });
     }
 
-    // sort
     const sortFn = (a: Product, b: Product) => {
       const pa = a.sale_price ?? a.price;
       const pb = b.sale_price ?? b.price;
@@ -226,14 +326,14 @@ export default function CatalogPage() {
         case "price_desc": return pb - pa;
         case "name": return a.name.localeCompare(b.name, "pt-BR");
         case "newest": return (b.new_arrival ? 1 : 0) - (a.new_arrival ? 1 : 0);
-        default: // relevance: featured > bestseller > rest
+        default: {
           const sa = (a.featured ? 4 : 0) + (a.bestseller ? 2 : 0) + (a.new_arrival ? 1 : 0);
           const sb = (b.featured ? 4 : 0) + (b.bestseller ? 2 : 0) + (b.new_arrival ? 1 : 0);
           return sb - sa;
+        }
       }
     };
 
-    // out-of-stock to end
     const inStock = result.filter((p) => p.inventory_count > 0).sort(sortFn);
     const outStock = result.filter((p) => p.inventory_count <= 0).sort(sortFn);
     return [...inStock, ...outStock];
@@ -261,7 +361,7 @@ export default function CatalogPage() {
       });
     }
     return chips;
-  }, [urlQ, urlCat, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, categories, priceBounds]);
+  }, [urlQ, urlCat, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, categories, priceBounds, setFilter, updateURL]);
 
   const clearAll = useCallback(() => {
     setSearchInput("");
@@ -283,6 +383,20 @@ export default function CatalogPage() {
     [addItem]
   );
 
+  /* callbacks for FilterSidebar */
+  const handleCategoryChange = useCallback(
+    (slug: string | undefined) => {
+      setFilter("categoria", slug);
+      setMobileOpen(false);
+    },
+    [setFilter]
+  );
+
+  const handleToggleFilter = useCallback(
+    (key: string, value: string | undefined) => setFilter(key, value),
+    [setFilter]
+  );
+
   /* SEO */
   const catName = urlCat ? categories.find((c) => c.slug === urlCat)?.name : null;
   const seoTitle = catName
@@ -292,84 +406,6 @@ export default function CatalogPage() {
     ? `Encontre os melhores produtos de ${catName} na Esdra Cosméticos. Qualidade premium com entrega para todo o Brasil.`
     : "Explore nossa coleção completa de cosméticos premium. Maquiagem, Skincare, Cabelos, Perfumaria e muito mais.";
   useSEO(seoTitle, seoDesc);
-
-  /* ─── filter sidebar content (shared desktop/mobile) ─── */
-  const FilterContent = () => (
-    <div className="space-y-6">
-      {/* Categories */}
-      <div>
-        <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Categorias</h3>
-        <div className="space-y-0.5">
-          <button
-            onClick={() => { setFilter("categoria", undefined); setMobileOpen(false); }}
-            className={`block w-full text-left px-3 py-2 rounded-lg font-body text-sm transition-colors ${!urlCat ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
-          >
-            Todos os produtos
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => { setFilter("categoria", cat.slug); setMobileOpen(false); }}
-              className={`block w-full text-left px-3 py-2 rounded-lg font-body text-sm transition-colors ${urlCat === cat.slug ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Price range */}
-      <div>
-        <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Faixa de preço</h3>
-        <Slider
-          min={priceBounds.min}
-          max={priceBounds.max}
-          step={5}
-          value={priceRange}
-          onValueChange={(v) => setPriceRange(v as [number, number])}
-          className="mb-3"
-        />
-        <div className="flex items-center justify-between font-body text-xs text-muted-foreground tabular-nums">
-          <span>{fmt(priceRange[0])}</span>
-          <span>{fmt(priceRange[1])}</span>
-        </div>
-      </div>
-
-      {/* Toggles */}
-      <div>
-        <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Filtrar por</h3>
-        <div className="space-y-3">
-          <label className="flex items-center gap-2.5 cursor-pointer">
-            <Checkbox
-              checked={urlInStock}
-              onCheckedChange={(c) => setFilter("estoque", c ? "1" : undefined)}
-            />
-            <span className="font-body text-sm text-foreground">Em estoque</span>
-          </label>
-          <label className="flex items-center gap-2.5 cursor-pointer">
-            <Checkbox
-              checked={urlOnSale}
-              onCheckedChange={(c) => setFilter("promocao", c ? "1" : undefined)}
-            />
-            <span className="font-body text-sm text-foreground">Em promoção</span>
-          </label>
-          <label className="flex items-center gap-2.5 cursor-pointer">
-            <Checkbox
-              checked={urlNew}
-              onCheckedChange={(c) => setFilter("novidades", c ? "1" : undefined)}
-            />
-            <span className="font-body text-sm text-foreground">Lançamentos</span>
-          </label>
-        </div>
-      </div>
-
-      {activeFilters.length > 0 && (
-        <Button variant="outline" size="sm" className="w-full text-xs" onClick={clearAll}>
-          Limpar todos os filtros
-        </Button>
-      )}
-    </div>
-  );
 
   return (
     <div className="py-6 lg:py-10">
@@ -425,7 +461,20 @@ export default function CatalogPage() {
                   <SheetTitle className="font-display text-xl italic">Filtros</SheetTitle>
                 </SheetHeader>
                 <div className="mt-6">
-                  <FilterContent />
+                  <FilterSidebar
+                    categories={categories}
+                    urlCat={urlCat}
+                    priceBounds={priceBounds}
+                    priceRange={priceRange}
+                    urlInStock={urlInStock}
+                    urlOnSale={urlOnSale}
+                    urlNew={urlNew}
+                    activeFilterCount={activeFilters.length}
+                    onCategoryChange={handleCategoryChange}
+                    onPriceChange={setPriceRange}
+                    onToggleFilter={handleToggleFilter}
+                    onClearAll={clearAll}
+                  />
                 </div>
               </SheetContent>
             </Sheet>
@@ -476,7 +525,20 @@ export default function CatalogPage() {
           {/* Desktop sidebar */}
           <aside className="hidden lg:block w-56 shrink-0">
             <div className="sticky top-24">
-              <FilterContent />
+              <FilterSidebar
+                categories={categories}
+                urlCat={urlCat}
+                priceBounds={priceBounds}
+                priceRange={priceRange}
+                urlInStock={urlInStock}
+                urlOnSale={urlOnSale}
+                urlNew={urlNew}
+                activeFilterCount={activeFilters.length}
+                onCategoryChange={handleCategoryChange}
+                onPriceChange={setPriceRange}
+                onToggleFilter={handleToggleFilter}
+                onClearAll={clearAll}
+              />
             </div>
           </aside>
 
@@ -666,5 +728,3 @@ const ProductCard = memo(function ProductCard({
     </motion.div>
   );
 });
-
-
