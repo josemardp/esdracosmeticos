@@ -102,7 +102,7 @@ const App = () => (
               <Route path="/admin/conteudo" element={<AdminContentPage />} />
               <Route path="/admin/suporte" element={<AdminSupportPage />} />
               <Route path="/admin/integracoes" element={<AdminIntegrationsPage />} />
-              <Route path="/admin/configuracoes" element={<AdminPlaceholder title="Configurações" />} />
+              <Route path="/admin/configuracoes" element={<AdminSettingsPage />} />
             </Route>
 
             {/* Catch-all */}
