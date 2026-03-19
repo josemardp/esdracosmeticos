@@ -1,0 +1,169 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import { Plus, Pencil, Trash2, Package, X } from "lucide-react";
+
+interface Product {
+  id: string; name: string; slug: string; sku: string | null; price: number;
+  sale_price: number | null; inventory_count: number; active: boolean;
+  featured: boolean; new_arrival: boolean; bestseller: boolean;
+  category_id: string | null; short_description: string | null;
+  full_description: string | null; cover_image: string | null;
+}
+
+interface Category { id: string; name: string; }
+
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [isNew, setIsNew] = useState(false);
+  const [form, setForm] = useState<Partial<Product>>({});
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    const [{ data: prods }, { data: cats }] = await Promise.all([
+      supabase.from("products").select("*").order("created_at", { ascending: false }),
+      supabase.from("categories").select("id, name").order("name"),
+    ]);
+    setProducts((prods as Product[]) ?? []);
+    setCategories((cats as Category[]) ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchProducts(); }, []);
+
+  const openNew = () => {
+    setIsNew(true);
+    setForm({ name: "", slug: "", sku: "", price: 0, sale_price: null, inventory_count: 0, active: true, featured: false, new_arrival: false, bestseller: false, category_id: null, short_description: "", full_description: "", cover_image: "" });
+    setEditing({} as Product);
+  };
+
+  const openEdit = (p: Product) => {
+    setIsNew(false);
+    setForm({ ...p });
+    setEditing(p);
+  };
+
+  const closeForm = () => { setEditing(null); setForm({}); };
+
+  const generateSlug = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  const handleSave = async () => {
+    if (!form.name) { toast({ title: "Nome é obrigatório", variant: "destructive" }); return; }
+    const slug = form.slug || generateSlug(form.name);
+    const payload = { ...form, slug, price: Number(form.price) || 0, sale_price: form.sale_price ? Number(form.sale_price) : null, inventory_count: Number(form.inventory_count) || 0 };
+
+    if (isNew) {
+      const { error } = await supabase.from("products").insert(payload as any);
+      if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+      toast({ title: "Produto criado!" });
+    } else {
+      const { error } = await supabase.from("products").update(payload as any).eq("id", editing!.id);
+      if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+      toast({ title: "Produto atualizado!" });
+    }
+    closeForm();
+    fetchProducts();
+  };
+
+  const toggleActive = async (p: Product) => {
+    await supabase.from("products").update({ active: !p.active }).eq("id", p.id);
+    fetchProducts();
+  };
+
+  const deleteProduct = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+    await supabase.from("products").delete().eq("id", id);
+    toast({ title: "Produto excluído" });
+    fetchProducts();
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="font-display text-2xl lg:text-3xl text-foreground">Produtos</h1>
+        <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Novo Produto</Button>
+      </div>
+
+      {/* Edit/Create form modal */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-foreground/40 overflow-y-auto">
+          <div className="bg-card border rounded-xl p-6 w-full max-w-2xl mx-4 mb-10 animate-fade-in-scale">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-xl text-foreground">{isNew ? "Novo Produto" : "Editar Produto"}</h2>
+              <button onClick={closeForm}><X className="w-5 h-5 text-muted-foreground" /></button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Nome *</Label><Input value={form.name || ""} onChange={e => setForm({ ...form, name: e.target.value, slug: generateSlug(e.target.value) })} /></div>
+              <div><Label className="font-body text-xs">Slug</Label><Input value={form.slug || ""} onChange={e => setForm({ ...form, slug: e.target.value })} /></div>
+              <div><Label className="font-body text-xs">SKU</Label><Input value={form.sku || ""} onChange={e => setForm({ ...form, sku: e.target.value })} /></div>
+              <div><Label className="font-body text-xs">Preço</Label><Input type="number" step="0.01" value={form.price ?? 0} onChange={e => setForm({ ...form, price: parseFloat(e.target.value) })} /></div>
+              <div><Label className="font-body text-xs">Preço Promocional</Label><Input type="number" step="0.01" value={form.sale_price ?? ""} onChange={e => setForm({ ...form, sale_price: e.target.value ? parseFloat(e.target.value) : null })} placeholder="Opcional" /></div>
+              <div><Label className="font-body text-xs">Estoque</Label><Input type="number" value={form.inventory_count ?? 0} onChange={e => setForm({ ...form, inventory_count: parseInt(e.target.value) })} /></div>
+              <div>
+                <Label className="font-body text-xs">Categoria</Label>
+                <select value={form.category_id || ""} onChange={e => setForm({ ...form, category_id: e.target.value || null })} className="w-full border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground">
+                  <option value="">Sem categoria</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">URL da imagem de capa</Label><Input value={form.cover_image || ""} onChange={e => setForm({ ...form, cover_image: e.target.value })} placeholder="https://..." /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição curta</Label><Textarea value={form.short_description || ""} onChange={e => setForm({ ...form, short_description: e.target.value })} rows={2} /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição completa</Label><Textarea value={form.full_description || ""} onChange={e => setForm({ ...form, full_description: e.target.value })} rows={4} /></div>
+              <div className="sm:col-span-2 flex flex-wrap gap-4">
+                {(["active", "featured", "new_arrival", "bestseller"] as const).map(key => (
+                  <label key={key} className="flex items-center gap-2 font-body text-sm">
+                    <input type="checkbox" checked={!!form[key]} onChange={e => setForm({ ...form, [key]: e.target.checked })} className="accent-primary" />
+                    {{ active: "Ativo", featured: "Destaque", new_arrival: "Lançamento", bestseller: "Mais Vendido" }[key]}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
+              <Button variant="outline" onClick={closeForm}>Cancelar</Button>
+              <Button onClick={handleSave}>{isNew ? "Criar Produto" : "Salvar"}</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="space-y-3">{[1,2,3,4].map(i => <div key={i} className="h-16 bg-card border rounded-xl animate-pulse" />)}</div>
+      ) : products.length === 0 ? (
+        <div className="bg-card border rounded-xl p-12 text-center">
+          <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+          <p className="font-body text-sm text-muted-foreground mb-4">Nenhum produto cadastrado.</p>
+          <Button onClick={openNew}>Cadastrar primeiro produto</Button>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {products.map(p => (
+            <div key={p.id} className="bg-card border rounded-xl p-4 flex items-center gap-4">
+              <div className="w-12 h-12 bg-secondary rounded-lg shrink-0 overflow-hidden">
+                {p.cover_image && <img src={p.cover_image} alt="" className="w-full h-full object-cover" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-body text-sm font-medium text-foreground truncate">{p.name}</h3>
+                  {!p.active && <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-body">Inativo</span>}
+                </div>
+                <p className="font-body text-xs text-muted-foreground">{p.sku || "Sem SKU"} · Est: {p.inventory_count} · R$ {p.price.toFixed(2)}</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="w-4 h-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={() => toggleActive(p)} className={p.active ? "text-success" : "text-muted-foreground"}>{p.active ? "✓" : "○"}</Button>
+                <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)} className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
