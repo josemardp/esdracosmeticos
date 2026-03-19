@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { SearchDialog } from "@/components/search/SearchDialog";
 import logoEsdra from "@/assets/logo-esdra.png";
 
 const navLinks = [
@@ -16,6 +17,7 @@ const navLinks = [
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const { itemCount } = useCart();
 
@@ -53,7 +55,7 @@ export function Header() {
             </nav>
 
             <div className="flex items-center gap-0.5 sm:gap-1">
-              <Button variant="ghost" size="icon" className="text-foreground w-9 h-9 sm:w-10 sm:h-10" aria-label="Buscar"><Search className="w-[18px] h-[18px]" /></Button>
+              <Button variant="ghost" size="icon" className="text-foreground w-9 h-9 sm:w-10 sm:h-10" aria-label="Buscar" onClick={() => setSearchOpen(true)}><Search className="w-[18px] h-[18px]" /></Button>
               <Link to="/conta/favoritos">
                 <Button variant="ghost" size="icon" className="text-foreground w-9 h-9 sm:w-10 sm:h-10" aria-label="Favoritos"><Heart className="w-[18px] h-[18px]" /></Button>
               </Link>
@@ -95,6 +97,7 @@ export function Header() {
           </div>
         )}
       </header>
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }

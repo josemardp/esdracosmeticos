@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, type Variants } from "framer-motion";
 import { ArrowRight, ShieldCheck, Truck, RotateCcw, Star, Gift, ShoppingBag, CreditCard, Clock, ChevronDown, ChevronUp } from "lucide-react";
@@ -72,23 +72,23 @@ export default function HomePage() {
     });
   }, []);
 
-  const handleQuickAdd = (p: Product) => {
+  const handleQuickAdd = useCallback((p: Product) => {
     if (p.inventory_count <= 0) return;
     addItem({
       id: p.id, name: p.name, slug: p.slug, price: p.price,
       sale_price: p.sale_price, cover_image: p.cover_image, inventory_count: p.inventory_count,
     });
-  };
+  }, [addItem]);
 
-  const formatInstallment = (price: number) => {
+  const formatInstallment = useCallback((price: number) => {
     const installment = price / 3;
     return `3x de R$ ${installment.toFixed(2)} sem juros`;
-  };
+  }, []);
 
-  const ProductCard = ({ p, i }: { p: Product; i: number }) => {
+  const ProductCard = useCallback(({ p, i }: { p: Product; i: number }) => {
     const finalPrice = p.sale_price ?? p.price;
     return (
-      <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
         <div className="group bg-card border rounded-xl overflow-hidden card-lift">
           <Link to={`/produto/${p.slug}`}>
             <div className="aspect-square bg-secondary relative overflow-hidden">
@@ -124,7 +124,14 @@ export default function HomePage() {
               {formatInstallment(finalPrice)}
             </p>
             {p.inventory_count > 0 && (
-              <Button size="sm" className="w-full text-xs font-medium" onClick={() => handleQuickAdd(p)}>
+              <Button
+                size="sm"
+                className="w-full text-xs font-medium"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleQuickAdd(p);
+                }}
+              >
                 <ShoppingBag className="w-3.5 h-3.5 mr-1.5" /> Adicionar
               </Button>
             )}
@@ -132,7 +139,7 @@ export default function HomePage() {
         </div>
       </motion.div>
     );
-  };
+  }, [handleQuickAdd, formatInstallment]);
 
   const ProductSection = ({ title, subtitle, products, linkTo, linkLabel }: { title: string; subtitle: string; products: Product[]; linkTo: string; linkLabel: string }) => {
     if (products.length === 0) return null;
