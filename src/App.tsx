@@ -44,6 +44,9 @@ import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
 import FavoritesPage from "@/pages/conta/FavoritesPage";
 import AccountPlaceholder from "@/pages/conta/AccountPlaceholder";
+import AddressesPage from "@/pages/conta/AddressesPage";
+import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
+import AdminContentPage from "@/pages/admin/AdminContentPage";
 
 const queryClient = new QueryClient();
 
