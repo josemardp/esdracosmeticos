@@ -676,7 +676,7 @@ const ProductCard = memo(function ProductCard({
         </Link>
 
         <div className="p-3 lg:p-4">
-          <Link to={`/produto/${p.slug}`}>
+          <Link to={`/produto/${p.slug}`} state={{ from: catalogUrl }}>
             <h3 className="font-body text-sm text-foreground font-medium line-clamp-2 mb-1.5 group-hover:text-primary transition-colors leading-snug min-h-[2.5em]">
               {p.name}
             </h3>
