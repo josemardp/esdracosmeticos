@@ -89,7 +89,7 @@ export default function ProductPage() {
     <div className="container mx-auto px-4 py-20 text-center">
       <h2 className="font-display text-2xl text-foreground mb-3">Produto não encontrado</h2>
       <p className="font-body text-sm text-muted-foreground mb-6">O produto que você está buscando pode ter sido removido ou não está disponível.</p>
-      <Link to="/loja"><Button>Voltar à loja</Button></Link>
+      <Link to={backUrl}><Button>Voltar à loja</Button></Link>
     </div>
   );
 
