@@ -117,7 +117,7 @@ export default function CheckoutPage() {
 
       // 5. Increment coupon usage if used
       if (coupon) {
-        await supabase.rpc("increment_coupon_usage" as any, { p_coupon_id: coupon.coupon_id }).catch(() => {});
+        try { await supabase.rpc("increment_coupon_usage" as any, { p_coupon_id: coupon.coupon_id }); } catch {}
       }
 
       // 6. Success
