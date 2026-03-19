@@ -142,6 +142,7 @@ export default function CheckoutPage() {
       }
 
       // 6. Success
+      trackPurchase(order.order_code, total, items.map(i => ({ id: i.id, name: i.name, price: i.sale_price ?? i.price, quantity: i.qty })));
       setOrderCode(order.order_code);
       clearCart();
       toast({ title: "Pedido criado com sucesso!", description: `Código: ${order.order_code}` });
