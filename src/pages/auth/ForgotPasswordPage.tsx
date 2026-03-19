@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md bg-card border rounded-xl p-8 shadow-elegant">
         <div className="text-center mb-8">
           <Link to="/">
-            <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4" />
+            <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4 logo-enhance" />
           </Link>
           <h1 className="font-display text-2xl text-foreground">Recuperar senha</h1>
         </div>

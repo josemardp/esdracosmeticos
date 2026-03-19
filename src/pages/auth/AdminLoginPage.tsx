@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md bg-card border rounded-xl p-8 shadow-elegant">
         <div className="text-center mb-8">
           <Link to="/">
-            <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4" />
+            <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4 logo-enhance" />
           </Link>
           <div className="flex items-center justify-center gap-2 mb-2">
             <Shield className="w-5 h-5 text-primary" />

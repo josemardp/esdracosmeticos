@@ -44,7 +44,7 @@ export function AdminLayout() {
       <aside className="hidden lg:flex lg:w-64 flex-col bg-card border-r">
         <div className="p-4 border-b">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoEsdra} alt="Esdra" className="h-8" />
+            <img src={logoEsdra} alt="Esdra" className="h-8 logo-enhance" />
             <div>
               <span className="font-display text-lg font-semibold text-foreground leading-none block">Esdra</span>
               <span className="font-body text-[9px] text-muted-foreground tracking-[0.15em] uppercase">Painel Gestor</span>
@@ -87,7 +87,7 @@ export function AdminLayout() {
           <Menu className="w-5 h-5 text-foreground" />
         </button>
         <Link to="/admin" className="flex items-center gap-2">
-          <img src={logoEsdra} alt="Esdra" className="h-6" />
+          <img src={logoEsdra} alt="Esdra" className="h-6 logo-enhance" />
           <span className="font-display text-sm font-semibold">Gestor</span>
         </Link>
         <div className="w-9" />
@@ -100,7 +100,7 @@ export function AdminLayout() {
           <div className="relative w-72 bg-card flex flex-col animate-fade-in">
             <div className="p-4 border-b flex items-center justify-between">
               <Link to="/" className="flex items-center gap-2">
-                <img src={logoEsdra} alt="Esdra" className="h-8" />
+                <img src={logoEsdra} alt="Esdra" className="h-8 logo-enhance" />
               </Link>
               <button onClick={() => setSidebarOpen(false)} className="p-1">
                 <X className="w-5 h-5 text-muted-foreground" />
