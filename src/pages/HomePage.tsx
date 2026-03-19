@@ -21,7 +21,7 @@ const fadeUp: Variants = {
 };
 
 const categoryImages: Record<string, string> = {
-  maquiagem: catMaquiagem, skincare: catSkincare, cabelos: catCabelos, perfumaria: catPerfumaria,
+  maquiagem: catMaquiagem, skincare: catSkincare, cabelos: catCabelos, perfumaria: catPerfumaria, perfumes: catPerfumaria,
 };
 
 const benefits = [
