@@ -213,7 +213,7 @@ export default function HomePage() {
       <ProductSection title="Destaques" subtitle="Seleção especial da curadoria Esdra" products={featured} linkTo="/loja" linkLabel="Ver todos" />
 
       {/* New Arrivals */}
-      <ProductSection title="Lançamentos" subtitle="Novidades que acabaram de chegar" products={newArrivals} linkTo="/loja?categoria=lancamentos" linkLabel="Ver lançamentos" />
+      <ProductSection title="Lançamentos" subtitle="Novidades que acabaram de chegar" products={newArrivals} linkTo="/lancamentos" linkLabel="Ver lançamentos" />
 
       {/* Bestsellers */}
       <div className="bg-secondary">
