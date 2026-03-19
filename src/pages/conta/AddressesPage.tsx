@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Plus, Trash2, Star } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { fetchCep } from "@/lib/viacep";
 
 interface Address {
   id: string; street: string; number: string; complement: string | null;
