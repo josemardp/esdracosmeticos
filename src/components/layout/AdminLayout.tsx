@@ -100,7 +100,7 @@ export function AdminLayout() {
           <div className="relative w-72 bg-card flex flex-col animate-fade-in">
             <div className="p-4 border-b flex items-center justify-between">
               <Link to="/" className="flex items-center gap-2">
-                <img src={logoEsdra} alt="Esdra" className="h-8" />
+                <img src={logoEsdra} alt="Esdra" className="h-8 logo-enhance" />
               </Link>
               <button onClick={() => setSidebarOpen(false)} className="p-1">
                 <X className="w-5 h-5 text-muted-foreground" />
