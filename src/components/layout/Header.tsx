@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { SearchDialog } from "@/components/search/SearchDialog";
 import logoEsdra from "@/assets/logo-esdra.png";
 
 const navLinks = [
