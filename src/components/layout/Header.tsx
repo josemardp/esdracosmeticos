@@ -7,10 +7,9 @@ import logoEsdra from "@/assets/logo-esdra.png";
 const navLinks = [
   { label: "Início", href: "/" },
   { label: "Loja", href: "/loja" },
-  { label: "Categorias", href: "/categorias" },
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Promoções", href: "/promocoes" },
-  { label: "Contato", href: "/contato" },
+  { label: "Suporte", href: "/suporte" },
 ];
 
 export function Header() {
