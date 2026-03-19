@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { AccountLayout } from "@/components/layout/AccountLayout";
@@ -43,6 +44,9 @@ import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
 import FavoritesPage from "@/pages/conta/FavoritesPage";
 import AccountPlaceholder from "@/pages/conta/AccountPlaceholder";
+import AddressesPage from "@/pages/conta/AddressesPage";
+import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
+import AdminContentPage from "@/pages/admin/AdminContentPage";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +57,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <CartProvider>
           <Routes>
             {/* Public routes with layout */}
             <Route element={<PublicLayout />}>
@@ -80,7 +85,7 @@ const App = () => (
                 <Route path="/conta" element={<OrdersPage />} />
                 <Route path="/conta/pedidos" element={<OrdersPage />} />
                 <Route path="/conta/dados" element={<ProfilePage />} />
-                <Route path="/conta/enderecos" element={<AccountPlaceholder title="Meus Endereços" />} />
+                <Route path="/conta/enderecos" element={<AddressesPage />} />
                 <Route path="/conta/favoritos" element={<FavoritesPage />} />
               </Route>
             </Route>
@@ -94,15 +99,16 @@ const App = () => (
               <Route path="/admin/clientes" element={<AdminCustomersPage />} />
               <Route path="/admin/estoque" element={<AdminStockPage />} />
               <Route path="/admin/cupons" element={<AdminCouponsPage />} />
-              <Route path="/admin/conteudo" element={<AdminPlaceholder title="Conteúdo" />} />
+              <Route path="/admin/conteudo" element={<AdminContentPage />} />
               <Route path="/admin/suporte" element={<AdminSupportPage />} />
               <Route path="/admin/integracoes" element={<AdminIntegrationsPage />} />
-              <Route path="/admin/configuracoes" element={<AdminPlaceholder title="Configurações" />} />
+              <Route path="/admin/configuracoes" element={<AdminSettingsPage />} />
             </Route>
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
