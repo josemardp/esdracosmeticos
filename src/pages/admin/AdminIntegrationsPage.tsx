@@ -68,6 +68,12 @@ export default function AdminIntegrationsPage() {
         <Button variant="outline" size="sm" onClick={fetchData}><RefreshCw className="w-4 h-4 mr-2" /> Atualizar</Button>
       </div>
 
+      {/* Status Banner */}
+      <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6">
+        <p className="font-body text-sm text-foreground font-medium mb-1">📋 Status do Módulo: Preparação Estrutural</p>
+        <p className="font-body text-xs text-muted-foreground">A base de dados, mapeamento de produtos e logs está pronta. A conexão real com as APIs dos marketplaces requer tokens e credenciais de cada plataforma, que serão configurados na fase de produção.</p>
+      </div>
+
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-32 bg-card border rounded-xl animate-pulse" />)}</div>
       ) : (
