@@ -318,9 +318,9 @@ export default function HomePage() {
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-primary-foreground mb-3">Precisa de ajuda para escolher?</h2>
             <p className="font-body text-sm text-primary-foreground/75 mb-8 max-w-md mx-auto leading-relaxed">
-              Nossa equipe está pronta para recomendar os produtos ideais para sua rotina de beleza. Atendimento rápido e personalizado.
+              Nossa equipe está pronta para ajudar você a encontrar o perfume ideal. Atendimento rápido e personalizado pelo WhatsApp.
             </p>
-            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20recomendação%20de%20produtos%20da%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20ajuda%20para%20escolher%20um%20perfume%20na%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body text-sm tracking-wide px-8 hover:-translate-y-0.5 transition-all duration-300">Falar no WhatsApp</Button>
             </a>
           </motion.div>
