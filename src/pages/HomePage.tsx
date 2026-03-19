@@ -59,15 +59,25 @@ export default function HomePage() {
   useEffect(() => {
     const cols = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, short_description";
     Promise.all([
-      supabase.from("products").select(cols).eq("active", true).eq("featured", true).limit(4),
-      supabase.from("products").select(cols).eq("active", true).eq("new_arrival", true).limit(4),
-      supabase.from("products").select(cols).eq("active", true).eq("bestseller", true).limit(4),
+      supabase.from("products").select(cols).eq("active", true).eq("featured", true).gt("inventory_count", 0).limit(4),
+      supabase.from("products").select(cols).eq("active", true).eq("new_arrival", true).gt("inventory_count", 0).limit(4),
+      supabase.from("products").select(cols).eq("active", true).eq("bestseller", true).gt("inventory_count", 0).limit(4),
       supabase.from("categories").select("id, name, slug, image_url").eq("active", true).order("sort_order").limit(6),
       supabase.from("reviews").select("rating, comment, created_at").eq("approved", true).order("created_at", { ascending: false }).limit(6),
-    ]).then(([f, n, b, c, r]) => {
-      setFeatured((f.data as Product[]) ?? []);
-      setNewArrivals((n.data as Product[]) ?? []);
-      setBestsellers((b.data as Product[]) ?? []);
+    ]).then(async ([f, n, b, c, r]) => {
+      // If not enough in-stock featured, fall back to any active
+      let featuredData = (f.data as Product[]) ?? [];
+      let newData = (n.data as Product[]) ?? [];
+      let bestData = (b.data as Product[]) ?? [];
+      
+      if (featuredData.length < 4) {
+        const { data: fallback } = await supabase.from("products").select(cols).eq("active", true).gt("inventory_count", 0).limit(4);
+        featuredData = featuredData.length > 0 ? featuredData : ((fallback as Product[]) ?? []);
+      }
+      
+      setFeatured(featuredData);
+      setNewArrivals(newData);
+      setBestsellers(bestData);
       setCategories((c.data as Category[]) ?? []);
       setReviews((r.data as any) ?? []);
     });
