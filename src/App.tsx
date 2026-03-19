@@ -12,6 +12,10 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 
 // Public pages
 import HomePage from "@/pages/HomePage";
+import CatalogPage from "@/pages/loja/CatalogPage";
+import ProductPage from "@/pages/loja/ProductPage";
+import CartPage from "@/pages/loja/CartPage";
+import CheckoutPage from "@/pages/loja/CheckoutPage";
 import SupportPage from "@/pages/suporte/SupportPage";
 import NotFound from "@/pages/NotFound";
 
@@ -24,10 +28,20 @@ import AdminLoginPage from "@/pages/auth/AdminLoginPage";
 
 // Admin pages
 import DashboardPage from "@/pages/admin/DashboardPage";
+import AdminProductsPage from "@/pages/admin/AdminProductsPage";
+import AdminCategoriesPage from "@/pages/admin/AdminCategoriesPage";
+import AdminOrdersPage from "@/pages/admin/AdminOrdersPage";
+import AdminCustomersPage from "@/pages/admin/AdminCustomersPage";
+import AdminStockPage from "@/pages/admin/AdminStockPage";
+import AdminCouponsPage from "@/pages/admin/AdminCouponsPage";
 import AdminSupportPage from "@/pages/admin/AdminSupportPage";
+import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
 import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
 
 // Account pages
+import ProfilePage from "@/pages/conta/ProfilePage";
+import OrdersPage from "@/pages/conta/OrdersPage";
+import FavoritesPage from "@/pages/conta/FavoritesPage";
 import AccountPlaceholder from "@/pages/conta/AccountPlaceholder";
 
 const queryClient = new QueryClient();
@@ -40,9 +54,15 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Public routes */}
+            {/* Public routes with layout */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
+              <Route path="/loja" element={<CatalogPage />} />
+              <Route path="/lancamentos" element={<CatalogPage />} />
+              <Route path="/promocoes" element={<CatalogPage />} />
+              <Route path="/produto/:slug" element={<ProductPage />} />
+              <Route path="/carrinho" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/suporte" element={<SupportPage />} />
               <Route path="/contato" element={<SupportPage />} />
             </Route>
@@ -57,26 +77,26 @@ const App = () => (
             {/* Protected client routes */}
             <Route element={<ProtectedRoute><PublicLayout /></ProtectedRoute>}>
               <Route element={<AccountLayout />}>
-                <Route path="/conta" element={<AccountPlaceholder title="Visão Geral" />} />
-                <Route path="/conta/pedidos" element={<AccountPlaceholder title="Meus Pedidos" />} />
-                <Route path="/conta/dados" element={<AccountPlaceholder title="Meus Dados" />} />
+                <Route path="/conta" element={<OrdersPage />} />
+                <Route path="/conta/pedidos" element={<OrdersPage />} />
+                <Route path="/conta/dados" element={<ProfilePage />} />
                 <Route path="/conta/enderecos" element={<AccountPlaceholder title="Meus Endereços" />} />
-                <Route path="/conta/favoritos" element={<AccountPlaceholder title="Meus Favoritos" />} />
+                <Route path="/conta/favoritos" element={<FavoritesPage />} />
               </Route>
             </Route>
 
             {/* Protected admin routes */}
             <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
               <Route path="/admin" element={<DashboardPage />} />
-              <Route path="/admin/produtos" element={<AdminPlaceholder title="Produtos" />} />
-              <Route path="/admin/categorias" element={<AdminPlaceholder title="Categorias" />} />
-              <Route path="/admin/pedidos" element={<AdminPlaceholder title="Pedidos" />} />
-              <Route path="/admin/clientes" element={<AdminPlaceholder title="Clientes" />} />
-              <Route path="/admin/estoque" element={<AdminPlaceholder title="Estoque" />} />
-              <Route path="/admin/cupons" element={<AdminPlaceholder title="Cupons" />} />
+              <Route path="/admin/produtos" element={<AdminProductsPage />} />
+              <Route path="/admin/categorias" element={<AdminCategoriesPage />} />
+              <Route path="/admin/pedidos" element={<AdminOrdersPage />} />
+              <Route path="/admin/clientes" element={<AdminCustomersPage />} />
+              <Route path="/admin/estoque" element={<AdminStockPage />} />
+              <Route path="/admin/cupons" element={<AdminCouponsPage />} />
               <Route path="/admin/conteudo" element={<AdminPlaceholder title="Conteúdo" />} />
               <Route path="/admin/suporte" element={<AdminSupportPage />} />
-              <Route path="/admin/integracoes" element={<AdminPlaceholder title="Integrações" />} />
+              <Route path="/admin/integracoes" element={<AdminIntegrationsPage />} />
               <Route path="/admin/configuracoes" element={<AdminPlaceholder title="Configurações" />} />
             </Route>
 
