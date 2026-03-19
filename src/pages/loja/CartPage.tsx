@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Minus, Plus, X, ShoppingBag, ArrowRight, MessageCircle, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
+import { getProductImage } from "@/lib/product-images";
 
 export default function CartPage() {
   const { items, itemCount, subtotal, discount, total, coupon, addItem, removeItem, updateQty, applyCoupon, removeCoupon } = useCart();
