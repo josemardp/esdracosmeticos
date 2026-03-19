@@ -35,7 +35,7 @@ export function Header() {
             </button>
 
             <Link to="/" className="flex items-center gap-2">
-              <img src={logoEsdra} alt="Esdra Cosméticos" className="h-9 sm:h-10 lg:h-12 w-auto" />
+              <img src={logoEsdra} alt="Esdra Cosméticos" className="h-9 sm:h-10 lg:h-12 w-auto logo-enhance" />
             </Link>
 
             <nav className="hidden lg:flex items-center gap-7">

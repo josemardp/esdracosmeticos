@@ -60,7 +60,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-secondary px-4">
       <div className="w-full max-w-md bg-card border rounded-xl p-8 shadow-elegant">
         <div className="text-center mb-8">
-          <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4" />
+          <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4 logo-enhance" />
           <h1 className="font-display text-2xl text-foreground">Nova senha</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
