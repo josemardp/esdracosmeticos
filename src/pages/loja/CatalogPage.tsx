@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getProductImage } from "@/lib/product-images";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal, X } from "lucide-react";
@@ -165,11 +166,7 @@ export default function CatalogPage() {
                   >
                     <Link to={`/produto/${p.slug}`} className="group block bg-card border rounded-xl overflow-hidden hover:shadow-elegant transition-all">
                       <div className="aspect-square bg-secondary relative overflow-hidden">
-                        {p.cover_image ? (
-                          <img src={p.cover_image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>
-                        )}
+                        {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
                         {p.new_arrival && (
                           <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-body font-medium px-2 py-0.5 rounded-full">Novo</span>
                         )}
