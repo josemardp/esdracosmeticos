@@ -587,6 +587,7 @@ export default function CatalogPage() {
                       product={p}
                       onQuickAdd={handleQuickAdd}
                       justAdded={addedIds.has(p.id)}
+                      catalogUrl={location.pathname + location.search}
                     />
                   ))}
                 </AnimatePresence>
