@@ -23,6 +23,8 @@ interface Review { id: string; rating: number; comment: string | null; created_a
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
+  const location = useLocation();
+  const backUrl = (location.state as { from?: string })?.from || "/loja";
   const { addItem } = useCart();
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
