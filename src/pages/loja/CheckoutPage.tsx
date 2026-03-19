@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { fetchCep } from "@/lib/viacep";
 import { getProductImage } from "@/lib/product-images";
+import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
@@ -141,6 +142,7 @@ export default function CheckoutPage() {
       }
 
       // 6. Success
+      trackPurchase(order.order_code, total, items.map(i => ({ id: i.id, name: i.name, price: i.sale_price ?? i.price, quantity: i.qty })));
       setOrderCode(order.order_code);
       clearCart();
       toast({ title: "Pedido criado com sucesso!", description: `Código: ${order.order_code}` });
