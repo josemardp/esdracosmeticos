@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getProductImage } from "@/lib/product-images";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal, X } from "lucide-react";
