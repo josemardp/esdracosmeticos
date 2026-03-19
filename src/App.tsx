@@ -42,6 +42,7 @@ import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
+import OrderDetailPage from "@/pages/conta/OrderDetailPage";
 import FavoritesPage from "@/pages/conta/FavoritesPage";
 import AccountPlaceholder from "@/pages/conta/AccountPlaceholder";
 import AddressesPage from "@/pages/conta/AddressesPage";
@@ -84,6 +85,7 @@ const App = () => (
               <Route element={<AccountLayout />}>
                 <Route path="/conta" element={<OrdersPage />} />
                 <Route path="/conta/pedidos" element={<OrdersPage />} />
+                <Route path="/conta/pedidos/:id" element={<OrderDetailPage />} />
                 <Route path="/conta/dados" element={<ProfilePage />} />
                 <Route path="/conta/enderecos" element={<AddressesPage />} />
                 <Route path="/conta/favoritos" element={<FavoritesPage />} />
