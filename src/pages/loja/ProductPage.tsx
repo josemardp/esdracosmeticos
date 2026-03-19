@@ -49,6 +49,7 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (!product) return;
+    trackAddToCart({ id: product.id, name: product.name, price: product.sale_price ?? product.price, quantity: qty });
     addItem({
       id: product.id, name: product.name, slug: product.slug,
       price: product.price, sale_price: product.sale_price,

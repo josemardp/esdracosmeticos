@@ -71,6 +71,7 @@ const App = () => (
               <Route path="/carrinho" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/suporte" element={<SupportPage />} />
+              <Route path="/sobre" element={<SobrePage />} />
               <Route path="/contato" element={<SupportPage />} />
             </Route>
 
