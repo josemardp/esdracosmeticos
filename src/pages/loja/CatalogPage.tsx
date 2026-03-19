@@ -112,7 +112,7 @@ export default function CatalogPage() {
 
         <div className="flex gap-8">
           {/* Sidebar filters */}
-          <aside className={`${showFilters ? 'block' : 'hidden'} sm:block w-full sm:w-48 shrink-0`}>
+          <aside className={`${showFilters ? 'block' : 'hidden'} lg:block w-full lg:w-48 shrink-0`}>
             <div className="sticky top-24 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-body text-sm font-semibold text-foreground">Categorias</h3>
