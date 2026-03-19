@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { fetchCep } from "@/lib/viacep";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
