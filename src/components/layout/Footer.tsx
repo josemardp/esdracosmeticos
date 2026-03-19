@@ -39,8 +39,9 @@ export function Footer() {
               Cosméticos
             </span>
             <p className="font-body text-sm text-primary-foreground/60 mt-4 leading-relaxed">
-              A essência do cuidado, traduzida em sofisticação. Produtos selecionados para realçar sua beleza natural.
+              A essência do cuidado, traduzida em sofisticação. Desde 2016, selecionamos produtos premium para realçar sua beleza natural.
             </p>
+            <Link to="/sobre" className="font-body text-xs text-primary hover:underline mt-2 inline-block">Conheça nossa história →</Link>
           </div>
 
           {/* Shop */}

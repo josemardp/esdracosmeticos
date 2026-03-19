@@ -18,6 +18,7 @@ import ProductPage from "@/pages/loja/ProductPage";
 import CartPage from "@/pages/loja/CartPage";
 import CheckoutPage from "@/pages/loja/CheckoutPage";
 import SupportPage from "@/pages/suporte/SupportPage";
+import SobrePage from "@/pages/SobrePage";
 import NotFound from "@/pages/NotFound";
 
 // Auth pages
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="/carrinho" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/suporte" element={<SupportPage />} />
+              <Route path="/sobre" element={<SobrePage />} />
               <Route path="/contato" element={<SupportPage />} />
             </Route>
 
