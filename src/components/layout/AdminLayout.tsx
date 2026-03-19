@@ -87,7 +87,7 @@ export function AdminLayout() {
           <Menu className="w-5 h-5 text-foreground" />
         </button>
         <Link to="/admin" className="flex items-center gap-2">
-          <img src={logoEsdra} alt="Esdra" className="h-6" />
+          <img src={logoEsdra} alt="Esdra" className="h-6 logo-enhance" />
           <span className="font-display text-sm font-semibold">Gestor</span>
         </Link>
         <div className="w-9" />
