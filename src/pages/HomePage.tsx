@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, type Variants } from "framer-motion";
 import { ArrowRight, ShieldCheck, Truck, RotateCcw, Star, Gift, ShoppingBag, CreditCard, Clock, ChevronDown, ChevronUp } from "lucide-react";
