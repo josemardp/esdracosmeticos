@@ -18,6 +18,7 @@ import ProductPage from "@/pages/loja/ProductPage";
 import CartPage from "@/pages/loja/CartPage";
 import CheckoutPage from "@/pages/loja/CheckoutPage";
 import SupportPage from "@/pages/suporte/SupportPage";
+import SobrePage from "@/pages/SobrePage";
 import NotFound from "@/pages/NotFound";
 
 // Auth pages
