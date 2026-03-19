@@ -44,7 +44,7 @@ export function AdminLayout() {
       <aside className="hidden lg:flex lg:w-64 flex-col bg-card border-r">
         <div className="p-4 border-b">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoEsdra} alt="Esdra" className="h-8" />
+            <img src={logoEsdra} alt="Esdra" className="h-8 logo-enhance" />
             <div>
               <span className="font-display text-lg font-semibold text-foreground leading-none block">Esdra</span>
               <span className="font-body text-[9px] text-muted-foreground tracking-[0.15em] uppercase">Painel Gestor</span>
