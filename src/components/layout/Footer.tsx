@@ -113,9 +113,11 @@ export function Footer() {
             <ul className="space-y-2.5">
               {[
                 { label: "Meus Pedidos", href: "/conta/pedidos" },
-                { label: "Trocas e Devoluções", href: "/suporte" },
+                { label: "Trocas e Devoluções", href: "/trocas-e-devolucoes" },
                 { label: "Perguntas Frequentes", href: "/suporte" },
                 { label: "Fale Conosco", href: "/suporte" },
+                { label: "Política de Privacidade", href: "/politica-de-privacidade" },
+                { label: "Termos de Uso", href: "/termos-de-uso" },
               ].map((item) => (
                 <li key={item.label}>
                   <Link to={item.href} className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
