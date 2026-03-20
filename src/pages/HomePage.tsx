@@ -191,7 +191,7 @@ export default function HomePage() {
         </div>
         <div className="relative container mx-auto px-4 py-20">
           <motion.div className="max-w-xl" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
-            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Perfumaria Selecionada</motion.span>
+            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Beleza & Perfumaria Selecionada</motion.span>
             <motion.h1 variants={fadeUp} custom={1} className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl italic leading-[1.08] tracking-tight text-primary-foreground mb-6">
               Beleza que traduz <span className="text-gold">personalidade</span>
             </motion.h1>
