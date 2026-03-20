@@ -50,6 +50,11 @@ import AddressesPage from "@/pages/conta/AddressesPage";
 import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
 import AdminContentPage from "@/pages/admin/AdminContentPage";
 
+// Institutional pages
+import PoliticaPrivacidadePage from "@/pages/institucional/PoliticaPrivacidadePage";
+import TrocasDevolucoesPage from "@/pages/institucional/TrocasDevolucoesPage";
+import TermosDeUsoPage from "@/pages/institucional/TermosDeUsoPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -73,6 +78,9 @@ const App = () => (
               <Route path="/suporte" element={<SupportPage />} />
               <Route path="/sobre" element={<SobrePage />} />
               <Route path="/contato" element={<SupportPage />} />
+              <Route path="/politica-de-privacidade" element={<PoliticaPrivacidadePage />} />
+              <Route path="/trocas-e-devolucoes" element={<TrocasDevolucoesPage />} />
+              <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
             </Route>
 
             {/* Auth routes (no layout) */}
