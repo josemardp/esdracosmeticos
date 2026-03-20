@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Package, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, X, Upload, Image } from "lucide-react";
 
 interface Product {
   id: string; name: string; slug: string; sku: string | null; price: number;
