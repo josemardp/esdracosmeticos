@@ -11,6 +11,9 @@ import catMaquiagem from "@/assets/cat-maquiagem.jpg";
 import catSkincare from "@/assets/cat-skincare.jpg";
 import catCabelos from "@/assets/cat-cabelos.jpg";
 import catPerfumaria from "@/assets/cat-perfumaria.jpg";
+import catCorpoBanho from "@/assets/cat-corpo-banho.jpg";
+import catInfantil from "@/assets/cat-infantil.jpg";
+import catAcessorios from "@/assets/cat-acessorios.jpg";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -22,6 +25,7 @@ const fadeUp: Variants = {
 
 const categoryImages: Record<string, string> = {
   maquiagem: catMaquiagem, skincare: catSkincare, cabelos: catCabelos, perfumaria: catPerfumaria, perfumes: catPerfumaria,
+  "corpo-e-banho": catCorpoBanho, infantil: catInfantil, acessorios: catAcessorios,
 };
 
 const benefits = [
@@ -35,8 +39,8 @@ const faqs = [
   { q: "Quanto tempo leva para meu pedido chegar?", a: "O prazo de entrega varia de 3 a 10 dias úteis, dependendo da sua região. Pedidos acima de R$ 199 têm frete grátis." },
   { q: "Posso trocar ou devolver um produto?", a: "Sim! Você tem até 30 dias para solicitar troca ou devolução de produtos lacrados e na embalagem original." },
   { q: "Quais formas de pagamento vocês aceitam?", a: "Aceitamos PIX, cartão de crédito e boleto bancário. Parcele em até 3x sem juros no cartão." },
-  { q: "Os perfumes são originais?", a: "Sim, todos os perfumes da Esdra Cosméticos são 100% originais, adquiridos diretamente de distribuidores autorizados." },
-  { q: "Qual a diferença entre os frascos de 15ml e 100ml?", a: "O frasco de 15ml é ideal para experimentar a fragrância ou levar na bolsa. O de 100ml é o tamanho padrão, perfeito para uso diário com melhor custo-benefício." },
+  { q: "Os produtos são originais?", a: "Sim, todos os produtos da Esdra Cosméticos são 100% originais, adquiridos diretamente de distribuidores autorizados como Eudora e O Boticário." },
+  { q: "Quais marcas vocês trabalham?", a: "Trabalhamos com marcas do Grupo Boticário como Eudora, O Boticário, Egeo, Siàge, Instance, Niina Secrets, Dr. Botica, Her Code, Cuide-se Bem e muito mais." },
 ];
 
 interface Product {
@@ -187,12 +191,12 @@ export default function HomePage() {
         </div>
         <div className="relative container mx-auto px-4 py-20">
           <motion.div className="max-w-xl" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
-            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Perfumaria Selecionada</motion.span>
+            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Beleza & Perfumaria Selecionada</motion.span>
             <motion.h1 variants={fadeUp} custom={1} className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl italic leading-[1.08] tracking-tight text-primary-foreground mb-6">
-              Fragrâncias que traduzem <span className="text-gold">personalidade</span>
+              Beleza que traduz <span className="text-gold">personalidade</span>
             </motion.h1>
             <motion.p variants={fadeUp} custom={2} className="font-body text-sm sm:text-base text-primary-foreground/75 max-w-md leading-relaxed mb-8">
-              Perfumes inspirados nas maiores grifes do mundo. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
+              Perfumes, maquiagem, cuidados corporais e muito mais das melhores marcas. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
             </motion.p>
             <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3 sm:gap-4">
               <Link to="/loja"><Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-body text-sm tracking-wide px-8">Explorar Coleção <ArrowRight className="w-4 h-4 ml-2" /></Button></Link>
@@ -225,7 +229,7 @@ export default function HomePage() {
           <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
              <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Explore por Categoria</h2>
-            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre a fragrância perfeita para cada ocasião</p>
+            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre o produto perfeito para cada momento</p>
           </motion.div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {categories.filter(c => categoryImages[c.slug]).map((cat, i) => (
