@@ -11,6 +11,9 @@ import catMaquiagem from "@/assets/cat-maquiagem.jpg";
 import catSkincare from "@/assets/cat-skincare.jpg";
 import catCabelos from "@/assets/cat-cabelos.jpg";
 import catPerfumaria from "@/assets/cat-perfumaria.jpg";
+import catCorpoBanho from "@/assets/cat-corpo-banho.jpg";
+import catInfantil from "@/assets/cat-infantil.jpg";
+import catAcessorios from "@/assets/cat-acessorios.jpg";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -22,6 +25,7 @@ const fadeUp: Variants = {
 
 const categoryImages: Record<string, string> = {
   maquiagem: catMaquiagem, skincare: catSkincare, cabelos: catCabelos, perfumaria: catPerfumaria, perfumes: catPerfumaria,
+  "corpo-e-banho": catCorpoBanho, infantil: catInfantil, acessorios: catAcessorios,
 };
 
 const benefits = [
