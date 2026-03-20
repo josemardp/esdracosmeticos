@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Package, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, X, Upload, Image } from "lucide-react";
 
 interface Product {
   id: string; name: string; slug: string; sku: string | null; price: number;
@@ -113,7 +113,31 @@ export default function AdminProductsPage() {
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
-              <div className="sm:col-span-2"><Label className="font-body text-xs">URL da imagem de capa</Label><Input value={form.cover_image || ""} onChange={e => setForm({ ...form, cover_image: e.target.value })} placeholder="https://..." /></div>
+              <div className="sm:col-span-2">
+                <Label className="font-body text-xs">Imagem do produto</Label>
+                <div className="flex items-center gap-3 mt-1">
+                  {form.cover_image && (
+                    <img src={form.cover_image} alt="" className="w-16 h-16 object-cover rounded-lg border" />
+                  )}
+                  <label className="flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors font-body text-sm">
+                    <Upload className="w-4 h-4" />
+                    <span>Enviar imagem</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const ext = file.name.split(".").pop();
+                      const path = `product-${Date.now()}.${ext}`;
+                      toast({ title: "Enviando imagem..." });
+                      const { error } = await supabase.storage.from("products").upload(path, file);
+                      if (error) { toast({ title: "Erro no upload", description: error.message, variant: "destructive" }); return; }
+                      const { data: { publicUrl } } = supabase.storage.from("products").getPublicUrl(path);
+                      setForm({ ...form, cover_image: publicUrl });
+                      toast({ title: "Imagem enviada!" });
+                    }} />
+                  </label>
+                </div>
+                <Input value={form.cover_image || ""} onChange={e => setForm({ ...form, cover_image: e.target.value })} placeholder="Ou cole a URL da imagem..." className="mt-2" />
+              </div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição curta</Label><Textarea value={form.short_description || ""} onChange={e => setForm({ ...form, short_description: e.target.value })} rows={2} /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição completa</Label><Textarea value={form.full_description || ""} onChange={e => setForm({ ...form, full_description: e.target.value })} rows={4} /></div>
               <div className="sm:col-span-2 flex flex-wrap gap-4">
