@@ -50,6 +50,11 @@ import AddressesPage from "@/pages/conta/AddressesPage";
 import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
 import AdminContentPage from "@/pages/admin/AdminContentPage";
 
+// Institutional pages
+import PoliticaPrivacidadePage from "@/pages/institucional/PoliticaPrivacidadePage";
+import TrocasDevolucoesPage from "@/pages/institucional/TrocasDevolucoesPage";
+import TermosDeUsoPage from "@/pages/institucional/TermosDeUsoPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
