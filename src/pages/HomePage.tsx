@@ -39,8 +39,8 @@ const faqs = [
   { q: "Quanto tempo leva para meu pedido chegar?", a: "O prazo de entrega varia de 3 a 10 dias úteis, dependendo da sua região. Pedidos acima de R$ 199 têm frete grátis." },
   { q: "Posso trocar ou devolver um produto?", a: "Sim! Você tem até 30 dias para solicitar troca ou devolução de produtos lacrados e na embalagem original." },
   { q: "Quais formas de pagamento vocês aceitam?", a: "Aceitamos PIX, cartão de crédito e boleto bancário. Parcele em até 3x sem juros no cartão." },
-  { q: "Os perfumes são originais?", a: "Sim, todos os perfumes da Esdra Cosméticos são 100% originais, adquiridos diretamente de distribuidores autorizados." },
-  { q: "Qual a diferença entre os frascos de 15ml e 100ml?", a: "O frasco de 15ml é ideal para experimentar a fragrância ou levar na bolsa. O de 100ml é o tamanho padrão, perfeito para uso diário com melhor custo-benefício." },
+  { q: "Os produtos são originais?", a: "Sim, todos os produtos da Esdra Cosméticos são 100% originais, adquiridos diretamente de distribuidores autorizados como Eudora e O Boticário." },
+  { q: "Quais marcas vocês trabalham?", a: "Trabalhamos com marcas do Grupo Boticário como Eudora, O Boticário, Egeo, Siàge, Instance, Niina Secrets, Dr. Botica, Her Code, Cuide-se Bem e muito mais." },
 ];
 
 interface Product {
