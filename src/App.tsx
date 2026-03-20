@@ -78,6 +78,9 @@ const App = () => (
               <Route path="/suporte" element={<SupportPage />} />
               <Route path="/sobre" element={<SobrePage />} />
               <Route path="/contato" element={<SupportPage />} />
+              <Route path="/politica-de-privacidade" element={<PoliticaPrivacidadePage />} />
+              <Route path="/trocas-e-devolucoes" element={<TrocasDevolucoesPage />} />
+              <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
             </Route>
 
             {/* Auth routes (no layout) */}
