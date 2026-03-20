@@ -229,7 +229,7 @@ export default function HomePage() {
           <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
              <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Explore por Categoria</h2>
-            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre a fragrância perfeita para cada ocasião</p>
+            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre o produto perfeito para cada momento</p>
           </motion.div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {categories.filter(c => categoryImages[c.slug]).map((cat, i) => (
