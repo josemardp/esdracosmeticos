@@ -50,7 +50,7 @@ export default function ProductPage() {
     setJustAdded(false);
     const fetchData = async () => {
       setLoading(true);
-      const { data } = await supabase.from("products").select("id, name, slug, sku, short_description, full_description, price, sale_price, inventory_count, cover_image, gallery, benefits, how_to_use, ingredients, category_id, new_arrival, bestseller").eq("slug", slug).eq("active", true).maybeSingle();
+      const { data } = await supabase.from("products").select("id, name, slug, sku, short_description, full_description, price, sale_price, inventory_count, cover_image, gallery, benefits, how_to_use, ingredients, category_id, new_arrival, bestseller, brand, weight_volume, tags").eq("slug", slug).eq("active", true).maybeSingle();
       setProduct(data as Product | null);
       if (data) {
         trackViewItem({ id: data.id, name: data.name, price: data.sale_price ?? data.price });
