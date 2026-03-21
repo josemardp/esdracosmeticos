@@ -69,14 +69,15 @@ export default function HomePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
-    const cols = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, short_description";
+    const cols = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, short_description, tags";
     Promise.all([
       supabase.from("products").select(cols).eq("active", true).eq("featured", true).gt("inventory_count", 0).limit(4),
       supabase.from("products").select(cols).eq("active", true).eq("new_arrival", true).gt("inventory_count", 0).limit(4),
       supabase.from("products").select(cols).eq("active", true).eq("bestseller", true).gt("inventory_count", 0).limit(4),
       supabase.from("categories").select("id, name, slug, image_url").eq("active", true).order("sort_order").limit(6),
       supabase.from("reviews").select("rating, comment, created_at").eq("approved", true).order("created_at", { ascending: false }).limit(6),
-    ]).then(async ([f, n, b, c, r]) => {
+      supabase.from("campaign_banners").select("id, title, subtitle, image_url, link_url, badge_text, position").eq("active", true).order("sort_order"),
+    ]).then(async ([f, n, b, c, r, camp]) => {
       // If not enough in-stock featured, fall back to any active
       let featuredData = (f.data as Product[]) ?? [];
       let newData = (n.data as Product[]) ?? [];
