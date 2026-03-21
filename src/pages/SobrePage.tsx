@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Heart, Award, Sparkles, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/use-seo";
 
 const milestones = [
   { year: "2016", text: "Fundação como MEI — início das vendas online e porta a porta em Valparaíso/SP." },
