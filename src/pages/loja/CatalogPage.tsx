@@ -195,6 +195,8 @@ export default function CatalogPage() {
   const [priceInited, setPriceInited] = useState(false);
 
   /* filter state from URL */
+  const [catalogBanner, setCatalogBanner] = useState<Tables<"campaign_banners"> | null>(null);
+
   const urlQ = searchParams.get("q") || "";
   const urlCat = searchParams.get("categoria") || "";
   const urlSort = searchParams.get("ordem") || "relevance";
