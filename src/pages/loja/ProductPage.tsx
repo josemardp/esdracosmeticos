@@ -113,7 +113,7 @@ export default function ProductPage() {
           {/* Images */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="aspect-square bg-secondary rounded-xl overflow-hidden mb-3 relative">
-              {images.length > 0 ? <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body">Sem imagem</div>}
+              {images.length > 0 ? <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body">Sem imagem</div>}
               {product.sale_price && (
                 <span className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-xs font-body font-bold px-3 py-1 rounded-full">-{discountPct}%</span>
               )}

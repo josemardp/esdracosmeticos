@@ -51,7 +51,7 @@ export default function CartPage() {
             return (
               <motion.div key={item.id} layout className="bg-card border rounded-xl p-4 flex gap-4">
                 <Link to={`/produto/${item.slug}`} className="w-20 h-20 sm:w-24 sm:h-24 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                  {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt={item.name} className="w-full h-full object-cover" /> : null; })()}
+                  {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt={item.name} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : null; })()}
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link to={`/produto/${item.slug}`} className="font-body text-sm font-medium text-foreground line-clamp-2 hover:text-primary transition-colors">{item.name}</Link>
