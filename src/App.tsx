@@ -39,6 +39,7 @@ import AdminCouponsPage from "@/pages/admin/AdminCouponsPage";
 import AdminSupportPage from "@/pages/admin/AdminSupportPage";
 import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
 import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
+import AdminCampaignsPage from "@/pages/admin/AdminCampaignsPage";
 
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
