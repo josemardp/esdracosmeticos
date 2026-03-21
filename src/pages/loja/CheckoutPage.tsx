@@ -99,7 +99,7 @@ export default function CheckoutPage() {
 
       if (error) throw new Error(error.message);
 
-      const result = data as {
+      const result = data as unknown as {
         order_code: string; order_id: string;
         subtotal: number; discount: number; total: number;
       };
