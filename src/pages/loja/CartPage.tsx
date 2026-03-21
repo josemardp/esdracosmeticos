@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, X, ShoppingBag, ArrowRight, MessageCircle, Tag, ShieldCheck, Truck, CreditCard } from "lucide-react";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { getProductImage } from "@/lib/product-images";
