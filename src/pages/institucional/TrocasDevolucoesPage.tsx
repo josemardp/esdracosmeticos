@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { RotateCcw, MessageCircle } from "lucide-react";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/use-seo";
 
