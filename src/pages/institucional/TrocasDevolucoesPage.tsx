@@ -62,7 +62,7 @@ export default function TrocasDevolucoesPage() {
 
         <div className="mt-10 pt-6 border-t flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
           <Link to="/suporte" className="font-body text-sm text-primary hover:underline">← Voltar ao Suporte</Link>
-          <a href="https://wa.me/5518991459429?text=Olá,%20gostaria%20de%20solicitar%20uma%20troca%20ou%20devolução." target="_blank" rel="noopener noreferrer">
+          <a href={whatsappUrl("Olá, gostaria de solicitar uma troca ou devolução.")} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm"><MessageCircle className="w-4 h-4 mr-1.5" /> Solicitar pelo WhatsApp</Button>
           </a>
         </div>

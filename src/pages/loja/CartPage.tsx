@@ -33,7 +33,7 @@ export default function CartPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link to="/loja"><Button size="lg">Explorar Produtos <ArrowRight className="w-4 h-4 ml-2" /></Button></Link>
-            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20ajuda%20para%20escolher%20produtos%20da%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer">
+            <a href={whatsappUrl("Olá, quero ajuda para escolher produtos da Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="outline"><MessageCircle className="w-4 h-4 mr-2" /> Pedir Recomendação</Button>
             </a>
           </div>

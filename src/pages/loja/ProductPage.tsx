@@ -236,7 +236,7 @@ export default function ProductPage() {
                     <><ShoppingBag className="w-4 h-4 mr-2" /> Comprar — R$ {(finalPrice * qty).toFixed(2)}</>
                   )}
                 </Button>
-                <a href={`https://wa.me/5518991459429?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_page")} className="block">
+                <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_page")} className="block">
                   <Button variant="outline" className="w-full h-10 text-sm" size="sm">
                     <MessageCircle className="w-4 h-4 mr-1.5" /> Comprar pelo WhatsApp
                   </Button>
