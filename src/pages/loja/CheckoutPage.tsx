@@ -12,6 +12,7 @@ import { toast } from "@/hooks/use-toast";
 import { fetchCep } from "@/lib/viacep";
 import { getProductImage } from "@/lib/product-images";
 import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
+import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
