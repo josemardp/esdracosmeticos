@@ -32,7 +32,7 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     const [{ data: prods }, { data: cats }] = await Promise.all([
-      supabase.from("products").select("id, name, slug, sku, price, sale_price, inventory_count, active, featured, new_arrival, bestseller, category_id, short_description, full_description, cover_image, how_to_use, benefits, ingredients").order("created_at", { ascending: false }),
+      supabase.from("products").select("id, name, slug, sku, price, sale_price, inventory_count, active, featured, new_arrival, bestseller, category_id, short_description, full_description, cover_image, how_to_use, benefits, ingredients, tags, brand, weight_volume").order("created_at", { ascending: false }),
       supabase.from("categories").select("id, name").order("name"),
     ]);
     setProducts((prods as Product[]) ?? []);
