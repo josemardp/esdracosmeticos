@@ -8,6 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { Mail, Phone, MessageCircle, Send, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/use-seo";
+import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
 
 const faqs = [
   { q: "Qual o prazo de entrega?", a: "O prazo varia de 3 a 10 dias úteis, dependendo da sua região." },
@@ -24,11 +25,13 @@ export default function SupportPage() {
   const [phone, setPhone] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) return; // silently block bots
     setSending(true);
     const { error } = await supabase.from("support_tickets").insert({
       name: name.trim(),
@@ -77,7 +80,7 @@ export default function SupportPage() {
             </p>
           </a>
           <a
-            href="https://wa.me/5518991459429?text=Olá,%20preciso%20de%20suporte%20sobre%20meu%20pedido%20da%20Esdra%20Cosméticos."
+            href={whatsappUrl("Olá, preciso de suporte sobre meu pedido da Esdra Cosméticos.")}
             target="_blank"
             rel="noopener noreferrer"
             className="group bg-card border rounded-xl p-6 text-center hover:shadow-elegant transition-all"
@@ -89,7 +92,7 @@ export default function SupportPage() {
             </p>
           </a>
           <a
-            href="tel:+5518991459429"
+            href={`tel:+${WHATSAPP_PHONE}`}
             className="group bg-card border rounded-xl p-6 text-center hover:shadow-elegant transition-all"
           >
             <Phone className="w-8 h-8 text-info mx-auto mb-3" />
@@ -118,12 +121,12 @@ export default function SupportPage() {
                 <p className="font-body text-sm text-muted-foreground mb-4">
                   Recebemos sua mensagem e responderemos em até 24 horas.
                 </p>
-                <Button variant="outline" onClick={() => { setSent(false); setName(""); setEmail(""); setPhone(""); setSubject(""); setMessage(""); }}>
+                <Button variant="outline" onClick={() => { setSent(false); setName(""); setEmail(""); setPhone(""); setSubject(""); setMessage(""); setHoneypot(""); }}>
                   Enviar outra mensagem
                 </Button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 relative">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="font-body text-sm">Nome *</Label>
@@ -143,6 +146,11 @@ export default function SupportPage() {
                     <Label className="font-body text-sm">Assunto *</Label>
                     <Input value={subject} onChange={(e) => setSubject(e.target.value)} required placeholder="Dúvida sobre pedido" />
                   </div>
+                </div>
+                {/* Honeypot — invisible to real users */}
+                <div className="absolute opacity-0 h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+                  <label htmlFor="hp_website">Website</label>
+                  <input id="hp_website" name="website" type="text" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} autoComplete="off" tabIndex={-1} />
                 </div>
                 <div>
                   <Label className="font-body text-sm">Mensagem *</Label>
