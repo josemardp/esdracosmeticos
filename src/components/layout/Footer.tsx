@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -13,14 +14,17 @@ export function Footer() {
     try {
       const { error } = await supabase.from("newsletter_subscribers").insert({ email: email.trim(), source: "footer" });
       if (error && error.code === "23505") {
-        // duplicate — still show success to avoid leaking info
+        // duplicate — show success to avoid leaking info
       } else if (error) {
         throw error;
       }
-    } catch {}
-    setSubscribed(true);
-    setEmail("");
-    setTimeout(() => setSubscribed(false), 4000);
+      setSubscribed(true);
+      setEmail("");
+      setTimeout(() => setSubscribed(false), 4000);
+    } catch (err) {
+      console.error("Newsletter subscription error:", err);
+      toast.error("Não foi possível concluir a inscrição. Tente novamente.");
+    }
   };
 
   return (
