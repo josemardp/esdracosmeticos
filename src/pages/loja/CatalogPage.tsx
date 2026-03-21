@@ -422,6 +422,41 @@ export default function CatalogPage() {
   return (
     <div className="py-6 lg:py-10">
       <div className="container mx-auto px-4">
+        {/* ─── Catalog Banner ─── */}
+        {catalogBanner && (
+          <Link
+            to={catalogBanner.link_url}
+            className="block mb-6 rounded-xl overflow-hidden relative"
+            style={{
+              backgroundColor: catalogBanner.bg_color || "hsl(var(--primary))",
+              color: catalogBanner.text_color || "hsl(var(--primary-foreground))",
+            }}
+          >
+            {catalogBanner.image_url ? (
+              <img
+                src={catalogBanner.image_url}
+                alt={catalogBanner.title}
+                className="w-full h-32 sm:h-40 lg:h-48 object-cover"
+                loading="eager"
+              />
+            ) : (
+              <div className="px-6 py-6 sm:py-8 text-center">
+                {catalogBanner.badge_text && (
+                  <span className="inline-block text-[10px] font-body font-semibold uppercase tracking-widest opacity-80 mb-1">
+                    {catalogBanner.badge_text}
+                  </span>
+                )}
+                <h2 className="font-display text-xl sm:text-2xl lg:text-3xl italic">
+                  {catalogBanner.title}
+                </h2>
+                {catalogBanner.subtitle && (
+                  <p className="font-body text-sm opacity-80 mt-1">{catalogBanner.subtitle}</p>
+                )}
+              </div>
+            )}
+          </Link>
+        )}
+
         {/* ─── Header ─── */}
         <div className="mb-6">
           <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-1">
