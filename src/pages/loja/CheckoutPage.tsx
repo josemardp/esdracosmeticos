@@ -130,10 +130,10 @@ export default function CheckoutPage() {
             <CheckCircle2 className="w-10 h-10 text-primary" />
           </div>
           <h1 className="font-display text-3xl text-foreground mb-2">Pedido Confirmado!</h1>
-          <p className="font-body text-sm text-muted-foreground mb-1">Seu pedido foi registrado com sucesso.</p>
+          <p className="font-body text-sm text-muted-foreground mb-1">Obrigada por comprar na Esdra Cosméticos 💜</p>
           <p className="font-body text-lg font-bold text-primary mb-4">Código: {orderResult.order_code}</p>
 
-          {/* Resumo financeiro confirmado pelo servidor */}
+          {/* Resumo financeiro */}
           <div className="inline-block bg-card border rounded-xl px-6 py-4 mb-6 text-left">
             <div className="space-y-1.5 font-body text-sm">
               <div className="flex justify-between gap-8">
@@ -154,7 +154,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Instruções por forma de pagamento */}
-          <div className="bg-card border rounded-xl px-6 py-5 mb-8 max-w-md mx-auto text-left">
+          <div className="bg-card border rounded-xl px-6 py-5 mb-6 max-w-md mx-auto text-left">
             {payment === "PIX" && (
               <>
                 <p className="font-body text-sm font-semibold text-foreground mb-1">Como pagar via PIX</p>
@@ -181,17 +181,27 @@ export default function CheckoutPage() {
             )}
           </div>
 
+          {/* Próximos passos */}
+          <div className="bg-secondary/50 border rounded-xl px-6 py-5 mb-8 max-w-md mx-auto text-left">
+            <p className="font-body text-sm font-semibold text-foreground mb-3">O que acontece agora?</p>
+            <ol className="space-y-2 font-body text-sm text-muted-foreground">
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>Finalize o pagamento pelo WhatsApp</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>Confirmamos e preparamos seu pedido</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>Enviamos com rastreamento pelo WhatsApp</li>
+            </ol>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            {user && <Link to="/conta/pedidos"><Button size="lg">Ver Meus Pedidos</Button></Link>}
-            <Link to="/loja"><Button size="lg" variant="outline">Continuar Comprando</Button></Link>
             <a
-              href={`https://wa.me/5518991459429?text=Olá,%20acabei%20de%20fazer%20o%20pedido%20*${orderResult.order_code}*%20na%20Esdra%20Cosméticos.%20Total:%20R$%20${orderResult.total.toFixed(2)}`}
+              href={`https://wa.me/5518991459429?text=Olá,%20acabei%20de%20fazer%20o%20pedido%20*${orderResult.order_code}*%20na%20Esdra%20Cosméticos.%20Total:%20R$%20${orderResult.total.toFixed(2)}.%20Forma%20de%20pagamento:%20${payment}`}
               target="_blank" rel="noopener noreferrer"
             >
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
+              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
                 <MessageCircle className="w-4 h-4 mr-2" /> Finalizar pelo WhatsApp
               </Button>
             </a>
+            {user && <Link to="/conta/pedidos"><Button size="lg" variant="outline">Ver Meus Pedidos</Button></Link>}
+            <Link to="/loja"><Button size="lg" variant="outline">Continuar Comprando</Button></Link>
           </div>
         </motion.div>
       </div>
