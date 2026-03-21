@@ -172,6 +172,80 @@ export type Database = {
         }
         Relationships: []
       }
+      cash_accounts: {
+        Row: {
+          active: boolean
+          balance: number
+          created_at: string
+          id: string
+          name: string
+          owner_user_id: string
+        }
+        Insert: {
+          active?: boolean
+          balance?: number
+          created_at?: string
+          id?: string
+          name?: string
+          owner_user_id: string
+        }
+        Update: {
+          active?: boolean
+          balance?: number
+          created_at?: string
+          id?: string
+          name?: string
+          owner_user_id?: string
+        }
+        Relationships: []
+      }
+      cash_movements: {
+        Row: {
+          amount: number
+          cash_account_id: string
+          created_at: string
+          description: string
+          id: string
+          movement_date: string
+          owner_user_id: string
+          reference_id: string | null
+          reference_type: string | null
+          type: string
+        }
+        Insert: {
+          amount?: number
+          cash_account_id: string
+          created_at?: string
+          description?: string
+          id?: string
+          movement_date?: string
+          owner_user_id: string
+          reference_id?: string | null
+          reference_type?: string | null
+          type?: string
+        }
+        Update: {
+          amount?: number
+          cash_account_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          movement_date?: string
+          owner_user_id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_movements_cash_account_id_fkey"
+            columns: ["cash_account_id"]
+            isOneToOne: false
+            referencedRelation: "cash_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           active: boolean
@@ -421,6 +495,55 @@ export type Database = {
         }
         Relationships: []
       }
+      order_financial_links: {
+        Row: {
+          cash_movement_id: string | null
+          created_at: string
+          id: string
+          order_id: string
+          owner_user_id: string
+          receivable_title_id: string | null
+        }
+        Insert: {
+          cash_movement_id?: string | null
+          created_at?: string
+          id?: string
+          order_id: string
+          owner_user_id: string
+          receivable_title_id?: string | null
+        }
+        Update: {
+          cash_movement_id?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string
+          owner_user_id?: string
+          receivable_title_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_financial_links_cash_movement_id_fkey"
+            columns: ["cash_movement_id"]
+            isOneToOne: false
+            referencedRelation: "cash_movements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_financial_links_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_financial_links_receivable_title_id_fkey"
+            columns: ["receivable_title_id"]
+            isOneToOne: false
+            referencedRelation: "receivable_titles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           id: string
@@ -530,6 +653,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payment_methods: {
+        Row: {
+          active: boolean
+          allows_installments: boolean
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          active?: boolean
+          allows_installments?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          active?: boolean
+          allows_installments?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
       }
       product_channel_mappings: {
         Row: {
@@ -700,6 +850,144 @@ export type Database = {
         }
         Relationships: []
       }
+      receivable_receipts: {
+        Row: {
+          amount: number
+          cash_account_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          owner_user_id: string
+          payment_method_id: string | null
+          receipt_date: string
+          title_id: string
+        }
+        Insert: {
+          amount: number
+          cash_account_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          owner_user_id: string
+          payment_method_id?: string | null
+          receipt_date?: string
+          title_id: string
+        }
+        Update: {
+          amount?: number
+          cash_account_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          owner_user_id?: string
+          payment_method_id?: string | null
+          receipt_date?: string
+          title_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receivable_receipts_cash_account_id_fkey"
+            columns: ["cash_account_id"]
+            isOneToOne: false
+            referencedRelation: "cash_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receivable_receipts_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receivable_receipts_title_id_fkey"
+            columns: ["title_id"]
+            isOneToOne: false
+            referencedRelation: "receivable_titles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receivable_titles: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_id: string | null
+          description: string
+          due_date: string
+          id: string
+          installment_number: number
+          order_id: string | null
+          owner_user_id: string
+          paid_amount: number
+          payment_method_id: string | null
+          sale_id: string | null
+          status: string
+          total_installments: number
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          customer_id?: string | null
+          description?: string
+          due_date?: string
+          id?: string
+          installment_number?: number
+          order_id?: string | null
+          owner_user_id: string
+          paid_amount?: number
+          payment_method_id?: string | null
+          sale_id?: string | null
+          status?: string
+          total_installments?: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_id?: string | null
+          description?: string
+          due_date?: string
+          id?: string
+          installment_number?: number
+          order_id?: string | null
+          owner_user_id?: string
+          paid_amount?: number
+          payment_method_id?: string | null
+          sale_id?: string | null
+          status?: string
+          total_installments?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receivable_titles_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receivable_titles_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receivable_titles_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receivable_titles_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           approved: boolean
@@ -744,6 +1032,151 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sale_items: {
+        Row: {
+          id: string
+          name: string
+          product_id: string | null
+          quantity: number
+          sale_id: string
+          subtotal: number
+          unit_price: number
+        }
+        Insert: {
+          id?: string
+          name: string
+          product_id?: string | null
+          quantity?: number
+          sale_id: string
+          subtotal?: number
+          unit_price?: number
+        }
+        Update: {
+          id?: string
+          name?: string
+          product_id?: string | null
+          quantity?: number
+          sale_id?: string
+          subtotal?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          channel_id: string
+          created_at: string
+          customer_id: string | null
+          customer_name: string
+          discount: number
+          id: string
+          installments: number
+          notes: string | null
+          owner_user_id: string
+          payment_method_id: string
+          sale_code: string
+          sale_date: string
+          status: string
+          subtotal: number
+          total: number
+        }
+        Insert: {
+          channel_id: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string
+          discount?: number
+          id?: string
+          installments?: number
+          notes?: string | null
+          owner_user_id: string
+          payment_method_id: string
+          sale_code?: string
+          sale_date?: string
+          status?: string
+          subtotal?: number
+          total?: number
+        }
+        Update: {
+          channel_id?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string
+          discount?: number
+          id?: string
+          installments?: number
+          notes?: string | null
+          owner_user_id?: string
+          payment_method_id?: string
+          sale_code?: string
+          sale_date?: string
+          status?: string
+          subtotal?: number
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "sales_channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_channels: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
       }
       stock_alerts: {
         Row: {
@@ -855,6 +1288,20 @@ export type Database = {
           p_items: Json
           p_payment_method: string
           p_user_id?: string
+        }
+        Returns: Json
+      }
+      create_sale: {
+        Args: {
+          p_channel_slug?: string
+          p_customer_id?: string
+          p_customer_name: string
+          p_discount?: number
+          p_installments?: number
+          p_items: Json
+          p_notes?: string
+          p_payment_slug?: string
+          p_sale_date?: string
         }
         Returns: Json
       }
