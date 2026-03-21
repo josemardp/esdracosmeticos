@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { getProductImage } from "@/lib/product-images";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -194,6 +195,8 @@ export default function CatalogPage() {
   const [priceInited, setPriceInited] = useState(false);
 
   /* filter state from URL */
+  const [catalogBanner, setCatalogBanner] = useState<Tables<"campaign_banners"> | null>(null);
+
   const urlQ = searchParams.get("q") || "";
   const urlCat = searchParams.get("categoria") || "";
   const urlSort = searchParams.get("ordem") || "relevance";
@@ -272,15 +275,23 @@ export default function CatalogPage() {
     setLoading(true);
     setError(false);
     try {
-      const [{ data: cats }, { data: prods }] = await Promise.all([
+      const [{ data: cats }, { data: prods }, { data: banners }] = await Promise.all([
         supabase.from("categories").select("id, name, slug").eq("active", true).order("sort_order"),
         supabase
           .from("products")
           .select("id, name, slug, price, sale_price, cover_image, category_id, inventory_count, featured, new_arrival, bestseller")
           .eq("active", true),
+        supabase
+          .from("campaign_banners")
+          .select("*")
+          .eq("active", true)
+          .eq("position", "catalog_top")
+          .order("sort_order")
+          .limit(1),
       ]);
       setCategories((cats as Category[]) ?? []);
       setAllProducts((prods as Product[]) ?? []);
+      if (banners && banners.length > 0) setCatalogBanner(banners[0]);
     } catch {
       setError(true);
     } finally {
@@ -411,6 +422,41 @@ export default function CatalogPage() {
   return (
     <div className="py-6 lg:py-10">
       <div className="container mx-auto px-4">
+        {/* ─── Catalog Banner ─── */}
+        {catalogBanner && (
+          <Link
+            to={catalogBanner.link_url}
+            className="block mb-6 rounded-xl overflow-hidden relative"
+            style={{
+              backgroundColor: catalogBanner.bg_color || "hsl(var(--primary))",
+              color: catalogBanner.text_color || "hsl(var(--primary-foreground))",
+            }}
+          >
+            {catalogBanner.image_url ? (
+              <img
+                src={catalogBanner.image_url}
+                alt={catalogBanner.title}
+                className="w-full h-32 sm:h-40 lg:h-48 object-cover"
+                loading="eager"
+              />
+            ) : (
+              <div className="px-6 py-6 sm:py-8 text-center">
+                {catalogBanner.badge_text && (
+                  <span className="inline-block text-[10px] font-body font-semibold uppercase tracking-widest opacity-80 mb-1">
+                    {catalogBanner.badge_text}
+                  </span>
+                )}
+                <h2 className="font-display text-xl sm:text-2xl lg:text-3xl italic">
+                  {catalogBanner.title}
+                </h2>
+                {catalogBanner.subtitle && (
+                  <p className="font-body text-sm opacity-80 mt-1">{catalogBanner.subtitle}</p>
+                )}
+              </div>
+            )}
+          </Link>
+        )}
+
         {/* ─── Header ─── */}
         <div className="mb-6">
           <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-1">
