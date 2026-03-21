@@ -78,7 +78,7 @@ export default function CheckoutPage() {
       // apenas product_id + qty. Cupom enviado como CODE (string).
       // Nenhum valor financeiro do frontend é confiado.
       // ─────────────────────────────────────────────────────────
-      const { data, error } = await supabase.rpc("create_order", {
+      const { data, error } = await (supabase.rpc as any)("create_order", {
         p_items:           items.map(i => ({ product_id: i.id, qty: i.qty })),
         p_customer_name:   form.name.trim(),
         p_customer_email:  form.email.trim().toLowerCase(),
@@ -93,7 +93,7 @@ export default function CheckoutPage() {
           zip:          form.zip.replace(/\D/g, ""),
         },
         p_payment_method: payment,
-        p_coupon_code:    coupon?.code ?? null,   // CODE, não ID
+        p_coupon_code:    coupon?.code ?? null,
         p_user_id:        user?.id ?? null,
       });
 
