@@ -2,7 +2,7 @@ export function getProductImage(slug: string, coverImage: string | null): string
   if (coverImage) return coverImage;
 
   switch (slug) {
-    case "desodorante-body-spray-boticollection-portinari-100ml":
+    case "body-spray-boticollection-portinari-100ml":
       return "https://res.cloudinary.com/beleza-na-web/image/upload/w_1500,f_auto,fl_progressive,q_auto:best/v1/imagens/products/B48779/BOTICOLL_PORTINARI_DES_SPR_100ml_V7-B48779-Conceito.jpg";
 
     case "eudora-siage-nutri-rose-shampoo-400ml":
