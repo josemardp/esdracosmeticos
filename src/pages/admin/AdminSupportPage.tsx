@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Mail, Phone } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface Ticket {
   id: string;
@@ -28,9 +29,12 @@ export default function AdminSupportPage() {
   useEffect(() => {
     supabase
       .from("support_tickets")
-      .select("*")
+      .select("id, name, email, phone, subject, message, channel, status, created_at")
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          toast({ title: "Erro ao carregar tickets", description: error.message, variant: "destructive" });
+        }
         setTickets((data as Ticket[]) ?? []);
         setLoading(false);
       });

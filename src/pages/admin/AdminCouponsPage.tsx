@@ -15,7 +15,13 @@ export default function AdminCouponsPage() {
   const [isNew, setIsNew] = useState(false);
   const [form, setForm] = useState<Partial<Coupon>>({});
 
-  const fetchCoupons = async () => { setLoading(true); const { data } = await supabase.from("coupons").select("*").order("created_at", { ascending: false }); setCoupons((data as Coupon[]) ?? []); setLoading(false); };
+  const fetchCoupons = async () => { 
+    setLoading(true); 
+    const { data, error } = await supabase.from("coupons").select("id, code, type, value, min_order, usage_limit, usage_count, active, starts_at, ends_at").order("created_at", { ascending: false }); 
+    if (error) toast({ title: "Erro ao carregar cupons", description: error.message, variant: "destructive" });
+    setCoupons((data as Coupon[]) ?? []); 
+    setLoading(false); 
+  };
   useEffect(() => { fetchCoupons(); }, []);
 
   const openNew = () => { setIsNew(true); setForm({ code: "", type: "percentage", value: 10, min_order: 0, active: true, usage_limit: null }); setEditing({} as Coupon); };

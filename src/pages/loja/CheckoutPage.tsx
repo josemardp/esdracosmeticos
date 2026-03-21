@@ -75,7 +75,8 @@ export default function CheckoutPage() {
           customerId = created.id;
         }
       } else {
-        const { data: existing } = await supabase.from("customers").select("id").eq("email", form.email).maybeSingle();
+        // Garantir que não vinculamos o pedido de um convidado a um cliente que já possui user_id
+        const { data: existing } = await supabase.from("customers").select("id").eq("email", form.email).is("user_id", null).maybeSingle();
         if (existing) {
           customerId = existing.id;
         } else {
@@ -92,7 +93,8 @@ export default function CheckoutPage() {
 
       const { data: order, error: orderError } = await supabase.from("orders").insert({
         customer_id: customerId,
-        order_code: "TEMP",
+        order_code: "",
+        // TODO: Migrar para cálculo server-side para evitar manipulação de preços no frontend
         subtotal, discount, shipping: 0, total,
         payment_method: payment, payment_status: "pending", status: "pending",
         channel_origin: "website", shipping_address_snapshot: addressSnapshot,
@@ -102,6 +104,7 @@ export default function CheckoutPage() {
 
       const orderItems = items.map(item => ({
         order_id: order.id, product_id: item.id, name_snapshot: item.name,
+        // RISCO: Preço unitário vindo do frontend. Validado posteriormente no RPC process_order_inventory_and_coupon.
         unit_price: item.sale_price ?? item.price, quantity: item.qty,
         subtotal: (item.sale_price ?? item.price) * item.qty,
       }));
@@ -110,7 +113,7 @@ export default function CheckoutPage() {
       if (itemsError) throw itemsError;
 
       const { error: batchError } = await supabase.rpc("process_order_inventory_and_coupon", {
-        p_items: items.map(i => ({ id: i.id, qty: i.qty })),
+        p_order_id: order.id,
         p_coupon_id: coupon?.coupon_id || null,
       });
 

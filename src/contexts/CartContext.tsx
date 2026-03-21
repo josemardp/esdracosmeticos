@@ -62,6 +62,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [coupon, setCoupon] = useState<CouponDiscount | null>(loadCoupon);
 
   // Persist
+  // RISCO: Estado do carrinho e cupons persistidos localmente. 
+  // O valor do desconto (discount_value) pode ser manipulado no localStorage.
+  // SEMPRE revalidar totais e cupons no backend antes de processar o pagamento ou baixar estoque.
   useEffect(() => { localStorage.setItem(CART_KEY, JSON.stringify(items)); }, [items]);
   useEffect(() => {
     if (coupon) localStorage.setItem(COUPON_KEY, JSON.stringify(coupon));
