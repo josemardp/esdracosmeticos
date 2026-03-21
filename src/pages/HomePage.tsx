@@ -53,6 +53,7 @@ interface Product {
 interface Category { id: string; name: string; slug: string; image_url: string | null; }
 
 export default function HomePage() {
+  useSEO("Esdra Cosméticos | Beleza e Sofisticação", "Perfumes, maquiagem, skincare e cuidados corporais das melhores marcas. Frete grátis acima de R$ 199. Parcele em até 3x sem juros.");
   const { addItem } = useCart();
   const [featured, setFeatured] = useState<Product[]>([]);
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
