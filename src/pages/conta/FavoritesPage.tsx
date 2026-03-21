@@ -49,7 +49,7 @@ export default function FavoritesPage() {
             <div key={f.id} className="bg-card border rounded-xl overflow-hidden relative group">
               <Link to={`/produto/${f.products.slug}`}>
                 <div className="aspect-square bg-secondary overflow-hidden">
-                  {(() => { const img = getProductImage(f.products.slug, f.products.cover_image); return img ? <img src={img} alt={f.products.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
+                  {(() => { const img = getProductImage(f.products.slug, f.products.cover_image); return img ? <img src={img} alt={f.products.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
                 </div>
                 <div className="p-3">
                   <h3 className="font-body text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">{f.products.name}</h3>

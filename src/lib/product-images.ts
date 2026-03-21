@@ -21,6 +21,6 @@ export function getProductImage(slug: string, coverImage: string | null): string
       return "https://http2.mlstatic.com/D_NQ_NP_693612-MLA88156231488_072025-O.webp";
 
     default:
-      return "/placeholder.png";
+      return "/placeholder.svg";
   }
 }
