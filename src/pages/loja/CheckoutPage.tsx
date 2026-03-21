@@ -12,6 +12,7 @@ import { toast } from "@/hooks/use-toast";
 import { fetchCep } from "@/lib/viacep";
 import { getProductImage } from "@/lib/product-images";
 import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
+import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
@@ -193,7 +194,7 @@ export default function CheckoutPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={`https://wa.me/5518991459429?text=Olá,%20acabei%20de%20fazer%20o%20pedido%20*${orderResult.order_code}*%20na%20Esdra%20Cosméticos.%20Total:%20R$%20${orderResult.total.toFixed(2)}.%20Forma%20de%20pagamento:%20${payment}`}
+              href={whatsappUrl(`Olá, acabei de fazer o pedido *${orderResult.order_code}* na Esdra Cosméticos. Total: R$ ${orderResult.total.toFixed(2)}. Forma de pagamento: ${payment}`)}
               target="_blank" rel="noopener noreferrer"
             >
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
@@ -329,7 +330,7 @@ export default function CheckoutPage() {
                 </>
               )}
             </div>
-            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20ajuda%20para%20finalizar%20minha%20compra%20na%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer" className="block">
+            <a href={whatsappUrl("Olá, quero ajuda para finalizar minha compra na Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer" className="block">
               <Button variant="outline" className="w-full" size="sm">
                 <MessageCircle className="w-4 h-4 mr-2" /> Precisa de ajuda?
               </Button>

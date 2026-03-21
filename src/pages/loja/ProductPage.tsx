@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { trackViewItem, trackAddToCart, trackWhatsAppClick } from "@/lib/analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { WHATSAPP_PHONE } from "@/lib/whatsapp";
 
 interface Product {
   id: string; name: string; slug: string; sku: string | null;
@@ -210,7 +211,7 @@ export default function ProductPage() {
               <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-5 mb-5">
                 <p className="font-body text-sm text-destructive font-semibold mb-1">Produto indisponível</p>
                 <p className="font-body text-xs text-muted-foreground mb-3">Este produto está temporariamente esgotado.</p>
-                <a href={`https://wa.me/5518991459429?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_out_of_stock")}>
+                <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_out_of_stock")}>
                   <Button variant="outline" size="sm"><MessageCircle className="w-4 h-4 mr-1.5" /> Avise-me quando voltar</Button>
                 </a>
               </div>
@@ -235,7 +236,7 @@ export default function ProductPage() {
                     <><ShoppingBag className="w-4 h-4 mr-2" /> Comprar — R$ {(finalPrice * qty).toFixed(2)}</>
                   )}
                 </Button>
-                <a href={`https://wa.me/5518991459429?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_page")} className="block">
+                <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_page")} className="block">
                   <Button variant="outline" className="w-full h-10 text-sm" size="sm">
                     <MessageCircle className="w-4 h-4 mr-1.5" /> Comprar pelo WhatsApp
                   </Button>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck, Check } from "lucide-react";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -154,7 +155,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-primary shrink-0" />
-                <a href="https://wa.me/5518991459429" target="_blank" rel="noopener noreferrer" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
                   (18) 99145-9429
                 </a>
               </li>

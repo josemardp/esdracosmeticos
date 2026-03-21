@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Package, MessageCircle } from "lucide-react";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 interface OrderDetail {
   id: string; order_code: string; status: string; payment_status: string;
@@ -110,7 +111,7 @@ export default function OrderDetailPage() {
         </div>
       )}
 
-      <a href={`https://wa.me/5518991459429?text=Olá,%20quero%20informações%20sobre%20meu%20pedido%20${order.order_code}`} target="_blank" rel="noopener noreferrer">
+      <a href={whatsappUrl(`Olá, quero informações sobre meu pedido ${order.order_code}`)} target="_blank" rel="noopener noreferrer">
         <Button variant="outline" size="sm"><MessageCircle className="w-4 h-4 mr-2" /> Falar sobre este pedido</Button>
       </a>
     </div>
