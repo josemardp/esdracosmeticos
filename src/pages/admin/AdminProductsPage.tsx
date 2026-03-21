@@ -14,6 +14,7 @@ interface Product {
   category_id: string | null; short_description: string | null;
   full_description: string | null; cover_image: string | null;
   how_to_use: string | null; benefits: string | null; ingredients: string | null;
+  tags: string[] | null; brand: string | null; weight_volume: string | null;
 }
 
 interface Category { id: string; name: string; }
