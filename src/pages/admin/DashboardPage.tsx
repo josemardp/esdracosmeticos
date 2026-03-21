@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ShoppingCart, Package, Users, DollarSign, AlertTriangle } from "lucide-react";
+import { ShoppingCart, Package, Users, DollarSign, AlertTriangle, Clock, PackageX, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Stats {
   totalOrders: number;
@@ -8,20 +10,24 @@ interface Stats {
   totalCustomers: number;
   totalRevenue: number;
   lowStock: number;
+  zeroStock: number;
+  pendingOrders: number;
   pendingTickets: number;
 }
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<Stats>({ totalOrders: 0, totalProducts: 0, totalCustomers: 0, totalRevenue: 0, lowStock: 0, pendingTickets: 0 });
+  const [stats, setStats] = useState<Stats>({ totalOrders: 0, totalProducts: 0, totalCustomers: 0, totalRevenue: 0, lowStock: 0, zeroStock: 0, pendingOrders: 0, pendingTickets: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [orders, products, customers, lowStock, tickets] = await Promise.all([
+      const [orders, products, customers, lowStock, zeroStock, pendingOrders, tickets] = await Promise.all([
         supabase.from("orders").select("total", { count: "exact" }),
         supabase.from("products").select("id", { count: "exact" }),
         supabase.from("customers").select("id", { count: "exact" }),
-        supabase.from("products").select("id", { count: "exact" }).lt("inventory_count", 5),
+        supabase.from("products").select("id", { count: "exact" }).lt("inventory_count", 5).gt("inventory_count", 0),
+        supabase.from("products").select("id", { count: "exact" }).eq("inventory_count", 0),
+        supabase.from("orders").select("id", { count: "exact" }).eq("status", "pending"),
         supabase.from("support_tickets").select("id", { count: "exact" }).eq("status", "new"),
       ]);
       const revenue = orders.data?.reduce((sum, o) => sum + Number(o.total), 0) ?? 0;
@@ -31,6 +37,8 @@ export default function DashboardPage() {
         totalCustomers: customers.count ?? 0,
         totalRevenue: revenue,
         lowStock: lowStock.count ?? 0,
+        zeroStock: zeroStock.count ?? 0,
+        pendingOrders: pendingOrders.count ?? 0,
         pendingTickets: tickets.count ?? 0,
       });
       setLoading(false);
@@ -57,7 +65,7 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {cards.map((c) => (
               <div key={c.label} className="bg-card border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-3">
@@ -69,27 +77,53 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Alerts */}
-          {(stats.lowStock > 0 || stats.pendingTickets > 0) && (
-            <div className="space-y-3">
-              {stats.lowStock > 0 && (
-                <div className="flex items-center gap-3 bg-warning/10 border border-warning/20 rounded-lg p-4">
+          {/* Action alerts */}
+          <div className="space-y-2">
+            {stats.pendingOrders > 0 && (
+              <Link to="/admin/pedidos" className="flex items-center justify-between bg-warning/10 border border-warning/20 rounded-lg p-4 hover:bg-warning/15 transition-colors">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-warning" />
+                  <p className="font-body text-sm text-foreground">
+                    <strong>{stats.pendingOrders}</strong> pedido(s) pendente(s) para processar
+                  </p>
+                </div>
+                <Button variant="outline" size="sm">Ver pedidos</Button>
+              </Link>
+            )}
+            {stats.zeroStock > 0 && (
+              <Link to="/admin/estoque" className="flex items-center justify-between bg-destructive/10 border border-destructive/20 rounded-lg p-4 hover:bg-destructive/15 transition-colors">
+                <div className="flex items-center gap-3">
+                  <PackageX className="w-5 h-5 text-destructive" />
+                  <p className="font-body text-sm text-foreground">
+                    <strong>{stats.zeroStock}</strong> produto(s) com estoque zerado
+                  </p>
+                </div>
+                <Button variant="outline" size="sm">Ver estoque</Button>
+              </Link>
+            )}
+            {stats.lowStock > 0 && (
+              <Link to="/admin/estoque" className="flex items-center justify-between bg-warning/10 border border-warning/20 rounded-lg p-4 hover:bg-warning/15 transition-colors">
+                <div className="flex items-center gap-3">
                   <AlertTriangle className="w-5 h-5 text-warning" />
                   <p className="font-body text-sm text-foreground">
                     <strong>{stats.lowStock}</strong> produto(s) com estoque baixo
                   </p>
                 </div>
-              )}
-              {stats.pendingTickets > 0 && (
-                <div className="flex items-center gap-3 bg-info/10 border border-info/20 rounded-lg p-4">
-                  <AlertTriangle className="w-5 h-5 text-info" />
+                <Button variant="outline" size="sm">Ver estoque</Button>
+              </Link>
+            )}
+            {stats.pendingTickets > 0 && (
+              <Link to="/admin/suporte" className="flex items-center justify-between bg-info/10 border border-info/20 rounded-lg p-4 hover:bg-info/15 transition-colors">
+                <div className="flex items-center gap-3">
+                  <MessageSquare className="w-5 h-5 text-info" />
                   <p className="font-body text-sm text-foreground">
                     <strong>{stats.pendingTickets}</strong> ticket(s) de suporte pendente(s)
                   </p>
                 </div>
-              )}
-            </div>
-          )}
+                <Button variant="outline" size="sm">Ver suporte</Button>
+              </Link>
+            )}
+          </div>
         </>
       )}
     </div>
