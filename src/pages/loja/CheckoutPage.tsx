@@ -109,15 +109,14 @@ export default function CheckoutPage() {
       const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
       if (itemsError) throw itemsError;
 
-      for (const item of items) {
-        const { error: stockError } = await supabase.rpc("decrement_inventory", { p_product_id: item.id, p_qty: item.qty });
-        if (stockError) {
-          toast({ title: `Estoque insuficiente: ${item.name}`, description: stockError.message, variant: "destructive" });
-        }
-      }
+      const { error: batchError } = await supabase.rpc("process_order_inventory_and_coupon", {
+        p_items: items.map(i => ({ id: i.id, qty: i.qty })),
+        p_coupon_id: coupon?.coupon_id || null,
+      });
 
-      if (coupon) {
-        try { await supabase.rpc("increment_coupon_usage" as any, { p_coupon_id: coupon.coupon_id }); } catch {}
+      if (batchError) {
+        toast({ title: "Erro no estoque", description: batchError.message, variant: "destructive" });
+        throw batchError;
       }
 
       trackPurchase(order.order_code, total, items.map(i => ({ id: i.id, name: i.name, price: i.sale_price ?? i.price, quantity: i.qty })));
