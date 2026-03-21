@@ -330,7 +330,7 @@ export default function CheckoutPage() {
                 </>
               )}
             </div>
-            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20ajuda%20para%20finalizar%20minha%20compra%20na%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer" className="block">
+            <a href={whatsappUrl("Olá, quero ajuda para finalizar minha compra na Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer" className="block">
               <Button variant="outline" className="w-full" size="sm">
                 <MessageCircle className="w-4 h-4 mr-2" /> Precisa de ajuda?
               </Button>

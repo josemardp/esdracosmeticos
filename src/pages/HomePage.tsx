@@ -426,7 +426,7 @@ export default function HomePage() {
             <p className="font-body text-sm text-primary-foreground/75 mb-8 max-w-md mx-auto leading-relaxed">
               Nossa equipe está pronta para ajudar você a encontrar o perfume ideal. Atendimento rápido e personalizado pelo WhatsApp.
             </p>
-            <a href="https://wa.me/5518991459429?text=Olá,%20quero%20ajuda%20para%20escolher%20um%20perfume%20na%20Esdra%20Cosméticos." target="_blank" rel="noopener noreferrer">
+            <a href={whatsappUrl("Olá, quero ajuda para escolher um perfume na Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body text-sm tracking-wide px-8 hover:-translate-y-0.5 transition-all duration-300">Falar no WhatsApp</Button>
             </a>
           </motion.div>
