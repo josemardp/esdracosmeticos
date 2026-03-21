@@ -845,6 +845,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_order: {
+        Args: {
+          p_address: Json
+          p_coupon_code?: string
+          p_customer_email: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_items: Json
+          p_payment_method: string
+          p_user_id?: string
+        }
+        Returns: Json
+      }
       decrement_inventory: {
         Args: { p_product_id: string; p_qty: number }
         Returns: undefined
