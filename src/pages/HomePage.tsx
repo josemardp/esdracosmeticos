@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
 import { useSEO } from "@/hooks/use-seo";
+import { whatsappUrl } from "@/lib/whatsapp";
 import heroImg from "@/assets/hero-cosmetics.jpg";
 import catMaquiagem from "@/assets/cat-maquiagem.jpg";
 import catSkincare from "@/assets/cat-skincare.jpg";
