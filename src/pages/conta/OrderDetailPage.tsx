@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Package, MessageCircle } from "lucide-react";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 interface OrderDetail {
   id: string; order_code: string; status: string; payment_status: string;
