@@ -83,7 +83,6 @@ export default function ReceberPage() {
     });
 
     // Update balance
-    await supabase.rpc("", {}).catch(() => {});
     const { data: acc } = await supabase.from("cash_accounts").select("balance").eq("id", cashId).single();
     if (acc) {
       await supabase.from("cash_accounts").update({ balance: acc.balance + remaining }).eq("id", cashId);
