@@ -11,7 +11,12 @@ export function Footer() {
     e.preventDefault();
     if (!email.trim() || !email.includes("@")) return;
     try {
-      await supabase.from("newsletter_subscribers").insert({ email: email.trim(), source: "footer" });
+      const { error } = await supabase.from("newsletter_subscribers").insert({ email: email.trim(), source: "footer" });
+      if (error && error.code === "23505") {
+        // duplicate — still show success to avoid leaking info
+      } else if (error) {
+        throw error;
+      }
     } catch {}
     setSubscribed(true);
     setEmail("");
