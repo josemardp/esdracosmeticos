@@ -275,15 +275,23 @@ export default function CatalogPage() {
     setLoading(true);
     setError(false);
     try {
-      const [{ data: cats }, { data: prods }] = await Promise.all([
+      const [{ data: cats }, { data: prods }, { data: banners }] = await Promise.all([
         supabase.from("categories").select("id, name, slug").eq("active", true).order("sort_order"),
         supabase
           .from("products")
           .select("id, name, slug, price, sale_price, cover_image, category_id, inventory_count, featured, new_arrival, bestseller")
           .eq("active", true),
+        supabase
+          .from("campaign_banners")
+          .select("*")
+          .eq("active", true)
+          .eq("position", "catalog_top")
+          .order("sort_order")
+          .limit(1),
       ]);
       setCategories((cats as Category[]) ?? []);
       setAllProducts((prods as Product[]) ?? []);
+      if (banners && banners.length > 0) setCatalogBanner(banners[0]);
     } catch {
       setError(true);
     } finally {
