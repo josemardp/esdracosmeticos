@@ -145,20 +145,22 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-primary shrink-0" />
-                <a href="https://wa.me/5518991459429" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                <a href="tel:+5518991459429" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
                   (18) 99145-9429
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <span className="font-body text-xs text-primary-foreground/50">Valparaíso/SP</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=R.+Ant%C3%B4nio+Cyrillo%2C+47+-+Eco+Ville%2C+Valpara%C3%ADso+-+SP%2C+16880-000" target="_blank" rel="noopener noreferrer" className="font-body text-xs text-primary-foreground/50 hover:text-primary-foreground transition-colors">
+                  R. Antônio Cyrillo, 47 – Valparaíso/SP
+                </a>
               </li>
             </ul>
             <div className="flex gap-3 mt-5">
-              <a href="#" className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all" aria-label="Instagram">
+              <a href="https://www.instagram.com/esdra_aline/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all" aria-label="Instagram">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all" aria-label="Facebook">
+              <a href="https://www.facebook.com/esdraaline" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all" aria-label="Facebook">
                 <Facebook className="w-4 h-4" />
               </a>
             </div>
