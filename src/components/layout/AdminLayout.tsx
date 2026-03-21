@@ -9,20 +9,38 @@ import {
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
 
-const navItems = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { label: "Produtos", href: "/admin/produtos", icon: Package },
-  { label: "Categorias", href: "/admin/categorias", icon: FolderTree },
-  { label: "Pedidos", href: "/admin/pedidos", icon: ShoppingCart },
-  { label: "Clientes", href: "/admin/clientes", icon: Users },
-  { label: "Estoque", href: "/admin/estoque", icon: Boxes },
-  { label: "Cupons", href: "/admin/cupons", icon: Ticket },
-  { label: "Campanhas", href: "/admin/campanhas", icon: Megaphone },
-  { label: "Conteúdo", href: "/admin/conteudo", icon: FileText },
-  { label: "Suporte", href: "/admin/suporte", icon: Headphones },
-  { label: "Integrações", href: "/admin/integracoes", icon: Link2 },
-  { label: "Configurações", href: "/admin/configuracoes", icon: Settings },
+const navSections = [
+  {
+    title: "Gestão",
+    items: [
+      { label: "Painel Gestão", href: "/admin/gestao/dashboard", icon: Briefcase },
+      { label: "Venda Rápida", href: "/admin/gestao/venda-rapida", icon: Zap },
+      { label: "Vendas", href: "/admin/gestao/vendas", icon: ShoppingCart },
+      { label: "Contas a Receber", href: "/admin/gestao/receber", icon: Clock },
+      { label: "Caixa", href: "/admin/gestao/caixa", icon: Wallet },
+      { label: "Clientes Gestão", href: "/admin/gestao/clientes", icon: UserCheck },
+    ],
+  },
+  {
+    title: "E-commerce",
+    items: [
+      { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+      { label: "Produtos", href: "/admin/produtos", icon: Package },
+      { label: "Categorias", href: "/admin/categorias", icon: FolderTree },
+      { label: "Pedidos", href: "/admin/pedidos", icon: ShoppingCart },
+      { label: "Clientes", href: "/admin/clientes", icon: Users },
+      { label: "Estoque", href: "/admin/estoque", icon: Boxes },
+      { label: "Cupons", href: "/admin/cupons", icon: Ticket },
+      { label: "Campanhas", href: "/admin/campanhas", icon: Megaphone },
+      { label: "Conteúdo", href: "/admin/conteudo", icon: FileText },
+      { label: "Suporte", href: "/admin/suporte", icon: Headphones },
+      { label: "Integrações", href: "/admin/integracoes", icon: Link2 },
+      { label: "Configurações", href: "/admin/configuracoes", icon: Settings },
+    ],
+  },
 ];
+
+const navItems = navSections.flatMap((s) => s.items);
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
