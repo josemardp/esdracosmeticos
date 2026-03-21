@@ -121,6 +121,8 @@ export default function HomePage() {
               <div className="absolute top-2 left-2 flex flex-col gap-1">
                 {p.new_arrival && <span className="bg-primary text-primary-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Novo</span>}
                 {p.bestseller && <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Mais Vendido</span>}
+                {p.tags?.includes("kit") && <span className="bg-info text-info-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Kit</span>}
+                {p.tags?.includes("combo") && <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Combo</span>}
               </div>
               {p.sale_price && (
                 <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">
