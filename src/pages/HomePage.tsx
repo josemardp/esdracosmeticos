@@ -47,10 +47,15 @@ const faqs = [
 interface Product {
   id: string; name: string; slug: string; price: number; sale_price: number | null;
   cover_image: string | null; inventory_count: number; new_arrival: boolean; bestseller: boolean; featured: boolean;
-  short_description: string | null;
+  short_description: string | null; tags: string[] | null;
 }
 
 interface Category { id: string; name: string; slug: string; image_url: string | null; }
+
+interface CampaignBanner {
+  id: string; title: string; subtitle: string | null; image_url: string | null;
+  link_url: string; badge_text: string | null; position: string;
+}
 
 export default function HomePage() {
   useSEO("Esdra Cosméticos | Beleza e Sofisticação", "Perfumes, maquiagem, skincare e cuidados corporais das melhores marcas. Frete grátis acima de R$ 199. Parcele em até 3x sem juros.");
@@ -60,17 +65,19 @@ export default function HomePage() {
   const [bestsellers, setBestsellers] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [reviews, setReviews] = useState<{ rating: number; comment: string | null; created_at: string }[]>([]);
+  const [campaigns, setCampaigns] = useState<CampaignBanner[]>([]);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
-    const cols = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, short_description";
+    const cols = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, short_description, tags";
     Promise.all([
       supabase.from("products").select(cols).eq("active", true).eq("featured", true).gt("inventory_count", 0).limit(4),
       supabase.from("products").select(cols).eq("active", true).eq("new_arrival", true).gt("inventory_count", 0).limit(4),
       supabase.from("products").select(cols).eq("active", true).eq("bestseller", true).gt("inventory_count", 0).limit(4),
       supabase.from("categories").select("id, name, slug, image_url").eq("active", true).order("sort_order").limit(6),
       supabase.from("reviews").select("rating, comment, created_at").eq("approved", true).order("created_at", { ascending: false }).limit(6),
-    ]).then(async ([f, n, b, c, r]) => {
+      supabase.from("campaign_banners").select("id, title, subtitle, image_url, link_url, badge_text, position").eq("active", true).order("sort_order"),
+    ]).then(async ([f, n, b, c, r, camp]) => {
       // If not enough in-stock featured, fall back to any active
       let featuredData = (f.data as Product[]) ?? [];
       let newData = (n.data as Product[]) ?? [];
@@ -86,6 +93,7 @@ export default function HomePage() {
       setBestsellers(bestData);
       setCategories((c.data as Category[]) ?? []);
       setReviews((r.data as any) ?? []);
+      setCampaigns((camp.data as CampaignBanner[]) ?? []);
     });
   }, []);
 
@@ -113,6 +121,8 @@ export default function HomePage() {
               <div className="absolute top-2 left-2 flex flex-col gap-1">
                 {p.new_arrival && <span className="bg-primary text-primary-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Novo</span>}
                 {p.bestseller && <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Mais Vendido</span>}
+                {p.tags?.includes("kit") && <span className="bg-info text-info-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Kit</span>}
+                {p.tags?.includes("combo") && <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Combo</span>}
               </div>
               {p.sale_price && (
                 <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">
@@ -225,7 +235,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Campaign Banners */}
+      {campaigns.filter(c => c.position === "home_top").length > 0 && (
+        <section className="py-6 lg:py-8">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {campaigns.filter(c => c.position === "home_top").map(camp => (
+                <Link key={camp.id} to={camp.link_url} className="group relative rounded-xl overflow-hidden block">
+                  {camp.image_url ? (
+                    <div className="aspect-[2/1] relative">
+                      <img src={camp.image_url} alt={camp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 to-transparent" />
+                      <div className="absolute inset-0 flex flex-col justify-center p-5 lg:p-8">
+                        {camp.badge_text && <span className="font-body text-[10px] tracking-[0.2em] uppercase text-primary-foreground/70 mb-1">{camp.badge_text}</span>}
+                        <h3 className="font-display text-lg sm:text-xl lg:text-2xl italic text-primary-foreground leading-tight mb-1">{camp.title}</h3>
+                        {camp.subtitle && <p className="font-body text-xs text-primary-foreground/75">{camp.subtitle}</p>}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-primary p-5 lg:p-8 aspect-[2/1] flex flex-col justify-center group-hover:bg-primary/90 transition-colors">
+                      {camp.badge_text && <span className="font-body text-[10px] tracking-[0.2em] uppercase text-primary-foreground/70 mb-1">{camp.badge_text}</span>}
+                      <h3 className="font-display text-lg sm:text-xl lg:text-2xl italic text-primary-foreground leading-tight mb-1">{camp.title}</h3>
+                      {camp.subtitle && <p className="font-body text-xs text-primary-foreground/75">{camp.subtitle}</p>}
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>

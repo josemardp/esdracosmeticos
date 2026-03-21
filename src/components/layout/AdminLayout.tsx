@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Package, FolderTree, ShoppingCart, Users,
-  Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight
+  Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight, Megaphone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
@@ -16,6 +16,7 @@ const navItems = [
   { label: "Clientes", href: "/admin/clientes", icon: Users },
   { label: "Estoque", href: "/admin/estoque", icon: Boxes },
   { label: "Cupons", href: "/admin/cupons", icon: Ticket },
+  { label: "Campanhas", href: "/admin/campanhas", icon: Megaphone },
   { label: "Conteúdo", href: "/admin/conteudo", icon: FileText },
   { label: "Suporte", href: "/admin/suporte", icon: Headphones },
   { label: "Integrações", href: "/admin/integracoes", icon: Link2 },

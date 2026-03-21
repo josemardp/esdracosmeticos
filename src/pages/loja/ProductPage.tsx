@@ -18,6 +18,7 @@ interface Product {
   cover_image: string | null; gallery: string[]; benefits: string | null;
   how_to_use: string | null; ingredients: string | null;
   category_id: string | null; new_arrival: boolean; bestseller: boolean;
+  brand: string | null; weight_volume: string | null; tags: string[] | null;
 }
 
 interface Review { id: string; rating: number; comment: string | null; created_at: string; }
@@ -49,7 +50,7 @@ export default function ProductPage() {
     setJustAdded(false);
     const fetchData = async () => {
       setLoading(true);
-      const { data } = await supabase.from("products").select("id, name, slug, sku, short_description, full_description, price, sale_price, inventory_count, cover_image, gallery, benefits, how_to_use, ingredients, category_id, new_arrival, bestseller").eq("slug", slug).eq("active", true).maybeSingle();
+      const { data } = await supabase.from("products").select("id, name, slug, sku, short_description, full_description, price, sale_price, inventory_count, cover_image, gallery, benefits, how_to_use, ingredients, category_id, new_arrival, bestseller, brand, weight_volume, tags").eq("slug", slug).eq("active", true).maybeSingle();
       setProduct(data as Product | null);
       if (data) {
         trackViewItem({ id: data.id, name: data.name, price: data.sale_price ?? data.price });
@@ -161,13 +162,19 @@ export default function ProductPage() {
 
           {/* Info */}
           <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              {product.brand && <span className="bg-secondary text-foreground font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full">{product.brand}</span>}
               {product.new_arrival && <span className="bg-primary/10 text-primary font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full">Lançamento</span>}
               {product.bestseller && <span className="bg-gold/10 text-gold font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full">Mais Vendido</span>}
               {!outOfStock && <span className="bg-success/10 text-success font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Em estoque</span>}
+              {product.tags?.includes("kit") && <span className="bg-info/10 text-info font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full">Kit</span>}
+              {product.tags?.includes("combo") && <span className="bg-gold/10 text-gold font-body text-[11px] font-semibold px-2.5 py-0.5 rounded-full">Combo</span>}
             </div>
             <h1 className="font-display text-2xl lg:text-3xl text-foreground mb-1">{product.name}</h1>
-            {product.sku && <p className="font-body text-xs text-muted-foreground mb-3">SKU: {product.sku}</p>}
+            <div className="flex items-center gap-2 mb-1">
+              {product.sku && <p className="font-body text-xs text-muted-foreground">SKU: {product.sku}</p>}
+              {product.weight_volume && <p className="font-body text-xs text-muted-foreground">· {product.weight_volume}</p>}
+            </div>
 
             {reviews.length > 0 && (
               <div className="flex items-center gap-2 mb-4">

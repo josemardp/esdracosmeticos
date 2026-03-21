@@ -14,6 +14,7 @@ interface Product {
   category_id: string | null; short_description: string | null;
   full_description: string | null; cover_image: string | null;
   how_to_use: string | null; benefits: string | null; ingredients: string | null;
+  tags: string[] | null; brand: string | null; weight_volume: string | null;
 }
 
 interface Category { id: string; name: string; }
@@ -31,7 +32,7 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     const [{ data: prods }, { data: cats }] = await Promise.all([
-      supabase.from("products").select("id, name, slug, sku, price, sale_price, inventory_count, active, featured, new_arrival, bestseller, category_id, short_description, full_description, cover_image, how_to_use, benefits, ingredients").order("created_at", { ascending: false }),
+      supabase.from("products").select("id, name, slug, sku, price, sale_price, inventory_count, active, featured, new_arrival, bestseller, category_id, short_description, full_description, cover_image, how_to_use, benefits, ingredients, tags, brand, weight_volume").order("created_at", { ascending: false }),
       supabase.from("categories").select("id, name").order("name"),
     ]);
     setProducts((prods as Product[]) ?? []);
@@ -43,7 +44,7 @@ export default function AdminProductsPage() {
 
   const openNew = () => {
     setIsNew(true);
-    setForm({ name: "", slug: "", sku: "", price: 0, sale_price: null, inventory_count: 0, active: true, featured: false, new_arrival: false, bestseller: false, category_id: null, short_description: "", full_description: "", cover_image: "", how_to_use: "", benefits: "", ingredients: "" });
+    setForm({ name: "", slug: "", sku: "", price: 0, sale_price: null, inventory_count: 0, active: true, featured: false, new_arrival: false, bestseller: false, category_id: null, short_description: "", full_description: "", cover_image: "", how_to_use: "", benefits: "", ingredients: "", tags: [], brand: "", weight_volume: "" });
     setEditing({} as Product);
   };
 
@@ -172,6 +173,9 @@ export default function AdminProductsPage() {
                 </div>
                 <Input value={form.cover_image || ""} onChange={e => setForm({ ...form, cover_image: e.target.value })} placeholder="Ou cole a URL da imagem..." className="mt-2" />
               </div>
+              <div><Label className="font-body text-xs">Marca</Label><Input value={form.brand || ""} onChange={e => setForm({ ...form, brand: e.target.value })} placeholder="Ex: Eudora, O Boticário" /></div>
+              <div><Label className="font-body text-xs">Volume/Peso</Label><Input value={form.weight_volume || ""} onChange={e => setForm({ ...form, weight_volume: e.target.value })} placeholder="Ex: 100ml, 400g" /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Tags (separadas por vírgula)</Label><Input value={(form.tags || []).join(", ")} onChange={e => setForm({ ...form, tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })} placeholder="kit, combo, dia-das-maes, natal" /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição curta</Label><Textarea value={form.short_description || ""} onChange={e => setForm({ ...form, short_description: e.target.value })} rows={2} /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição completa</Label><Textarea value={form.full_description || ""} onChange={e => setForm({ ...form, full_description: e.target.value })} rows={4} /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Modo de uso</Label><Textarea value={form.how_to_use || ""} onChange={e => setForm({ ...form, how_to_use: e.target.value })} rows={2} /></div>
@@ -222,9 +226,12 @@ export default function AdminProductsPage() {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-body text-xs text-muted-foreground">{p.sku || "Sem SKU"}</p>
+                  {p.brand && <span className="font-body text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">{p.brand}</span>}
                   {getCatName(p.category_id) && <span className="font-body text-[10px] bg-secondary px-1.5 py-0.5 rounded">{getCatName(p.category_id)}</span>}
+                  {p.tags && p.tags.length > 0 && p.tags.map(tag => <span key={tag} className="font-body text-[10px] bg-gold/10 text-gold px-1.5 py-0.5 rounded">{tag}</span>)}
                   <span className="font-body text-xs text-muted-foreground">R$ {p.price.toFixed(2)}</span>
                   {p.sale_price && <span className="font-body text-xs text-primary font-medium">R$ {p.sale_price.toFixed(2)}</span>}
+                  {p.weight_volume && <span className="font-body text-[10px] text-muted-foreground">{p.weight_volume}</span>}
                   {p.inventory_count === 0 ? (
                     <span className="flex items-center gap-0.5 text-[10px] text-destructive font-medium"><PackageX className="w-3 h-3" /> Zerado</span>
                   ) : p.inventory_count < 5 ? (
