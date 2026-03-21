@@ -44,7 +44,7 @@ export default function AdminProductsPage() {
 
   const openNew = () => {
     setIsNew(true);
-    setForm({ name: "", slug: "", sku: "", price: 0, sale_price: null, inventory_count: 0, active: true, featured: false, new_arrival: false, bestseller: false, category_id: null, short_description: "", full_description: "", cover_image: "", how_to_use: "", benefits: "", ingredients: "" });
+    setForm({ name: "", slug: "", sku: "", price: 0, sale_price: null, inventory_count: 0, active: true, featured: false, new_arrival: false, bestseller: false, category_id: null, short_description: "", full_description: "", cover_image: "", how_to_use: "", benefits: "", ingredients: "", tags: [], brand: "", weight_volume: "" });
     setEditing({} as Product);
   };
 
