@@ -226,9 +226,12 @@ export default function AdminProductsPage() {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-body text-xs text-muted-foreground">{p.sku || "Sem SKU"}</p>
+                  {p.brand && <span className="font-body text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">{p.brand}</span>}
                   {getCatName(p.category_id) && <span className="font-body text-[10px] bg-secondary px-1.5 py-0.5 rounded">{getCatName(p.category_id)}</span>}
+                  {p.tags && p.tags.length > 0 && p.tags.map(tag => <span key={tag} className="font-body text-[10px] bg-gold/10 text-gold px-1.5 py-0.5 rounded">{tag}</span>)}
                   <span className="font-body text-xs text-muted-foreground">R$ {p.price.toFixed(2)}</span>
                   {p.sale_price && <span className="font-body text-xs text-primary font-medium">R$ {p.sale_price.toFixed(2)}</span>}
+                  {p.weight_volume && <span className="font-body text-[10px] text-muted-foreground">{p.weight_volume}</span>}
                   {p.inventory_count === 0 ? (
                     <span className="flex items-center gap-0.5 text-[10px] text-destructive font-medium"><PackageX className="w-3 h-3" /> Zerado</span>
                   ) : p.inventory_count < 5 ? (
