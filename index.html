@@ -37,10 +37,129 @@
       }
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "Esdra Cosméticos",
+      "url": "https://esdracosmeticos.lovable.app",
+      "description": "Loja online de cosméticos premium — perfumes, maquiagem, cuidados corporais e cabelos das melhores marcas como Eudora, O Boticário, Egeo, Siàge e mais.",
+      "priceRange": "$$",
+      "currenciesAccepted": "BRL",
+      "paymentAccepted": "PIX, Cartão de Crédito, Boleto",
+      "openingHours": "Mo-Su 00:00-23:59",
+      "telephone": "+55-18-99145-9429",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "BR"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Catálogo Esdra Cosméticos",
+        "itemListElement": [
+          {"@type": "OfferCatalog", "name": "Perfumaria"},
+          {"@type": "OfferCatalog", "name": "Maquiagem"},
+          {"@type": "OfferCatalog", "name": "Corpo e Banho"},
+          {"@type": "OfferCatalog", "name": "Cabelos"},
+          {"@type": "OfferCatalog", "name": "Infantil"},
+          {"@type": "OfferCatalog", "name": "Acessórios"}
+        ]
+      }
+    }
+    </script>
+    <style>
+      .ssr-fallback { font-family: 'Inter', system-ui, sans-serif; color: #3d3429; max-width: 1200px; margin: 0 auto; padding: 20px; }
+      .ssr-fallback h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-style: italic; margin-bottom: 0.5rem; }
+      .ssr-fallback h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-style: italic; margin: 2rem 0 1rem; }
+      .ssr-fallback p { font-size: 0.95rem; line-height: 1.6; color: #7c6a56; margin-bottom: 1rem; }
+      .ssr-fallback a { color: #7c6a56; text-decoration: underline; }
+      .ssr-fallback nav a { display: inline-block; margin-right: 1.5rem; font-size: 0.9rem; }
+      .ssr-fallback ul { list-style: none; padding: 0; }
+      .ssr-fallback ul li { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+      .ssr-hide { display: none; }
+    </style>
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static HTML for crawlers/SEO — React replaces this on hydration -->
+      <div class="ssr-fallback" role="main">
+        <header>
+          <p style="font-size:1.5rem;font-weight:700;font-family:'Cormorant Garamond',serif;font-style:italic;">Esdra Cosméticos</p>
+          <nav aria-label="Navegação principal">
+            <a href="/">Início</a>
+            <a href="/loja">Loja</a>
+            <a href="/lancamentos">Lançamentos</a>
+            <a href="/promocoes">Promoções</a>
+            <a href="/sobre">Sobre</a>
+            <a href="/suporte">Suporte</a>
+          </nav>
+        </header>
+
+        <section>
+          <h1>Beleza que traduz personalidade</h1>
+          <p>Perfumes, maquiagem, cuidados corporais e muito mais das melhores marcas. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.</p>
+          <p><a href="/loja">Explorar Coleção →</a></p>
+        </section>
+
+        <section>
+          <h2>Categorias</h2>
+          <ul>
+            <li><a href="/loja?categoria=perfumes">Perfumaria</a> — Fragrâncias femininas, masculinas e unissex</li>
+            <li><a href="/loja?categoria=maquiagem">Maquiagem</a> — Batons, máscaras de cílios, bases e mais</li>
+            <li><a href="/loja?categoria=corpo-e-banho">Corpo e Banho</a> — Hidratantes, sabonetes e body splashes</li>
+            <li><a href="/loja?categoria=cabelos">Cabelos</a> — Shampoos, condicionadores e tratamentos</li>
+            <li><a href="/loja?categoria=infantil">Infantil</a> — Colônias e cuidados para crianças</li>
+            <li><a href="/loja?categoria=acessorios">Acessórios</a> — Espelhos, estojos e complementos</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Por que comprar na Esdra Cosméticos?</h2>
+          <ul>
+            <li>✓ Frete Grátis em compras acima de R$ 199 para todo o Brasil</li>
+            <li>✓ Compra 100% Segura — dados criptografados e protegidos</li>
+            <li>✓ Troca em até 30 dias — devolução simples e sem burocracia</li>
+            <li>✓ Produtos 100% originais de distribuidores autorizados</li>
+            <li>✓ Parcele em até 3x sem juros no cartão</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Marcas</h2>
+          <p>Trabalhamos com marcas do Grupo Boticário e parceiros: Eudora, O Boticário, Egeo, Siàge, Instance, Niina Secrets, Dr. Botica, Her Code, Cuide-se Bem, Jequiti, Barbie, Candy Land, Turma da Mônica e mais.</p>
+        </section>
+
+        <section>
+          <h2>Perguntas Frequentes</h2>
+          <ul>
+            <li><strong>Quanto tempo leva para meu pedido chegar?</strong> O prazo de entrega varia de 3 a 10 dias úteis.</li>
+            <li><strong>Posso trocar ou devolver um produto?</strong> Sim, você tem até 30 dias para solicitar troca ou devolução.</li>
+            <li><strong>Quais formas de pagamento vocês aceitam?</strong> PIX, cartão de crédito e boleto bancário.</li>
+            <li><strong>Os produtos são originais?</strong> Sim, 100% originais de distribuidores autorizados.</li>
+          </ul>
+        </section>
+
+        <footer>
+          <p>Esdra Cosméticos — Beleza e Sofisticação</p>
+          <nav aria-label="Links institucionais">
+            <a href="/politica-de-privacidade">Política de Privacidade</a>
+            <a href="/trocas-e-devolucoes">Trocas e Devoluções</a>
+            <a href="/termos-de-uso">Termos de Uso</a>
+            <a href="/sobre">Sobre Nós</a>
+            <a href="/suporte">Contato</a>
+          </nav>
+          <p style="font-size:0.8rem;margin-top:1rem;">© 2025 Esdra Cosméticos. Todos os direitos reservados.</p>
+        </footer>
+      </div>
+    </div>
+    <noscript>
+      <div style="font-family:Inter,sans-serif;max-width:800px;margin:40px auto;padding:20px;text-align:center;">
+        <h1 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2rem;">Esdra Cosméticos</h1>
+        <p>Para navegar na loja, ative o JavaScript no seu navegador.</p>
+        <p>Enquanto isso, entre em contato pelo WhatsApp: <a href="https://wa.me/5518991459429">(18) 99145-9429</a></p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
