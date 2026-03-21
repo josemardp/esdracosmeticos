@@ -16,6 +16,7 @@ const navItems = [
   { label: "Clientes", href: "/admin/clientes", icon: Users },
   { label: "Estoque", href: "/admin/estoque", icon: Boxes },
   { label: "Cupons", href: "/admin/cupons", icon: Ticket },
+  { label: "Campanhas", href: "/admin/campanhas", icon: Megaphone },
   { label: "Conteúdo", href: "/admin/conteudo", icon: FileText },
   { label: "Suporte", href: "/admin/suporte", icon: Headphones },
   { label: "Integrações", href: "/admin/integracoes", icon: Link2 },
