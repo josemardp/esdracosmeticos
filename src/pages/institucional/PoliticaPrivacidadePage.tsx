@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function PoliticaPrivacidadePage() {
+  useSEO("Política de Privacidade", "Saiba como a Esdra Cosméticos protege seus dados pessoais e garante sua privacidade.");
   return (
     <div className="container mx-auto px-4 py-10 lg:py-16 max-w-3xl">
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Heart, Award, Sparkles, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/use-seo";
 
 const milestones = [
   { year: "2016", text: "Fundação como MEI — início das vendas online e porta a porta em Valparaíso/SP." },
@@ -12,6 +13,7 @@ const milestones = [
 ];
 
 export default function SobrePage() {
+  useSEO("Sobre Nós", "Conheça a Esdra Cosméticos — desde 2016 selecionando produtos premium de beleza com curadoria exclusiva.");
   return (
     <div className="py-12 lg:py-20">
       <div className="container mx-auto px-4">
