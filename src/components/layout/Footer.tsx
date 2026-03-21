@@ -155,7 +155,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-primary shrink-0" />
-                <a href="https://wa.me/5518991459429" target="_blank" rel="noopener noreferrer" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
                   (18) 99145-9429
                 </a>
               </li>

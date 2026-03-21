@@ -27,7 +27,7 @@ export function WhatsAppButton() {
 
   const handleClick = (msg: string, context: string) => {
     trackWhatsAppClick(context);
-    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
     setOpen(false);
   };
 
