@@ -2,8 +2,10 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { RotateCcw, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function TrocasDevolucoesPage() {
+  useSEO("Trocas e Devoluções", "Política de trocas e devoluções da Esdra Cosméticos. Troque em até 30 dias de forma simples e sem burocracia.");
   return (
     <div className="container mx-auto px-4 py-10 lg:py-16 max-w-3xl">
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

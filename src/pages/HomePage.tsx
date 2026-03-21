@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
+import { useSEO } from "@/hooks/use-seo";
 import heroImg from "@/assets/hero-cosmetics.jpg";
 import catMaquiagem from "@/assets/cat-maquiagem.jpg";
 import catSkincare from "@/assets/cat-skincare.jpg";
@@ -52,6 +53,7 @@ interface Product {
 interface Category { id: string; name: string; slug: string; image_url: string | null; }
 
 export default function HomePage() {
+  useSEO("Esdra Cosméticos | Beleza e Sofisticação", "Perfumes, maquiagem, skincare e cuidados corporais das melhores marcas. Frete grátis acima de R$ 199. Parcele em até 3x sem juros.");
   const { addItem } = useCart();
   const [featured, setFeatured] = useState<Product[]>([]);
   const [newArrivals, setNewArrivals] = useState<Product[]>([]);
@@ -259,7 +261,54 @@ export default function HomePage() {
       {/* Bestsellers */}
       <ProductSection title="Mais Vendidos" subtitle="Os favoritos das nossas clientes" products={bestsellers} linkTo="/loja" linkLabel="Ver todos" />
 
-      {/* Reviews */}
+      {/* Brands */}
+      <section className="py-14 lg:py-20 bg-secondary/50">
+        <div className="container mx-auto px-4">
+          <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Nossas Marcas</span>
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Marcas que Confiamos</h2>
+            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Trabalhamos exclusivamente com marcas renomadas e distribuidores autorizados</p>
+          </motion.div>
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 lg:gap-12">
+            {["Eudora", "O Boticário", "Egeo", "Siàge", "Instance", "Niina Secrets", "Dr. Botica", "Her Code", "Cuide-se Bem", "Jequiti"].map((brand, i) => (
+              <motion.div
+                key={brand}
+                className="px-4 py-3 bg-card border rounded-lg font-body text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors cursor-default"
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.04 }}
+              >
+                {brand}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Block */}
+      <section className="py-14 lg:py-20">
+        <div className="container mx-auto px-4">
+          <motion.div className="text-center mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Por que comprar na Esdra?</h2>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 max-w-5xl mx-auto">
+            {[
+              { icon: ShieldCheck, title: "100% Original", desc: "Todos os produtos são adquiridos diretamente de distribuidores autorizados Eudora e O Boticário." },
+              { icon: CreditCard, title: "Parcele sem Juros", desc: "Pague em até 3x sem juros no cartão ou economize no PIX." },
+              { icon: Truck, title: "Entrega Rápida", desc: "Frete grátis acima de R$ 199. Envio para todo o Brasil em até 10 dias úteis." },
+              { icon: RotateCcw, title: "Troca Fácil", desc: "Não gostou? Troque em até 30 dias, sem burocracia e com suporte direto pelo WhatsApp." },
+            ].map((item, i) => (
+              <motion.div key={item.title} className="bg-card border rounded-xl p-6 text-center" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+                <item.icon className="w-8 h-8 text-primary mx-auto mb-3" />
+                <h4 className="font-body text-sm font-semibold text-foreground mb-2">{item.title}</h4>
+                <p className="font-body text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {reviews.length > 0 && (
         <section className="py-14 lg:py-20 bg-secondary/50">
           <div className="container mx-auto px-4">

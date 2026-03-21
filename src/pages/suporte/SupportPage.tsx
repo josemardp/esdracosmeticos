@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Mail, Phone, MessageCircle, Send, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSEO } from "@/hooks/use-seo";
 
 const faqs = [
   { q: "Qual o prazo de entrega?", a: "O prazo varia de 3 a 10 dias úteis, dependendo da sua região." },
@@ -17,6 +18,7 @@ const faqs = [
 ];
 
 export default function SupportPage() {
+  useSEO("Suporte e Contato", "Precisa de ajuda? Fale conosco por WhatsApp, e-mail ou envie uma mensagem. Atendimento rápido e personalizado.");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");

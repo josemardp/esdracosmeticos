@@ -91,10 +91,11 @@ export function Footer() {
             <h5 className="font-body text-xs font-semibold tracking-widest uppercase mb-4 text-primary-foreground/80">Loja</h5>
             <ul className="space-y-2.5">
               {[
+                { label: "Perfumaria", href: "/loja?categoria=perfumes" },
                 { label: "Maquiagem", href: "/loja?categoria=maquiagem" },
-                { label: "Skincare", href: "/loja?categoria=skincare" },
+                { label: "Corpo e Banho", href: "/loja?categoria=corpo-e-banho" },
                 { label: "Cabelos", href: "/loja?categoria=cabelos" },
-                { label: "Perfumaria", href: "/loja?categoria=perfumaria" },
+                { label: "Infantil", href: "/loja?categoria=infantil" },
                 { label: "Lançamentos", href: "/lancamentos" },
                 { label: "Promoções", href: "/promocoes" },
               ].map((item) => (
