@@ -235,7 +235,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Campaign Banners */}
+      {campaigns.filter(c => c.position === "home_top").length > 0 && (
+        <section className="py-6 lg:py-8">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {campaigns.filter(c => c.position === "home_top").map(camp => (
+                <Link key={camp.id} to={camp.link_url} className="group relative rounded-xl overflow-hidden block">
+                  {camp.image_url ? (
+                    <div className="aspect-[2/1] relative">
+                      <img src={camp.image_url} alt={camp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 to-transparent" />
+                      <div className="absolute inset-0 flex flex-col justify-center p-5 lg:p-8">
+                        {camp.badge_text && <span className="font-body text-[10px] tracking-[0.2em] uppercase text-primary-foreground/70 mb-1">{camp.badge_text}</span>}
+                        <h3 className="font-display text-lg sm:text-xl lg:text-2xl italic text-primary-foreground leading-tight mb-1">{camp.title}</h3>
+                        {camp.subtitle && <p className="font-body text-xs text-primary-foreground/75">{camp.subtitle}</p>}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-primary p-5 lg:p-8 aspect-[2/1] flex flex-col justify-center group-hover:bg-primary/90 transition-colors">
+                      {camp.badge_text && <span className="font-body text-[10px] tracking-[0.2em] uppercase text-primary-foreground/70 mb-1">{camp.badge_text}</span>}
+                      <h3 className="font-display text-lg sm:text-xl lg:text-2xl italic text-primary-foreground leading-tight mb-1">{camp.title}</h3>
+                      {camp.subtitle && <p className="font-body text-xs text-primary-foreground/75">{camp.subtitle}</p>}
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
