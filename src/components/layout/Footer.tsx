@@ -151,7 +151,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <a href="https://www.google.com/maps/search/?api=1&query=R.+Ant%C3%B4nio+Cyrillo%2C+47+-+Eco+Ville%2C+Valpara%C3%ADso+-+SP%2C+16880-000" target="_blank" rel="noopener noreferrer" className="font-body text-xs text-primary-foreground/50 hover:text-primary-foreground transition-colors">
+                <a href="https://share.google/bTJn8G6Fxi4NYL04U" target="_blank" rel="noopener noreferrer" className="font-body text-xs text-primary-foreground/50 hover:text-primary-foreground transition-colors">
                   R. Antônio Cyrillo, 47 – Valparaíso/SP
                 </a>
               </li>
