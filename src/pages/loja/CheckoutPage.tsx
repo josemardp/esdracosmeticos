@@ -194,7 +194,7 @@ export default function CheckoutPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={`https://wa.me/5518991459429?text=Olá,%20acabei%20de%20fazer%20o%20pedido%20*${orderResult.order_code}*%20na%20Esdra%20Cosméticos.%20Total:%20R$%20${orderResult.total.toFixed(2)}.%20Forma%20de%20pagamento:%20${payment}`}
+              href={whatsappUrl(`Olá, acabei de fazer o pedido *${orderResult.order_code}* na Esdra Cosméticos. Total: R$ ${orderResult.total.toFixed(2)}. Forma de pagamento: ${payment}`)}
               target="_blank" rel="noopener noreferrer"
             >
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
