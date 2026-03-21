@@ -286,25 +286,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trust Block */}
+      {/* Institutional Trust */}
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
-          <motion.div className="text-center mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Por que comprar na Esdra?</h2>
-          </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 max-w-5xl mx-auto">
-            {[
-              { icon: ShieldCheck, title: "100% Original", desc: "Todos os produtos são adquiridos diretamente de distribuidores autorizados Eudora e O Boticário." },
-              { icon: CreditCard, title: "Parcele sem Juros", desc: "Pague em até 3x sem juros no cartão ou economize no PIX." },
-              { icon: Truck, title: "Entrega Rápida", desc: "Frete grátis acima de R$ 199. Envio para todo o Brasil em até 10 dias úteis." },
-              { icon: RotateCcw, title: "Troca Fácil", desc: "Não gostou? Troque em até 30 dias, sem burocracia e com suporte direto pelo WhatsApp." },
-            ].map((item, i) => (
-              <motion.div key={item.title} className="bg-card border rounded-xl p-6 text-center" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
-                <item.icon className="w-8 h-8 text-primary mx-auto mb-3" />
-                <h4 className="font-body text-sm font-semibold text-foreground mb-2">{item.title}</h4>
-                <p className="font-body text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-5xl mx-auto mb-12">
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Sobre Nós</span>
+              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-4">Esdra Cosméticos</h2>
+              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">
+                Desde 2016, a Esdra Cosméticos seleciona os melhores produtos de beleza e perfumaria para mulheres que valorizam qualidade e originalidade.
+              </p>
+              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
+                Trabalhamos com marcas renomadas como Eudora, O Boticário e Jequiti, adquiridas diretamente de distribuidores autorizados. Cada produto é cuidadosamente selecionado para garantir a melhor experiência.
+              </p>
+              <Link to="/sobre" className="font-body text-sm text-primary hover:underline font-medium inline-flex items-center gap-1">
+                Conheça nossa história <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </motion.div>
+            <motion.div className="grid grid-cols-2 gap-3" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              {[
+                { icon: ShieldCheck, title: "100% Original", desc: "Distribuidores autorizados" },
+                { icon: CreditCard, title: "3x sem Juros", desc: "Cartão, PIX ou boleto" },
+                { icon: Truck, title: "Frete Grátis", desc: "Acima de R$ 199" },
+                { icon: RotateCcw, title: "Troca Fácil", desc: "Até 30 dias" },
+              ].map((item) => (
+                <div key={item.title} className="bg-card border rounded-xl p-4 text-center">
+                  <item.icon className="w-6 h-6 text-primary mx-auto mb-2" />
+                  <h4 className="font-body text-xs font-semibold text-foreground mb-1">{item.title}</h4>
+                  <p className="font-body text-[10px] text-muted-foreground">{item.desc}</p>
+                </div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
