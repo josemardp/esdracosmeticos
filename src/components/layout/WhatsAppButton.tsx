@@ -2,8 +2,7 @@ import { useState } from "react";
 import { MessageCircle, X, ShoppingBag, HelpCircle, Package, Sparkles } from "lucide-react";
 import { trackWhatsAppClick } from "@/lib/analytics";
 import { useLocation } from "react-router-dom";
-
-const PHONE = "5518991459429";
+import { WHATSAPP_PHONE } from "@/lib/whatsapp";
 
 const quickMessages = [
   { icon: ShoppingBag, label: "Quero comprar", msg: "Olá! Quero fazer um pedido na Esdra Cosméticos. Pode me ajudar?", context: "buy" },
@@ -28,7 +27,7 @@ export function WhatsAppButton() {
 
   const handleClick = (msg: string, context: string) => {
     trackWhatsAppClick(context);
-    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`, "_blank");
     setOpen(false);
   };
 
