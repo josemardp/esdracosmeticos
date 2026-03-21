@@ -18,6 +18,7 @@ const faqs = [
 ];
 
 export default function SupportPage() {
+  useSEO("Suporte e Contato", "Precisa de ajuda? Fale conosco por WhatsApp, e-mail ou envie uma mensagem. Atendimento rápido e personalizado.");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");

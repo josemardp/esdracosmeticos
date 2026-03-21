@@ -13,6 +13,7 @@ const milestones = [
 ];
 
 export default function SobrePage() {
+  useSEO("Sobre Nós", "Conheça a Esdra Cosméticos — desde 2016 selecionando produtos premium de beleza com curadoria exclusiva.");
   return (
     <div className="py-12 lg:py-20">
       <div className="container mx-auto px-4">
