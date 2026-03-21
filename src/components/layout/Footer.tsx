@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck, Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !email.includes("@")) return;
+    try {
+      await supabase.from("newsletter_subscribers").insert({ email: email.trim(), source: "footer" });
+    } catch {}
     setSubscribed(true);
     setEmail("");
     setTimeout(() => setSubscribed(false), 4000);
