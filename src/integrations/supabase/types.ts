@@ -121,6 +121,57 @@ export type Database = {
           },
         ]
       }
+      campaign_banners: {
+        Row: {
+          active: boolean
+          badge_text: string | null
+          bg_color: string | null
+          created_at: string
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          link_url: string
+          position: string
+          sort_order: number
+          starts_at: string | null
+          subtitle: string | null
+          text_color: string | null
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          badge_text?: string | null
+          bg_color?: string | null
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string
+          position?: string
+          sort_order?: number
+          starts_at?: string | null
+          subtitle?: string | null
+          text_color?: string | null
+          title: string
+        }
+        Update: {
+          active?: boolean
+          badge_text?: string | null
+          bg_color?: string | null
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string
+          position?: string
+          sort_order?: number
+          starts_at?: string | null
+          subtitle?: string | null
+          text_color?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           active: boolean
@@ -201,8 +252,11 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          last_order_at: string | null
           name: string
+          order_count: number | null
           phone: string | null
+          total_spent: number | null
           updated_at: string
           user_id: string | null
         }
@@ -210,8 +264,11 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          last_order_at?: string | null
           name: string
+          order_count?: number | null
           phone?: string | null
+          total_spent?: number | null
           updated_at?: string
           user_id?: string | null
         }
@@ -219,8 +276,11 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_order_at?: string | null
           name?: string
+          order_count?: number | null
           phone?: string | null
+          total_spent?: number | null
           updated_at?: string
           user_id?: string | null
         }
@@ -523,6 +583,7 @@ export type Database = {
           active: boolean
           benefits: string | null
           bestseller: boolean
+          brand: string | null
           category_id: string | null
           cost: number | null
           cover_image: string | null
@@ -542,12 +603,15 @@ export type Database = {
           short_description: string | null
           sku: string | null
           slug: string
+          tags: string[] | null
           updated_at: string
+          weight_volume: string | null
         }
         Insert: {
           active?: boolean
           benefits?: string | null
           bestseller?: boolean
+          brand?: string | null
           category_id?: string | null
           cost?: number | null
           cover_image?: string | null
@@ -567,12 +631,15 @@ export type Database = {
           short_description?: string | null
           sku?: string | null
           slug: string
+          tags?: string[] | null
           updated_at?: string
+          weight_volume?: string | null
         }
         Update: {
           active?: boolean
           benefits?: string | null
           bestseller?: boolean
+          brand?: string | null
           category_id?: string | null
           cost?: number | null
           cover_image?: string | null
@@ -592,7 +659,9 @@ export type Database = {
           short_description?: string | null
           sku?: string | null
           slug?: string
+          tags?: string[] | null
           updated_at?: string
+          weight_volume?: string | null
         }
         Relationships: [
           {

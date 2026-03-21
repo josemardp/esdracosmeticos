@@ -39,6 +39,7 @@ import AdminCouponsPage from "@/pages/admin/AdminCouponsPage";
 import AdminSupportPage from "@/pages/admin/AdminSupportPage";
 import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
 import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
+import AdminCampaignsPage from "@/pages/admin/AdminCampaignsPage";
 
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
@@ -112,6 +113,7 @@ const App = () => (
               <Route path="/admin/estoque" element={<AdminStockPage />} />
               <Route path="/admin/cupons" element={<AdminCouponsPage />} />
               <Route path="/admin/conteudo" element={<AdminContentPage />} />
+              <Route path="/admin/campanhas" element={<AdminCampaignsPage />} />
               <Route path="/admin/suporte" element={<AdminSupportPage />} />
               <Route path="/admin/integracoes" element={<AdminIntegrationsPage />} />
               <Route path="/admin/configuracoes" element={<AdminSettingsPage />} />
