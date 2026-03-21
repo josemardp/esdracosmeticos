@@ -18,6 +18,7 @@ interface Product {
   cover_image: string | null; gallery: string[]; benefits: string | null;
   how_to_use: string | null; ingredients: string | null;
   category_id: string | null; new_arrival: boolean; bestseller: boolean;
+  brand: string | null; weight_volume: string | null; tags: string[] | null;
 }
 
 interface Review { id: string; rating: number; comment: string | null; created_at: string; }
