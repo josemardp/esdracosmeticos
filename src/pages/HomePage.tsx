@@ -9,7 +9,6 @@ import { useCart } from "@/contexts/CartContext";
 import { useSEO } from "@/hooks/use-seo";
 import heroImg from "@/assets/hero-cosmetics.jpg";
 import catMaquiagem from "@/assets/cat-maquiagem.jpg";
-import catMaquiagem from "@/assets/cat-maquiagem.jpg";
 import catSkincare from "@/assets/cat-skincare.jpg";
 import catCabelos from "@/assets/cat-cabelos.jpg";
 import catPerfumaria from "@/assets/cat-perfumaria.jpg";
