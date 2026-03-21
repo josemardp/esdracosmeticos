@@ -28,7 +28,7 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     const [{ data: prods }, { data: cats }] = await Promise.all([
-      supabase.from("products").select("*").order("created_at", { ascending: false }),
+      supabase.from("products").select("id, name, slug, sku, price, sale_price, inventory_count, active, featured, new_arrival, bestseller, category_id, short_description, full_description, cover_image").order("created_at", { ascending: false }),
       supabase.from("categories").select("id, name").order("name"),
     ]);
     setProducts((prods as Product[]) ?? []);
@@ -137,6 +137,7 @@ export default function AdminProductsPage() {
                   </label>
                 </div>
                 <Input value={form.cover_image || ""} onChange={e => setForm({ ...form, cover_image: e.target.value })} placeholder="Ou cole a URL da imagem..." className="mt-2" />
+                {/* NOTA: Recomendado migrar URLs externas para Storage próprio no futuro */}
               </div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição curta</Label><Textarea value={form.short_description || ""} onChange={e => setForm({ ...form, short_description: e.target.value })} rows={2} /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição completa</Label><Textarea value={form.full_description || ""} onChange={e => setForm({ ...form, full_description: e.target.value })} rows={4} /></div>

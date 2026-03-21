@@ -37,7 +37,7 @@ export default function ProductPage() {
   useEffect(() => {
     if (!slug) return;
     const fetchData = async () => {
-      const { data } = await supabase.from("products").select("*").eq("slug", slug).eq("active", true).maybeSingle();
+      const { data } = await supabase.from("products").select("id, name, slug, sku, short_description, full_description, price, sale_price, inventory_count, cover_image, gallery, benefits, how_to_use, ingredients, category_id, new_arrival, bestseller").eq("slug", slug).eq("active", true).maybeSingle();
       setProduct(data as Product | null);
       if (data) {
         trackViewItem({ id: data.id, name: data.name, price: data.sale_price ?? data.price });
@@ -94,6 +94,8 @@ export default function ProductPage() {
   );
 
   const fallbackImg = getProductImage(product.slug, product.cover_image);
+  // NOTA: Atualmente usando URLs de imagens externas. 
+  // Recomendação futura: Migrar para Supabase Storage próprio para maior controle e performance.
   const images = [product.cover_image || fallbackImg, ...(product.gallery || [])].filter(Boolean) as string[];
   const outOfStock = product.inventory_count <= 0;
   const avgRating = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
