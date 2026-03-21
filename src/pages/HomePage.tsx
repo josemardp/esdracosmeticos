@@ -65,6 +65,7 @@ export default function HomePage() {
   const [bestsellers, setBestsellers] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [reviews, setReviews] = useState<{ rating: number; comment: string | null; created_at: string }[]>([]);
+  const [campaigns, setCampaigns] = useState<CampaignBanner[]>([]);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
