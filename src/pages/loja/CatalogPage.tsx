@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { getProductImage } from "@/lib/product-images";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
