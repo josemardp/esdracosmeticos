@@ -118,6 +118,7 @@ export function SearchDialog({
                         src={img}
                         alt={p.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">

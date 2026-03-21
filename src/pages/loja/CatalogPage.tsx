@@ -633,6 +633,7 @@ const ProductCard = memo(function ProductCard({
               <img
                 src={img}
                 alt={p.name}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }}
                 width={400}
                 height={400}
                 loading="lazy"
