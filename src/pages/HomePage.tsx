@@ -93,6 +93,7 @@ export default function HomePage() {
       setBestsellers(bestData);
       setCategories((c.data as Category[]) ?? []);
       setReviews((r.data as any) ?? []);
+      setCampaigns((camp.data as CampaignBanner[]) ?? []);
     });
   }, []);
 
