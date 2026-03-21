@@ -173,6 +173,9 @@ export default function AdminProductsPage() {
                 </div>
                 <Input value={form.cover_image || ""} onChange={e => setForm({ ...form, cover_image: e.target.value })} placeholder="Ou cole a URL da imagem..." className="mt-2" />
               </div>
+              <div><Label className="font-body text-xs">Marca</Label><Input value={form.brand || ""} onChange={e => setForm({ ...form, brand: e.target.value })} placeholder="Ex: Eudora, O Boticário" /></div>
+              <div><Label className="font-body text-xs">Volume/Peso</Label><Input value={form.weight_volume || ""} onChange={e => setForm({ ...form, weight_volume: e.target.value })} placeholder="Ex: 100ml, 400g" /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Tags (separadas por vírgula)</Label><Input value={(form.tags || []).join(", ")} onChange={e => setForm({ ...form, tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })} placeholder="kit, combo, dia-das-maes, natal" /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição curta</Label><Textarea value={form.short_description || ""} onChange={e => setForm({ ...form, short_description: e.target.value })} rows={2} /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição completa</Label><Textarea value={form.full_description || ""} onChange={e => setForm({ ...form, full_description: e.target.value })} rows={4} /></div>
               <div className="sm:col-span-2"><Label className="font-body text-xs">Modo de uso</Label><Textarea value={form.how_to_use || ""} onChange={e => setForm({ ...form, how_to_use: e.target.value })} rows={2} /></div>
