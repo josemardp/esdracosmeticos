@@ -1,0 +1,6 @@
+UPDATE products SET cover_image = 'https://khnrwskgpedwerbpohfe.supabase.co/storage/v1/object/public/products/images/body-spray-boticollection-portinari-100ml.jpg' WHERE slug = 'body-spray-boticollection-portinari-100ml';
+UPDATE products SET cover_image = 'https://khnrwskgpedwerbpohfe.supabase.co/storage/v1/object/public/products/images/siage-nutri-rose-shampoo-400ml.jpg' WHERE slug = 'siage-nutri-rose-shampoo-400ml';
+UPDATE products SET cover_image = 'https://khnrwskgpedwerbpohfe.supabase.co/storage/v1/object/public/products/images/mascara-cilios-super-brown-niina-secrets-10g.jpg' WHERE slug = 'mascara-cilios-super-brown-niina-secrets-10g';
+UPDATE products SET cover_image = 'https://khnrwskgpedwerbpohfe.supabase.co/storage/v1/object/public/products/images/locao-hidratante-dr-botica-pocao-das-nuvens-400ml.jpg' WHERE slug = 'locao-hidratante-dr-botica-pocao-das-nuvens-400ml';
+UPDATE products SET cover_image = 'https://khnrwskgpedwerbpohfe.supabase.co/storage/v1/object/public/products/images/mascara-cilios-turbo-dimension-eudora-make-10g.jpg' WHERE slug = 'mascara-cilios-turbo-dimension-eudora-make-10g';
+UPDATE products SET cover_image = 'https://khnrwskgpedwerbpohfe.supabase.co/storage/v1/object/public/products/images/creme-hidratante-instance-baunilha-400ml.jpg' WHERE slug = 'creme-hidratante-instance-baunilha-400ml';
