@@ -211,7 +211,7 @@ export default function ProductPage() {
               <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-5 mb-5">
                 <p className="font-body text-sm text-destructive font-semibold mb-1">Produto indisponível</p>
                 <p className="font-body text-xs text-muted-foreground mb-3">Este produto está temporariamente esgotado.</p>
-                <a href={`https://wa.me/5518991459429?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_out_of_stock")}>
+                <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_out_of_stock")}>
                   <Button variant="outline" size="sm"><MessageCircle className="w-4 h-4 mr-1.5" /> Avise-me quando voltar</Button>
                 </a>
               </div>
