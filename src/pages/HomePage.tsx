@@ -109,7 +109,7 @@ export default function HomePage() {
         <div className="group bg-card border rounded-xl overflow-hidden card-lift">
           <Link to={`/produto/${p.slug}`}>
             <div className="aspect-square bg-secondary relative overflow-hidden">
-              {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
+              {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
               <div className="absolute top-2 left-2 flex flex-col gap-1">
                 {p.new_arrival && <span className="bg-primary text-primary-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Novo</span>}
                 {p.bestseller && <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Mais Vendido</span>}

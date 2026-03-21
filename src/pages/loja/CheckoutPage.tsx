@@ -78,7 +78,7 @@ export default function CheckoutPage() {
       // apenas product_id + qty. Cupom enviado como CODE (string).
       // Nenhum valor financeiro do frontend é confiado.
       // ─────────────────────────────────────────────────────────
-      const { data, error } = await supabase.rpc("create_order", {
+      const { data, error } = await (supabase.rpc as any)("create_order", {
         p_items:           items.map(i => ({ product_id: i.id, qty: i.qty })),
         p_customer_name:   form.name.trim(),
         p_customer_email:  form.email.trim().toLowerCase(),
@@ -93,13 +93,13 @@ export default function CheckoutPage() {
           zip:          form.zip.replace(/\D/g, ""),
         },
         p_payment_method: payment,
-        p_coupon_code:    coupon?.code ?? null,   // CODE, não ID
+        p_coupon_code:    coupon?.code ?? null,
         p_user_id:        user?.id ?? null,
       });
 
       if (error) throw new Error(error.message);
 
-      const result = data as {
+      const result = data as unknown as {
         order_code: string; order_id: string;
         subtotal: number; discount: number; total: number;
       };
@@ -282,7 +282,7 @@ export default function CheckoutPage() {
                     {items.map(item => (
                       <div key={item.id} className="flex gap-3">
                         <div className="w-12 h-12 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                          {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt="" className="w-full h-full object-cover" /> : null; })()}
+                          {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt="" className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : null; })()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-body text-xs text-foreground line-clamp-1 font-medium">{item.name}</p>
