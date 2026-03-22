@@ -29,6 +29,7 @@ interface PO {
 }
 
 interface Supplier { id: string; name: string; }
+interface ProductOption { id: string; name: string; cost: number | null; }
 
 interface FormItem { name: string; qty: string; unit_cost: string; product_id: string; }
 
