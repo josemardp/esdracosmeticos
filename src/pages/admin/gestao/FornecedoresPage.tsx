@@ -86,6 +86,8 @@ export default function FornecedoresPage() {
       if (error) toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
       else toast({ title: "Fornecedor atualizado" });
     } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { toast({ title: "Sessão expirada", variant: "destructive" }); setSaving(false); return; }
       const { error } = await supabase.from("suppliers").insert({
         name: form.name.trim(),
         document: form.document || null,
@@ -93,6 +95,7 @@ export default function FornecedoresPage() {
         phone: form.phone || null,
         contact_name: form.contact_name || null,
         notes: form.notes || null,
+        owner_user_id: user.id,
       });
       if (error) toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
       else toast({ title: "Fornecedor criado" });
