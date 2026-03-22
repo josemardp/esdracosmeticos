@@ -55,6 +55,10 @@ import ComprasPage from "@/pages/admin/gestao/ComprasPage";
 import PagarPage from "@/pages/admin/gestao/PagarPage";
 import VencimentosPage from "@/pages/admin/gestao/VencimentosPage";
 import ProjecaoPage from "@/pages/admin/gestao/ProjecaoPage";
+import CategoriasFinanceirasPage from "@/pages/admin/gestao/CategoriasFinanceirasPage";
+import CentrosCustoPage from "@/pages/admin/gestao/CentrosCustoPage";
+import RelatoriosPage from "@/pages/admin/gestao/RelatoriosPage";
+import ResultadoPage from "@/pages/admin/gestao/ResultadoPage";
 
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
@@ -147,6 +151,10 @@ const App = () => (
               <Route path="/admin/gestao/pagar" element={<PagarPage />} />
               <Route path="/admin/gestao/vencimentos" element={<VencimentosPage />} />
               <Route path="/admin/gestao/projecao" element={<ProjecaoPage />} />
+              <Route path="/admin/gestao/categorias-financeiras" element={<CategoriasFinanceirasPage />} />
+              <Route path="/admin/gestao/centros-custo" element={<CentrosCustoPage />} />
+              <Route path="/admin/gestao/relatorios" element={<RelatoriosPage />} />
+              <Route path="/admin/gestao/resultado" element={<ResultadoPage />} />
             </Route>
 
             {/* Catch-all */}

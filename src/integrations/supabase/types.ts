@@ -203,8 +203,10 @@ export type Database = {
         Row: {
           amount: number
           cash_account_id: string
+          cost_center_id: string | null
           created_at: string
           description: string
+          financial_category_id: string | null
           id: string
           movement_date: string
           owner_user_id: string
@@ -215,8 +217,10 @@ export type Database = {
         Insert: {
           amount?: number
           cash_account_id: string
+          cost_center_id?: string | null
           created_at?: string
           description?: string
+          financial_category_id?: string | null
           id?: string
           movement_date?: string
           owner_user_id: string
@@ -227,8 +231,10 @@ export type Database = {
         Update: {
           amount?: number
           cash_account_id?: string
+          cost_center_id?: string | null
           created_at?: string
           description?: string
+          financial_category_id?: string | null
           id?: string
           movement_date?: string
           owner_user_id?: string
@@ -242,6 +248,20 @@ export type Database = {
             columns: ["cash_account_id"]
             isOneToOne: false
             referencedRelation: "cash_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_movements_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_movements_financial_category_id_fkey"
+            columns: ["financial_category_id"]
+            isOneToOne: false
+            referencedRelation: "financial_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -276,6 +296,33 @@ export type Database = {
           name?: string
           slug?: string
           sort_order?: number
+        }
+        Relationships: []
+      }
+      cost_centers: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          owner_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          owner_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          owner_user_id?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -395,6 +442,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      financial_categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          owner_user_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          owner_user_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          owner_user_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       integration_logs: {
         Row: {
