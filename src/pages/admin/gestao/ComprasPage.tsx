@@ -46,6 +46,8 @@ export default function ComprasPage() {
   const [discount, setDiscount] = useState("0");
   const [freight, setFreight] = useState("0");
   const [notes, setNotes] = useState("");
+  const [orderDate, setOrderDate] = useState<Date | undefined>(new Date());
+  const [expectedDelivery, setExpectedDelivery] = useState<Date | undefined>(undefined);
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
