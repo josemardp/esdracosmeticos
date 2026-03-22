@@ -31,7 +31,9 @@ export default function CentrosCustoPage() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    supabase.rpc("ensure_financial_defaults").then(() => load());
+  }, []);
 
   const handleAdd = async () => {
     if (!newName.trim() || !user) return;
