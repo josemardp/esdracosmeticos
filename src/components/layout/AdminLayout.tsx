@@ -5,7 +5,8 @@ import {
   LayoutDashboard, Package, FolderTree, ShoppingCart, Users,
   Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight, Megaphone,
   Briefcase, Zap, Clock, Wallet, UserCheck, BarChart3,
-  Building2, ShoppingBag, CreditCard, CalendarDays, TrendingUp
+  Building2, ShoppingBag, CreditCard, CalendarDays, TrendingUp,
+  Tag, Landmark, FileBarChart, PieChart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
@@ -26,6 +27,10 @@ const navSections = [
       { label: "Contas a Pagar", href: "/admin/gestao/pagar", icon: CreditCard },
       { label: "Vencimentos", href: "/admin/gestao/vencimentos", icon: CalendarDays },
       { label: "Projeção", href: "/admin/gestao/projecao", icon: TrendingUp },
+      { label: "Cat. Financeiras", href: "/admin/gestao/categorias-financeiras", icon: Tag },
+      { label: "Centros de Custo", href: "/admin/gestao/centros-custo", icon: Landmark },
+      { label: "Relatórios", href: "/admin/gestao/relatorios", icon: FileBarChart },
+      { label: "Resultado", href: "/admin/gestao/resultado", icon: PieChart },
     ],
   },
   {
