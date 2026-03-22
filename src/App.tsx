@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -97,6 +98,16 @@ import TermosDeUsoPage from "@/pages/institucional/TermosDeUsoPage";
 
 const queryClient = new QueryClient();
 
+const ManifestSwitcher = () => {
+  useEffect(() => {
+    const link = document.getElementById('pwa-manifest') as HTMLLinkElement | null;
+    if (!link) return;
+    const isAdmin = window.location.pathname.startsWith('/admin');
+    link.href = isAdmin ? '/admin.webmanifest' : '/manifest.webmanifest';
+  }, []);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -105,6 +116,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
+          <ManifestSwitcher />
           <ScrollToTop />
           <Routes>
             {/* Public routes with layout */}
