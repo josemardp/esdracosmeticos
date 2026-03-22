@@ -18,7 +18,7 @@ export function useSEO(title: string, description?: string) {
     // Update canonical
     let canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
-      canonical.setAttribute("href", "https://esdracosmeticos.com.br" + window.location.pathname);
+      canonical.setAttribute("href", "https://www.esdracosmeticos.com.br" + window.location.pathname);
     }
   }, [title, description]);
 }
