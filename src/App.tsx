@@ -50,6 +50,11 @@ import VendasConsolidadasPage from "@/pages/admin/gestao/VendasConsolidadasPage"
 import ReceberPage from "@/pages/admin/gestao/ReceberPage";
 import CaixaPage from "@/pages/admin/gestao/CaixaPage";
 import GestaoClientesPage from "@/pages/admin/gestao/GestaoClientesPage";
+import FornecedoresPage from "@/pages/admin/gestao/FornecedoresPage";
+import ComprasPage from "@/pages/admin/gestao/ComprasPage";
+import PagarPage from "@/pages/admin/gestao/PagarPage";
+import VencimentosPage from "@/pages/admin/gestao/VencimentosPage";
+import ProjecaoPage from "@/pages/admin/gestao/ProjecaoPage";
 
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
