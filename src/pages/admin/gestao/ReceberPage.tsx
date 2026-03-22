@@ -46,9 +46,11 @@ export default function ReceberPage() {
   useEffect(() => { load(); }, [filter]);
 
   const markPaid = async (title: Title) => {
+    if (payingId) return;
     const remaining = title.amount - title.paid_amount;
     if (remaining <= 0) return;
 
+    setPayingId(title.id);
     const { error } = await supabase.rpc("register_receipt", {
       p_title_id: title.id,
     });
@@ -59,6 +61,7 @@ export default function ReceberPage() {
       toast({ title: "Recebimento registrado!" });
       load();
     }
+    setPayingId(null);
   };
 
   const totalPending = titles.filter((t) => t.status === "pending").reduce((s, t) => s + (t.amount - t.paid_amount), 0);
