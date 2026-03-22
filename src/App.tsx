@@ -142,6 +142,11 @@ const App = () => (
               <Route path="/admin/gestao/receber" element={<ReceberPage />} />
               <Route path="/admin/gestao/caixa" element={<CaixaPage />} />
               <Route path="/admin/gestao/clientes" element={<GestaoClientesPage />} />
+              <Route path="/admin/gestao/fornecedores" element={<FornecedoresPage />} />
+              <Route path="/admin/gestao/compras" element={<ComprasPage />} />
+              <Route path="/admin/gestao/pagar" element={<PagarPage />} />
+              <Route path="/admin/gestao/vencimentos" element={<VencimentosPage />} />
+              <Route path="/admin/gestao/projecao" element={<ProjecaoPage />} />
             </Route>
 
             {/* Catch-all */}

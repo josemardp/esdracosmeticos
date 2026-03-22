@@ -21,6 +21,11 @@ const navSections = [
       { label: "Contas a Receber", href: "/admin/gestao/receber", icon: Clock },
       { label: "Caixa", href: "/admin/gestao/caixa", icon: Wallet },
       { label: "Clientes Gestão", href: "/admin/gestao/clientes", icon: UserCheck },
+      { label: "Fornecedores", href: "/admin/gestao/fornecedores", icon: Building2 },
+      { label: "Compras", href: "/admin/gestao/compras", icon: ShoppingBag },
+      { label: "Contas a Pagar", href: "/admin/gestao/pagar", icon: CreditCard },
+      { label: "Vencimentos", href: "/admin/gestao/vencimentos", icon: CalendarDays },
+      { label: "Projeção", href: "/admin/gestao/projecao", icon: TrendingUp },
     ],
   },
   {
