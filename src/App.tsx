@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -99,12 +99,13 @@ import TermosDeUsoPage from "@/pages/institucional/TermosDeUsoPage";
 const queryClient = new QueryClient();
 
 const ManifestSwitcher = () => {
+  const location = useLocation();
   useEffect(() => {
     const link = document.getElementById('pwa-manifest') as HTMLLinkElement | null;
     if (!link) return;
-    const isAdmin = window.location.pathname.startsWith('/admin');
+    const isAdmin = location.pathname.startsWith('/admin');
     link.href = isAdmin ? '/admin.webmanifest' : '/manifest.webmanifest';
-  }, []);
+  }, [location.pathname]);
   return null;
 };
 
