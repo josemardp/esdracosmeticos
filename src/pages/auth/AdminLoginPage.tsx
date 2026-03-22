@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,16 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [waitingAuth, setWaitingAuth] = useState(false);
   const navigate = useNavigate();
+  const { isAdmin, user } = useAuth();
+
+  // When AuthContext confirms admin, navigate
+  useEffect(() => {
+    if (waitingAuth && isAdmin && user) {
+      navigate("/admin", { replace: true });
+    }
+  }, [waitingAuth, isAdmin, user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
