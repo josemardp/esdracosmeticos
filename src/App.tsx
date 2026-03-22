@@ -42,6 +42,15 @@ import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
 import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
 import AdminCampaignsPage from "@/pages/admin/AdminCampaignsPage";
 
+// Gestão pages
+import GestaoDashboardPage from "@/pages/admin/gestao/GestaoDashboardPage";
+import VendaRapidaPage from "@/pages/admin/gestao/VendaRapidaPage";
+import VendasPage from "@/pages/admin/gestao/VendasPage";
+import VendasConsolidadasPage from "@/pages/admin/gestao/VendasConsolidadasPage";
+import ReceberPage from "@/pages/admin/gestao/ReceberPage";
+import CaixaPage from "@/pages/admin/gestao/CaixaPage";
+import GestaoClientesPage from "@/pages/admin/gestao/GestaoClientesPage";
+
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
@@ -119,6 +128,15 @@ const App = () => (
               <Route path="/admin/suporte" element={<AdminSupportPage />} />
               <Route path="/admin/integracoes" element={<AdminIntegrationsPage />} />
               <Route path="/admin/configuracoes" element={<AdminSettingsPage />} />
+              {/* Gestão routes */}
+              <Route path="/admin/gestao" element={<GestaoDashboardPage />} />
+              <Route path="/admin/gestao/dashboard" element={<GestaoDashboardPage />} />
+              <Route path="/admin/gestao/venda-rapida" element={<VendaRapidaPage />} />
+              <Route path="/admin/gestao/vendas" element={<VendasPage />} />
+              <Route path="/admin/gestao/consolidado" element={<VendasConsolidadasPage />} />
+              <Route path="/admin/gestao/receber" element={<ReceberPage />} />
+              <Route path="/admin/gestao/caixa" element={<CaixaPage />} />
+              <Route path="/admin/gestao/clientes" element={<GestaoClientesPage />} />
             </Route>
 
             {/* Catch-all */}

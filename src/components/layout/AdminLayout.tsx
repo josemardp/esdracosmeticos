@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Package, FolderTree, ShoppingCart, Users,
   Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight, Megaphone,
-  Briefcase, Zap, Clock, Wallet, UserCheck
+  Briefcase, Zap, Clock, Wallet, UserCheck, BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
@@ -16,6 +16,7 @@ const navSections = [
       { label: "Painel Gestão", href: "/admin/gestao/dashboard", icon: Briefcase },
       { label: "Venda Rápida", href: "/admin/gestao/venda-rapida", icon: Zap },
       { label: "Vendas", href: "/admin/gestao/vendas", icon: ShoppingCart },
+      { label: "Consolidado", href: "/admin/gestao/consolidado", icon: BarChart3 },
       { label: "Contas a Receber", href: "/admin/gestao/receber", icon: Clock },
       { label: "Caixa", href: "/admin/gestao/caixa", icon: Wallet },
       { label: "Clientes Gestão", href: "/admin/gestao/clientes", icon: UserCheck },
@@ -40,7 +41,7 @@ const navSections = [
   },
 ];
 
-const navItems = navSections.flatMap((s) => s.items);
+
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -71,20 +72,27 @@ export function AdminLayout() {
             </div>
           </Link>
         </div>
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm transition-colors ${
-                isActive(item.href)
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </Link>
+        <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+          {navSections.map((section) => (
+            <div key={section.title}>
+              <p className="font-body text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">{section.title}</p>
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg font-body text-sm transition-colors ${
+                      isActive(item.href)
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
         <div className="p-3 border-t">
@@ -126,22 +134,29 @@ export function AdminLayout() {
                 <X className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
-            <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm transition-colors ${
-                    isActive(item.href)
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-muted-foreground hover:bg-secondary"
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                  <ChevronRight className="w-3 h-3 ml-auto opacity-30" />
-                </Link>
+            <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+              {navSections.map((section) => (
+                <div key={section.title}>
+                  <p className="font-body text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">{section.title}</p>
+                  <div className="space-y-0.5">
+                    {section.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm transition-colors ${
+                          isActive(item.href)
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground hover:bg-secondary"
+                        }`}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {item.label}
+                        <ChevronRight className="w-3 h-3 ml-auto opacity-30" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </nav>
             <div className="p-3 border-t">

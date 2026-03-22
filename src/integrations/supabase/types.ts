@@ -1320,6 +1320,10 @@ export type Database = {
         Args: { p_coupon_id: string }
         Returns: undefined
       }
+      register_receipt: {
+        Args: { p_amount?: number; p_title_id: string }
+        Returns: Json
+      }
       validate_coupon: {
         Args: { p_code: string; p_order_total: number }
         Returns: {
