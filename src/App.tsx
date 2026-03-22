@@ -175,6 +175,23 @@ const App = () => (
               <Route path="/admin/gestao/centros-custo" element={<CentrosCustoPage />} />
               <Route path="/admin/gestao/relatorios" element={<RelatoriosPage />} />
               <Route path="/admin/gestao/resultado" element={<ResultadoPage />} />
+              {/* Phase 4 */}
+              <Route path="/admin/gestao/recebimento-compras" element={<RecebimentoComprasPage />} />
+              <Route path="/admin/gestao/movimentos-estoque" element={<MovimentosEstoquePage />} />
+              <Route path="/admin/gestao/margem" element={<MargemPage />} />
+              <Route path="/admin/gestao/reposicao" element={<ReposicaoPage />} />
+              {/* Phase 5 */}
+              <Route path="/admin/gestao/crm" element={<CRMPage />} />
+              <Route path="/admin/gestao/segmentos" element={<SegmentosPage />} />
+              <Route path="/admin/gestao/newsletter" element={<NewsletterGestaoPage />} />
+              <Route path="/admin/gestao/reativacao" element={<ReativacaoPage />} />
+              {/* Phase 6 */}
+              <Route path="/admin/gestao/executivo" element={<ExecutivoPage />} />
+              <Route path="/admin/gestao/canais" element={<CanaisPage />} />
+              <Route path="/admin/gestao/produtos-resultado" element={<ProdutosResultadoPage />} />
+              <Route path="/admin/gestao/exportacoes" element={<ExportacoesPage />} />
+              <Route path="/admin/gestao/auditoria" element={<AuditoriaPage />} />
+              <Route path="/admin/gestao/integracoes-avancadas" element={<IntegracoesAvancadasPage />} />
             </Route>
 
             {/* Catch-all */}
