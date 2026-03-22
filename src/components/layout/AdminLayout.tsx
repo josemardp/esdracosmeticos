@@ -6,7 +6,10 @@ import {
   Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight, Megaphone,
   Briefcase, Zap, Clock, Wallet, UserCheck, BarChart3,
   Building2, ShoppingBag, CreditCard, CalendarDays, TrendingUp,
-  Tag, Landmark, FileBarChart, PieChart
+  Tag, Landmark, FileBarChart, PieChart,
+  PackageCheck, ArrowDownUp, Percent, AlertTriangle,
+  UserPlus, Filter, Mail, UserMinus,
+  Gauge, Radio, PackageSearch, Download, Shield, Link as LinkIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
