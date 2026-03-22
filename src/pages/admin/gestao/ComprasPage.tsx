@@ -184,6 +184,36 @@ export default function ComprasPage() {
               </Select>
             </div>
 
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Data da Compra</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !orderDate && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {orderDate ? format(orderDate, "dd/MM/yyyy") : "Selecione..."}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={orderDate} onSelect={setOrderDate} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label>Previsão de Entrega</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !expectedDelivery && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {expectedDelivery ? format(expectedDelivery, "dd/MM/yyyy") : "Opcional"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={expectedDelivery} onSelect={setExpectedDelivery} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
             <div>
               <Label className="mb-2 block">Itens</Label>
               {items.map((it, idx) => (
