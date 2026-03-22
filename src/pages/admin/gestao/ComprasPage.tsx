@@ -72,6 +72,9 @@ export default function ComprasPage() {
 
   const openNew = () => {
     loadSuppliers();
+    supabase.from("products").select("id, name, cost").eq("active", true).order("name").then(({ data }) => {
+      if (data) setProducts(data.map(p => ({ id: p.id, name: p.name, cost: p.cost })));
+    });
     setSupplierId("");
     setItems([{ name: "", qty: "1", unit_cost: "", product_id: "" }]);
     setInstallments("1");
@@ -81,6 +84,15 @@ export default function ComprasPage() {
     setOrderDate(new Date());
     setExpectedDelivery(undefined);
     setDialogOpen(true);
+  };
+
+  const selectProduct = (idx: number, productId: string) => {
+    const prod = products.find(p => p.id === productId);
+    if (prod) {
+      setItems(prev => prev.map((it, i) => i === idx ? { ...it, product_id: productId, name: prod.name, unit_cost: prod.cost ? String(prod.cost) : it.unit_cost } : it));
+    } else {
+      setItems(prev => prev.map((it, i) => i === idx ? { ...it, product_id: "" } : it));
+    }
   };
 
   const updateItem = (idx: number, field: keyof FormItem, value: string) => {
