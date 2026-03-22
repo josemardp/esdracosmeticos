@@ -98,6 +98,16 @@ import TermosDeUsoPage from "@/pages/institucional/TermosDeUsoPage";
 
 const queryClient = new QueryClient();
 
+const ManifestSwitcher = () => {
+  useEffect(() => {
+    const link = document.getElementById('pwa-manifest') as HTMLLinkElement | null;
+    if (!link) return;
+    const isAdmin = window.location.pathname.startsWith('/admin');
+    link.href = isAdmin ? '/admin.webmanifest' : '/manifest.webmanifest';
+  }, []);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
