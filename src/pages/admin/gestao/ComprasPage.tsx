@@ -37,6 +37,7 @@ const statusLabels: Record<string, string> = { draft: "Rascunho", confirmed: "Co
 const statusColors: Record<string, string> = { draft: "secondary", confirmed: "default", received: "default", cancelled: "destructive" };
 
 export default function ComprasPage() {
+  const [pos, setPos] = useState<PO[]>([]);
   const [products, setProducts] = useState<ProductOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
