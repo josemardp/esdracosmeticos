@@ -76,6 +76,8 @@ export default function ComprasPage() {
     setDiscount("0");
     setFreight("0");
     setNotes("");
+    setOrderDate(new Date());
+    setExpectedDelivery(undefined);
     setDialogOpen(true);
   };
 
