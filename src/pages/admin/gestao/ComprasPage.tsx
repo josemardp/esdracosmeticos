@@ -231,13 +231,27 @@ export default function ComprasPage() {
             <div>
               <Label className="mb-2 block">Itens</Label>
               {items.map((it, idx) => (
-                <div key={idx} className="flex gap-2 mb-2 items-end">
-                  <div className="flex-1"><Input placeholder="Descrição" value={it.name} onChange={e => updateItem(idx, "name", e.target.value)} /></div>
-                  <div className="w-16"><Input placeholder="Qtd" type="number" min="1" value={it.qty} onChange={e => updateItem(idx, "qty", e.target.value)} /></div>
-                  <div className="w-24"><Input placeholder="Custo" type="number" step="0.01" min="0" value={it.unit_cost} onChange={e => updateItem(idx, "unit_cost", e.target.value)} /></div>
-                  {items.length > 1 && (
-                    <button onClick={() => removeItem(idx)} className="p-1.5 text-destructive"><Trash2 className="w-4 h-4" /></button>
-                  )}
+                <div key={idx} className="space-y-1 mb-3 p-2 border rounded-lg">
+                  <div className="flex gap-2 items-end">
+                    <div className="flex-1">
+                      <select
+                        value={it.product_id}
+                        onChange={e => selectProduct(idx, e.target.value)}
+                        className="w-full border rounded-lg px-3 py-2 font-body text-xs bg-background"
+                      >
+                        <option value="">Produto (opcional)</option>
+                        {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                    </div>
+                    {items.length > 1 && (
+                      <button onClick={() => removeItem(idx)} className="p-1.5 text-destructive"><Trash2 className="w-4 h-4" /></button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1"><Input placeholder="Descrição" value={it.name} onChange={e => updateItem(idx, "name", e.target.value)} /></div>
+                    <div className="w-16"><Input placeholder="Qtd" type="number" min="1" value={it.qty} onChange={e => updateItem(idx, "qty", e.target.value)} /></div>
+                    <div className="w-24"><Input placeholder="Custo" type="number" step="0.01" min="0" value={it.unit_cost} onChange={e => updateItem(idx, "unit_cost", e.target.value)} /></div>
+                  </div>
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Item</Button>
