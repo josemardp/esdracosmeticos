@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, AlertTriangle, CalendarDays, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 
 interface MonthData {
   month: string;
@@ -10,57 +10,71 @@ interface MonthData {
   saldo: number;
 }
 
+interface BlockTotals {
+  receber: number;
+  pagar: number;
+}
+
 export default function ProjecaoPage() {
-  const [data, setData] = useState<MonthData[]>([]);
+  const [overdue, setOverdue] = useState<BlockTotals>({ receber: 0, pagar: 0 });
+  const [next30, setNext30] = useState<BlockTotals>({ receber: 0, pagar: 0 });
+  const [chartData, setChartData] = useState<MonthData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      // Get next 6 months of pending titles
       const today = new Date();
-      const limit = new Date(today);
-      limit.setMonth(limit.getMonth() + 6);
+      const todayStr = today.toISOString().split("T")[0];
+      const d30 = new Date(today);
+      d30.setDate(d30.getDate() + 30);
+      const d30Str = d30.toISOString().split("T")[0];
+      const d6m = new Date(today);
+      d6m.setMonth(d6m.getMonth() + 6);
+      const d6mStr = d6m.toISOString().split("T")[0];
 
-      const [{ data: receber }, { data: pagar }] = await Promise.all([
-        supabase
-          .from("receivable_titles")
-          .select("amount, paid_amount, due_date")
-          .in("status", ["pending"])
-          .gte("due_date", today.toISOString().split("T")[0])
-          .lte("due_date", limit.toISOString().split("T")[0])
-          .limit(500),
-        supabase
-          .from("payable_titles")
-          .select("amount, paid_amount, due_date")
-          .in("status", ["pending", "partial"])
-          .gte("due_date", today.toISOString().split("T")[0])
-          .lte("due_date", limit.toISOString().split("T")[0])
-          .limit(500),
+      const openStatuses = ["pending", "partial"];
+
+      const [
+        { data: recOverdue },
+        { data: pagOverdue },
+        { data: rec30 },
+        { data: pag30 },
+        { data: rec6m },
+        { data: pag6m },
+      ] = await Promise.all([
+        supabase.from("receivable_titles").select("amount, paid_amount").in("status", openStatuses).lt("due_date", todayStr).limit(500),
+        supabase.from("payable_titles").select("amount, paid_amount").in("status", openStatuses).lt("due_date", todayStr).limit(500),
+        supabase.from("receivable_titles").select("amount, paid_amount").in("status", openStatuses).gte("due_date", todayStr).lte("due_date", d30Str).limit(500),
+        supabase.from("payable_titles").select("amount, paid_amount").in("status", openStatuses).gte("due_date", todayStr).lte("due_date", d30Str).limit(500),
+        supabase.from("receivable_titles").select("amount, paid_amount, due_date").in("status", openStatuses).gte("due_date", todayStr).lte("due_date", d6mStr).limit(500),
+        supabase.from("payable_titles").select("amount, paid_amount, due_date").in("status", openStatuses).gte("due_date", todayStr).lte("due_date", d6mStr).limit(500),
       ]);
 
-      // Group by month
-      const months: Record<string, { receber: number; pagar: number }> = {};
-      const monthLabels: string[] = [];
+      const sum = (rows: any[] | null) => (rows || []).reduce((s, r) => s + (r.amount - r.paid_amount), 0);
 
+      setOverdue({ receber: sum(recOverdue), pagar: sum(pagOverdue) });
+      setNext30({ receber: sum(rec30), pagar: sum(pag30) });
+
+      // Chart — group by month
+      const months: Record<string, { receber: number; pagar: number }> = {};
+      const monthKeys: string[] = [];
       for (let i = 0; i < 6; i++) {
         const d = new Date(today.getFullYear(), today.getMonth() + i, 1);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-        const label = d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
         months[key] = { receber: 0, pagar: 0 };
-        monthLabels.push(key);
+        monthKeys.push(key);
       }
 
-      (receber || []).forEach(r => {
+      (rec6m || []).forEach(r => {
         const key = r.due_date.substring(0, 7);
         if (months[key]) months[key].receber += (r.amount - r.paid_amount);
       });
-
-      (pagar || []).forEach(p => {
+      (pag6m || []).forEach(p => {
         const key = p.due_date.substring(0, 7);
         if (months[key]) months[key].pagar += (p.amount - p.paid_amount);
       });
 
-      const chartData: MonthData[] = monthLabels.map(key => {
+      setChartData(monthKeys.map(key => {
         const d = new Date(key + "-01");
         return {
           month: d.toLocaleDateString("pt-BR", { month: "short" }),
@@ -68,49 +82,73 @@ export default function ProjecaoPage() {
           pagar: parseFloat(months[key].pagar.toFixed(2)),
           saldo: parseFloat((months[key].receber - months[key].pagar).toFixed(2)),
         };
-      });
+      }));
 
-      setData(chartData);
       setLoading(false);
     })();
   }, []);
 
-  const totalReceber = data.reduce((s, d) => s + d.receber, 0);
-  const totalPagar = data.reduce((s, d) => s + d.pagar, 0);
+  const fmt = (v: number) => `R$ ${v.toFixed(2)}`;
+
+  const SummaryCards = ({ title, icon: Icon, data, iconColor }: { title: string; icon: any; data: BlockTotals; iconColor: string }) => {
+    const saldo = data.receber - data.pagar;
+    return (
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Icon className={`w-4 h-4 ${iconColor}`} />
+          <h2 className="font-display text-sm font-semibold text-foreground">{title}</h2>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-card border rounded-xl p-3">
+            <span className="font-body text-[10px] text-muted-foreground">A Receber</span>
+            <p className="font-display text-lg text-success">{fmt(data.receber)}</p>
+          </div>
+          <div className="bg-card border rounded-xl p-3">
+            <span className="font-body text-[10px] text-muted-foreground">A Pagar</span>
+            <p className="font-display text-lg text-destructive">{fmt(data.pagar)}</p>
+          </div>
+          <div className="bg-card border rounded-xl p-3">
+            <span className="font-body text-[10px] text-muted-foreground">Saldo</span>
+            <p className={`font-display text-lg ${saldo >= 0 ? "text-success" : "text-destructive"}`}>{fmt(saldo)}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <h1 className="font-display text-2xl text-foreground mb-4">Projeção Financeira</h1>
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-28 bg-card border rounded-xl animate-pulse" />)}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <h1 className="font-display text-2xl text-foreground mb-4">Projeção Financeira</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-        <div className="bg-card border rounded-xl p-4">
-          <span className="font-body text-xs text-muted-foreground">Total a Receber</span>
-          <p className="font-display text-xl text-success">R$ {totalReceber.toFixed(2)}</p>
+      {(overdue.receber > 0 || overdue.pagar > 0) && (
+        <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 mb-6">
+          <SummaryCards title="Vencido" icon={AlertTriangle} data={overdue} iconColor="text-destructive" />
         </div>
-        <div className="bg-card border rounded-xl p-4">
-          <span className="font-body text-xs text-muted-foreground">Total a Pagar</span>
-          <p className="font-display text-xl text-destructive">R$ {totalPagar.toFixed(2)}</p>
-        </div>
-        <div className="bg-card border rounded-xl p-4">
-          <div className="flex items-center gap-1">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <span className="font-body text-xs text-muted-foreground">Saldo Projetado</span>
-          </div>
-          <p className={`font-display text-xl ${(totalReceber - totalPagar) >= 0 ? "text-success" : "text-destructive"}`}>
-            R$ {(totalReceber - totalPagar).toFixed(2)}
-          </p>
-        </div>
-      </div>
+      )}
 
-      {loading ? (
-        <div className="h-64 bg-card border rounded-xl animate-pulse" />
-      ) : data.length === 0 ? (
-        <p className="font-body text-sm text-muted-foreground text-center py-12">Sem dados para projeção.</p>
-      ) : (
-        <div className="bg-card border rounded-xl p-4">
-          <h2 className="font-body text-sm font-semibold text-foreground mb-4">Próximos 6 meses</h2>
+      <SummaryCards title="Próximos 30 dias" icon={CalendarDays} data={next30} iconColor="text-primary" />
+
+      <div className="bg-card border rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <TrendingUp className="w-4 h-4 text-primary" />
+          <h2 className="font-body text-sm font-semibold text-foreground">Próximos 6 meses</h2>
+        </div>
+        {chartData.every(d => d.receber === 0 && d.pagar === 0) ? (
+          <p className="font-body text-sm text-muted-foreground text-center py-12">Sem dados para projeção.</p>
+        ) : (
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
+            <BarChart data={chartData}>
               <XAxis dataKey="month" fontSize={12} />
               <YAxis fontSize={12} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} />
               <Tooltip
@@ -124,8 +162,8 @@ export default function ProjecaoPage() {
               <Bar dataKey="pagar" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
