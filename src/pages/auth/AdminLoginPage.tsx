@@ -46,7 +46,8 @@ export default function AdminLoginPage() {
       toast({ title: "Acesso negado", description: "Você não tem permissão de gestor.", variant: "destructive" });
       return;
     }
-    navigate("/admin", { replace: true });
+    // Wait for AuthContext to pick up admin status before navigating
+    setWaitingAuth(true);
   };
 
   return (
