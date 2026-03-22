@@ -115,8 +115,8 @@ export default function ReceberPage() {
                   </div>
                 </div>
                 {t.status === "pending" && (
-                  <Button variant="outline" size="sm" className="mt-3 w-full" onClick={() => markPaid(t)}>
-                    <CheckCircle className="w-4 h-4 mr-1.5" /> Marcar como recebido
+                  <Button variant="outline" size="sm" className="mt-3 w-full" onClick={() => markPaid(t)} disabled={payingId === t.id}>
+                    <CheckCircle className="w-4 h-4 mr-1.5" /> {payingId === t.id ? "Processando..." : "Marcar como recebido"}
                   </Button>
                 )}
               </div>
