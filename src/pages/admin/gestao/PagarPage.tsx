@@ -50,16 +50,19 @@ export default function PagarPage() {
     .reduce((s, t) => s + (t.amount - t.paid_amount), 0);
 
   const markPaid = async (title: Title) => {
-    if (payingId) return; // prevent double click
+    if (payingId) return;
     setPayingId(title.id);
-    const { error } = await supabase.rpc("register_payment", { p_title_id: title.id });
-    if (error) {
-      toast({ title: "Erro ao pagar", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Pagamento registrado!" });
+    try {
+      const { error } = await supabase.rpc("register_payment", { p_title_id: title.id });
+      if (error) {
+        toast({ title: "Erro ao pagar", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Pagamento registrado!" });
+      }
+    } finally {
+      setPayingId(null);
+      load();
     }
-    setPayingId(null);
-    load();
   };
 
   const isOverdue = (t: Title) => t.status === "pending" && new Date(t.due_date) < new Date(new Date().toDateString());
