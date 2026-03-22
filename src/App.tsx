@@ -55,6 +55,10 @@ import ComprasPage from "@/pages/admin/gestao/ComprasPage";
 import PagarPage from "@/pages/admin/gestao/PagarPage";
 import VencimentosPage from "@/pages/admin/gestao/VencimentosPage";
 import ProjecaoPage from "@/pages/admin/gestao/ProjecaoPage";
+import CategoriasFinanceirasPage from "@/pages/admin/gestao/CategoriasFinanceirasPage";
+import CentrosCustoPage from "@/pages/admin/gestao/CentrosCustoPage";
+import RelatoriosPage from "@/pages/admin/gestao/RelatoriosPage";
+import ResultadoPage from "@/pages/admin/gestao/ResultadoPage";
 
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
