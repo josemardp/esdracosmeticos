@@ -654,6 +654,117 @@ export type Database = {
           },
         ]
       }
+      payable_payments: {
+        Row: {
+          amount: number
+          cash_account_id: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          owner_user_id: string
+          payable_title_id: string
+          payment_date: string
+        }
+        Insert: {
+          amount: number
+          cash_account_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          owner_user_id: string
+          payable_title_id: string
+          payment_date?: string
+        }
+        Update: {
+          amount?: number
+          cash_account_id?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          owner_user_id?: string
+          payable_title_id?: string
+          payment_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payable_payments_cash_account_id_fkey"
+            columns: ["cash_account_id"]
+            isOneToOne: false
+            referencedRelation: "cash_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payable_payments_payable_title_id_fkey"
+            columns: ["payable_title_id"]
+            isOneToOne: false
+            referencedRelation: "payable_titles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payable_titles: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          due_date: string
+          id: string
+          installment_number: number
+          owner_user_id: string
+          paid_amount: number
+          purchase_order_id: string | null
+          status: string
+          supplier_id: string | null
+          total_installments: number
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string
+          due_date?: string
+          id?: string
+          installment_number?: number
+          owner_user_id: string
+          paid_amount?: number
+          purchase_order_id?: string | null
+          status?: string
+          supplier_id?: string | null
+          total_installments?: number
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          due_date?: string
+          id?: string
+          installment_number?: number
+          owner_user_id?: string
+          paid_amount?: number
+          purchase_order_id?: string | null
+          status?: string
+          supplier_id?: string | null
+          total_installments?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payable_titles_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payable_titles_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_methods: {
         Row: {
           active: boolean
@@ -849,6 +960,113 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      purchase_order_items: {
+        Row: {
+          id: string
+          name: string
+          product_id: string | null
+          purchase_order_id: string
+          quantity: number
+          subtotal: number
+          unit_cost: number
+        }
+        Insert: {
+          id?: string
+          name: string
+          product_id?: string | null
+          purchase_order_id: string
+          quantity?: number
+          subtotal?: number
+          unit_cost?: number
+        }
+        Update: {
+          id?: string
+          name?: string
+          product_id?: string | null
+          purchase_order_id?: string
+          quantity?: number
+          subtotal?: number
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_order_items_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_orders: {
+        Row: {
+          created_at: string
+          discount: number
+          expected_delivery: string | null
+          freight: number
+          id: string
+          installments: number
+          notes: string | null
+          order_date: string
+          owner_user_id: string
+          po_code: string
+          status: string
+          subtotal: number
+          supplier_id: string
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          discount?: number
+          expected_delivery?: string | null
+          freight?: number
+          id?: string
+          installments?: number
+          notes?: string | null
+          order_date?: string
+          owner_user_id: string
+          po_code: string
+          status?: string
+          subtotal?: number
+          supplier_id: string
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          discount?: number
+          expected_delivery?: string | null
+          freight?: number
+          id?: string
+          installments?: number
+          notes?: string | null
+          order_date?: string
+          owner_user_id?: string
+          po_code?: string
+          status?: string
+          subtotal?: number
+          supplier_id?: string
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       receivable_receipts: {
         Row: {
@@ -1216,6 +1434,48 @@ export type Database = {
           },
         ]
       }
+      suppliers: {
+        Row: {
+          active: boolean
+          contact_name: string | null
+          created_at: string
+          document: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_user_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          contact_name?: string | null
+          created_at?: string
+          document?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_user_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          contact_name?: string | null
+          created_at?: string
+          document?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_user_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           channel: string
@@ -1291,6 +1551,19 @@ export type Database = {
         }
         Returns: Json
       }
+      create_purchase_order: {
+        Args: {
+          p_discount?: number
+          p_expected_delivery?: string
+          p_freight?: number
+          p_installments?: number
+          p_items: Json
+          p_notes?: string
+          p_order_date?: string
+          p_supplier_id: string
+        }
+        Returns: Json
+      }
       create_sale: {
         Args: {
           p_channel_slug?: string
@@ -1319,6 +1592,10 @@ export type Database = {
       increment_coupon_usage: {
         Args: { p_coupon_id: string }
         Returns: undefined
+      }
+      register_payment: {
+        Args: { p_amount?: number; p_title_id: string }
+        Returns: Json
       }
       register_receipt: {
         Args: { p_amount?: number; p_title_id: string }
