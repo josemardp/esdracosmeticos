@@ -74,8 +74,8 @@ export default function AdminLoginPage() {
             <Label htmlFor="password" className="font-body text-sm">Senha</Label>
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Verificando..." : "Acessar Painel"}
+          <Button type="submit" className="w-full" disabled={loading || waitingAuth}>
+            {loading || waitingAuth ? "Verificando..." : "Acessar Painel"}
           </Button>
         </form>
         <p className="text-center font-body text-xs text-muted-foreground mt-6">

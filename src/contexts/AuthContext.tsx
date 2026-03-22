@@ -47,11 +47,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Set up auth listener for subsequent changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          await checkAdmin(session.user.id);
+          // setTimeout avoids Supabase client deadlock
+          setTimeout(() => checkAdmin(session.user.id), 0);
         } else {
           setIsAdmin(false);
         }
