@@ -42,6 +42,15 @@ import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
 import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
 import AdminCampaignsPage from "@/pages/admin/AdminCampaignsPage";
 
+// Gestão pages
+import GestaoDashboardPage from "@/pages/admin/gestao/GestaoDashboardPage";
+import VendaRapidaPage from "@/pages/admin/gestao/VendaRapidaPage";
+import VendasPage from "@/pages/admin/gestao/VendasPage";
+import VendasConsolidadasPage from "@/pages/admin/gestao/VendasConsolidadasPage";
+import ReceberPage from "@/pages/admin/gestao/ReceberPage";
+import CaixaPage from "@/pages/admin/gestao/CaixaPage";
+import GestaoClientesPage from "@/pages/admin/gestao/GestaoClientesPage";
+
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
