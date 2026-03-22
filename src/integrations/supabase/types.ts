@@ -121,6 +121,36 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity: string
+          entity_id: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity: string
+          entity_id?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       campaign_banners: {
         Row: {
           active: boolean
@@ -365,6 +395,68 @@ export type Database = {
           usage_count?: number
           usage_limit?: number | null
           value?: number
+        }
+        Relationships: []
+      }
+      customer_notes: {
+        Row: {
+          created_at: string
+          created_by: string
+          customer_id: string
+          id: string
+          note: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          customer_id: string
+          id?: string
+          note: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          customer_id?: string
+          id?: string
+          note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_notes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_segments: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          owner_user_id: string
+          rules: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          owner_user_id: string
+          rules?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          owner_user_id?: string
+          rules?: Json
+          updated_at?: string
         }
         Relationships: []
       }
@@ -919,6 +1011,7 @@ export type Database = {
       products: {
         Row: {
           active: boolean
+          avg_cost: number | null
           benefits: string | null
           bestseller: boolean
           brand: string | null
@@ -947,6 +1040,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          avg_cost?: number | null
           benefits?: string | null
           bestseller?: boolean
           brand?: string | null
@@ -975,6 +1069,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          avg_cost?: number | null
           benefits?: string | null
           bestseller?: boolean
           brand?: string | null
@@ -1511,6 +1606,56 @@ export type Database = {
           },
         ]
       }
+      stock_movements: {
+        Row: {
+          balance_after: number
+          cost_at_time: number | null
+          created_at: string
+          id: string
+          owner_user_id: string
+          product_id: string
+          quantity: number
+          reason: string
+          reference_id: string | null
+          reference_type: string | null
+          type: string
+        }
+        Insert: {
+          balance_after?: number
+          cost_at_time?: number | null
+          created_at?: string
+          id?: string
+          owner_user_id: string
+          product_id: string
+          quantity?: number
+          reason?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          type?: string
+        }
+        Update: {
+          balance_after?: number
+          cost_at_time?: number | null
+          created_at?: string
+          id?: string
+          owner_user_id?: string
+          product_id?: string
+          quantity?: number
+          reason?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           active: boolean
@@ -1615,6 +1760,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adjust_stock: {
+        Args: {
+          p_new_quantity: number
+          p_product_id: string
+          p_reason?: string
+        }
+        Returns: Json
+      }
       create_order: {
         Args: {
           p_address: Json
@@ -1671,6 +1824,7 @@ export type Database = {
         Args: { p_coupon_id: string }
         Returns: undefined
       }
+      receive_purchase_order: { Args: { p_po_id: string }; Returns: Json }
       register_payment: {
         Args: { p_amount?: number; p_title_id: string }
         Returns: Json
