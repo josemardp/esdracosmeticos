@@ -28,6 +28,7 @@ export default function ReceberPage() {
   const [titles, setTitles] = useState<Title[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "paid">("pending");
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
