@@ -116,6 +116,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
+          <ManifestSwitcher />
           <ScrollToTop />
           <Routes>
             {/* Public routes with layout */}
