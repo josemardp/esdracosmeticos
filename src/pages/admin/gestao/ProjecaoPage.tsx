@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 import { TrendingUp, AlertTriangle, CalendarDays, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 
 interface MonthData {
@@ -147,21 +147,44 @@ export default function ProjecaoPage() {
         {chartData.every(d => d.receber === 0 && d.pagar === 0) ? (
           <p className="font-body text-sm text-muted-foreground text-center py-12">Sem dados para projeção.</p>
         ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
-              <XAxis dataKey="month" fontSize={12} />
-              <YAxis fontSize={12} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip
-                formatter={(value: number, name: string) => [
-                  `R$ ${value.toFixed(2)}`,
-                  name === "receber" ? "A Receber" : name === "pagar" ? "A Pagar" : "Saldo",
-                ]}
-              />
-              <Legend formatter={v => v === "receber" ? "A Receber" : v === "pagar" ? "A Pagar" : "Saldo"} />
-              <Bar dataKey="receber" fill="hsl(var(--success, 142 71% 45%))" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="pagar" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <>
+            {(() => {
+              const saldoVencido = overdue.receber - overdue.pagar;
+              const hasOverdue = overdue.receber > 0 || overdue.pagar > 0;
+              return (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData}>
+                    <XAxis dataKey="month" fontSize={12} />
+                    <YAxis fontSize={12} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} />
+                    <Tooltip
+                      formatter={(value: number, name: string) => [
+                        `R$ ${value.toFixed(2)}`,
+                        name === "receber" ? "A Receber (futuro)" : name === "pagar" ? "A Pagar (futuro)" : "Saldo",
+                      ]}
+                    />
+                    <Legend formatter={v => v === "receber" ? "A Receber (futuro)" : v === "pagar" ? "A Pagar (futuro)" : "Saldo"} />
+                    <Bar dataKey="receber" fill="hsl(var(--success, 142 71% 45%))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="pagar" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+                    {hasOverdue && (
+                      <ReferenceLine
+                        y={saldoVencido}
+                        stroke="hsl(var(--warning, 38 92% 50%))"
+                        strokeDasharray="6 3"
+                        strokeWidth={2}
+                        label={{
+                          value: `Saldo vencido: R$ ${saldoVencido.toFixed(2)}`,
+                          position: "insideTopRight",
+                          fontSize: 11,
+                          fill: "hsl(var(--warning, 38 92% 50%))",
+                          fontWeight: 600,
+                        }}
+                      />
+                    )}
+                  </BarChart>
+                </ResponsiveContainer>
+              );
+            })()}
+          </>
         )}
       </div>
     </div>
