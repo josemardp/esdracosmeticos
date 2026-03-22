@@ -203,8 +203,10 @@ export type Database = {
         Row: {
           amount: number
           cash_account_id: string
+          cost_center_id: string | null
           created_at: string
           description: string
+          financial_category_id: string | null
           id: string
           movement_date: string
           owner_user_id: string
@@ -215,8 +217,10 @@ export type Database = {
         Insert: {
           amount?: number
           cash_account_id: string
+          cost_center_id?: string | null
           created_at?: string
           description?: string
+          financial_category_id?: string | null
           id?: string
           movement_date?: string
           owner_user_id: string
@@ -227,8 +231,10 @@ export type Database = {
         Update: {
           amount?: number
           cash_account_id?: string
+          cost_center_id?: string | null
           created_at?: string
           description?: string
+          financial_category_id?: string | null
           id?: string
           movement_date?: string
           owner_user_id?: string
@@ -242,6 +248,20 @@ export type Database = {
             columns: ["cash_account_id"]
             isOneToOne: false
             referencedRelation: "cash_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_movements_cost_center_id_fkey"
+            columns: ["cost_center_id"]
+            isOneToOne: false
+            referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_movements_financial_category_id_fkey"
+            columns: ["financial_category_id"]
+            isOneToOne: false
+            referencedRelation: "financial_categories"
             referencedColumns: ["id"]
           },
         ]
