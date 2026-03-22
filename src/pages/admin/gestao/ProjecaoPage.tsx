@@ -150,7 +150,7 @@ export default function ProjecaoPage() {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <XAxis dataKey="month" fontSize={12} />
-              <YAxis fontSize={12} tickFormatter={(value: number) => value >= 1000 ? `R$${(value / 1000).toFixed(0)}k` : `R$${value.toFixed(0)}`} domain={[
+              <YAxis fontSize={12} tickFormatter={(value: number) => Math.abs(value) >= 10000 ? `R$${(value / 1000).toFixed(0)}k` : `R$ ${value.toFixed(0)}`} domain={[
                 (dataMin: number) => {
                   const saldoVencido = overdue.receber - overdue.pagar;
                   return Math.min(dataMin, saldoVencido) * 1.1;
@@ -174,12 +174,11 @@ export default function ProjecaoPage() {
                 label={
                   overdue.receber > 0 || overdue.pagar > 0
                     ? {
-                        value: `Saldo vencido: R$ ${(overdue.receber - overdue.pagar).toFixed(2)}`,
-                        position: "top", // Ajustado para melhor visibilidade
-                        offset: 10, // Adiciona um pequeno offset para não sobrepor o gráfico
-                        fontSize: 12, // Aumentado para melhor legibilidade
+                        value: `Vencido: R$ ${(overdue.receber - overdue.pagar).toFixed(0)}`,
+                        position: "insideBottomRight",
+                        fontSize: 11,
                         fill: "#f59e0b",
-                        fontWeight: 600,
+                        fontWeight: 700,
                       }
                     : undefined
                 }
