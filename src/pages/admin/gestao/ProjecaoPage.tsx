@@ -174,12 +174,11 @@ export default function ProjecaoPage() {
                 label={
                   overdue.receber > 0 || overdue.pagar > 0
                     ? {
-                        value: `Saldo vencido: R$ ${(overdue.receber - overdue.pagar).toFixed(2)}`,
-                        position: "top", // Ajustado para melhor visibilidade
-                        offset: 10, // Adiciona um pequeno offset para não sobrepor o gráfico
-                        fontSize: 12, // Aumentado para melhor legibilidade
+                        value: `Vencido: R$ ${(overdue.receber - overdue.pagar).toFixed(0)}`,
+                        position: "insideBottomRight",
+                        fontSize: 11,
                         fill: "#f59e0b",
-                        fontWeight: 600,
+                        fontWeight: 700,
                       }
                     : undefined
                 }
