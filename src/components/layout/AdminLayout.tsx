@@ -41,7 +41,7 @@ const navSections = [
   },
 ];
 
-const navItems = navSections.flatMap((s) => s.items);
+
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
