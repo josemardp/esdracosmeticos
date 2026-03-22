@@ -28,6 +28,7 @@ export default function ReceberPage() {
   const [titles, setTitles] = useState<Title[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "paid">("pending");
+  const [payingId, setPayingId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -45,9 +46,11 @@ export default function ReceberPage() {
   useEffect(() => { load(); }, [filter]);
 
   const markPaid = async (title: Title) => {
+    if (payingId) return;
     const remaining = title.amount - title.paid_amount;
     if (remaining <= 0) return;
 
+    setPayingId(title.id);
     const { error } = await supabase.rpc("register_receipt", {
       p_title_id: title.id,
     });
@@ -58,6 +61,7 @@ export default function ReceberPage() {
       toast({ title: "Recebimento registrado!" });
       load();
     }
+    setPayingId(null);
   };
 
   const totalPending = titles.filter((t) => t.status === "pending").reduce((s, t) => s + (t.amount - t.paid_amount), 0);
@@ -111,8 +115,8 @@ export default function ReceberPage() {
                   </div>
                 </div>
                 {t.status === "pending" && (
-                  <Button variant="outline" size="sm" className="mt-3 w-full" onClick={() => markPaid(t)}>
-                    <CheckCircle className="w-4 h-4 mr-1.5" /> Marcar como recebido
+                  <Button variant="outline" size="sm" className="mt-3 w-full" onClick={() => markPaid(t)} disabled={payingId === t.id}>
+                    <CheckCircle className="w-4 h-4 mr-1.5" /> {payingId === t.id ? "Processando..." : "Marcar como recebido"}
                   </Button>
                 )}
               </div>
