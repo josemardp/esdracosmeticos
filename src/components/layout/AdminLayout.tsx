@@ -16,6 +16,7 @@ const navSections = [
       { label: "Painel Gestão", href: "/admin/gestao/dashboard", icon: Briefcase },
       { label: "Venda Rápida", href: "/admin/gestao/venda-rapida", icon: Zap },
       { label: "Vendas", href: "/admin/gestao/vendas", icon: ShoppingCart },
+      { label: "Consolidado", href: "/admin/gestao/consolidado", icon: BarChart3 },
       { label: "Contas a Receber", href: "/admin/gestao/receber", icon: Clock },
       { label: "Caixa", href: "/admin/gestao/caixa", icon: Wallet },
       { label: "Clientes Gestão", href: "/admin/gestao/clientes", icon: UserCheck },
