@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Package, FolderTree, ShoppingCart, Users,
   Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight, Megaphone,
-  Briefcase, Zap, Clock, Wallet, UserCheck
+  Briefcase, Zap, Clock, Wallet, UserCheck, BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
