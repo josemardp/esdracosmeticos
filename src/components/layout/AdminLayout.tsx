@@ -72,20 +72,27 @@ export function AdminLayout() {
             </div>
           </Link>
         </div>
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm transition-colors ${
-                isActive(item.href)
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </Link>
+        <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+          {navSections.map((section) => (
+            <div key={section.title}>
+              <p className="font-body text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">{section.title}</p>
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg font-body text-sm transition-colors ${
+                      isActive(item.href)
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
         <div className="p-3 border-t">
