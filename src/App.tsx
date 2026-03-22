@@ -128,6 +128,15 @@ const App = () => (
               <Route path="/admin/suporte" element={<AdminSupportPage />} />
               <Route path="/admin/integracoes" element={<AdminIntegrationsPage />} />
               <Route path="/admin/configuracoes" element={<AdminSettingsPage />} />
+              {/* Gestão routes */}
+              <Route path="/admin/gestao" element={<GestaoDashboardPage />} />
+              <Route path="/admin/gestao/dashboard" element={<GestaoDashboardPage />} />
+              <Route path="/admin/gestao/venda-rapida" element={<VendaRapidaPage />} />
+              <Route path="/admin/gestao/vendas" element={<VendasPage />} />
+              <Route path="/admin/gestao/consolidado" element={<VendasConsolidadasPage />} />
+              <Route path="/admin/gestao/receber" element={<ReceberPage />} />
+              <Route path="/admin/gestao/caixa" element={<CaixaPage />} />
+              <Route path="/admin/gestao/clientes" element={<GestaoClientesPage />} />
             </Route>
 
             {/* Catch-all */}
