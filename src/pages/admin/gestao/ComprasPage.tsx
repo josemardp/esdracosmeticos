@@ -7,7 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Plus, ShoppingBag, Trash2, CalendarIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface PO {
@@ -42,6 +46,8 @@ export default function ComprasPage() {
   const [discount, setDiscount] = useState("0");
   const [freight, setFreight] = useState("0");
   const [notes, setNotes] = useState("");
+  const [orderDate, setOrderDate] = useState<Date | undefined>(new Date());
+  const [expectedDelivery, setExpectedDelivery] = useState<Date | undefined>(undefined);
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
@@ -70,6 +76,8 @@ export default function ComprasPage() {
     setDiscount("0");
     setFreight("0");
     setNotes("");
+    setOrderDate(new Date());
+    setExpectedDelivery(undefined);
     setDialogOpen(true);
   };
 
@@ -101,6 +109,8 @@ export default function ComprasPage() {
       p_discount: parseFloat(discount) || 0,
       p_freight: parseFloat(freight) || 0,
       p_notes: notes || null,
+      p_order_date: orderDate ? orderDate.toISOString() : new Date().toISOString(),
+      p_expected_delivery: expectedDelivery ? format(expectedDelivery, "yyyy-MM-dd") : null,
     });
 
     setSaving(false);
@@ -174,6 +184,36 @@ export default function ComprasPage() {
               </Select>
             </div>
 
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Data da Compra</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !orderDate && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {orderDate ? format(orderDate, "dd/MM/yyyy") : "Selecione..."}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={orderDate} onSelect={setOrderDate} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label>Previsão de Entrega</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !expectedDelivery && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {expectedDelivery ? format(expectedDelivery, "dd/MM/yyyy") : "Opcional"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={expectedDelivery} onSelect={setExpectedDelivery} initialFocus className={cn("p-3 pointer-events-auto")} />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
             <div>
               <Label className="mb-2 block">Itens</Label>
               {items.map((it, idx) => (
