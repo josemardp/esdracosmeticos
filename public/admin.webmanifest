@@ -1,0 +1,17 @@
+{
+  "id": "/admin",
+  "name": "Esdra Admin",
+  "short_name": "Esdra Admin",
+  "description": "Painel de gestão da Esdra Cosméticos — vendas, estoque, financeiro e relatórios.",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/admin-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/admin-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/admin-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
