@@ -109,6 +109,8 @@ export default function ComprasPage() {
       p_discount: parseFloat(discount) || 0,
       p_freight: parseFloat(freight) || 0,
       p_notes: notes || null,
+      p_order_date: orderDate ? orderDate.toISOString() : new Date().toISOString(),
+      p_expected_delivery: expectedDelivery ? format(expectedDelivery, "yyyy-MM-dd") : null,
     });
 
     setSaving(false);
