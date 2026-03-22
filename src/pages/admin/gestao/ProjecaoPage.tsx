@@ -179,6 +179,7 @@ export default function ProjecaoPage() {
               />
             </BarChart>
           </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
