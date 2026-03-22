@@ -15,4 +15,4 @@ Allow: /
 Disallow: /admin
 Disallow: /conta
 
-Sitemap: https://esdracosmeticos.com.br/sitemap.xml
+Sitemap: https://www.esdracosmeticos.com.br/sitemap.xml
