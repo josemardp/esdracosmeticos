@@ -150,7 +150,7 @@ export default function ProjecaoPage() {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <XAxis dataKey="month" fontSize={12} />
-              <YAxis fontSize={12} tickFormatter={v => `R$${(v / 1000).toFixed(0)}k`} domain={[
+              <YAxis fontSize={12} tickFormatter={(value: number) => value >= 1000 ? `R$${(value / 1000).toFixed(0)}k` : `R$${value.toFixed(0)}`} domain={[
                 (dataMin: number) => {
                   const saldoVencido = overdue.receber - overdue.pagar;
                   return Math.min(dataMin, saldoVencido) * 1.1;
@@ -163,7 +163,7 @@ export default function ProjecaoPage() {
                   name === "receber" ? "A Receber (futuro)" : name === "pagar" ? "A Pagar (futuro)" : "Saldo",
                 ]}
               />
-              <Legend formatter={v => v === "receber" ? "A Receber (futuro)" : v === "pagar" ? "A Pagar (futuro)" : "Saldo"} />
+              <Legend formatter={(value: string) => value === "receber" ? "A Receber (futuro)" : value === "pagar" ? "A Pagar (futuro)" : "Saldo"} />
               <Bar dataKey="receber" fill="hsl(var(--success, 142 71% 45%))" radius={[4, 4, 0, 0]} />
               <Bar dataKey="pagar" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
               <ReferenceLine
@@ -175,8 +175,9 @@ export default function ProjecaoPage() {
                   overdue.receber > 0 || overdue.pagar > 0
                     ? {
                         value: `Saldo vencido: R$ ${(overdue.receber - overdue.pagar).toFixed(2)}`,
-                        position: "insideTopRight",
-                        fontSize: 11,
+                        position: "top", // Ajustado para melhor visibilidade
+                        offset: 10, // Adiciona um pequeno offset para não sobrepor o gráfico
+                        fontSize: 12, // Aumentado para melhor legibilidade
                         fill: "#f59e0b",
                         fontWeight: 600,
                       }
