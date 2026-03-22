@@ -60,6 +60,26 @@ import CentrosCustoPage from "@/pages/admin/gestao/CentrosCustoPage";
 import RelatoriosPage from "@/pages/admin/gestao/RelatoriosPage";
 import ResultadoPage from "@/pages/admin/gestao/ResultadoPage";
 
+// Phase 4
+import RecebimentoComprasPage from "@/pages/admin/gestao/RecebimentoComprasPage";
+import MovimentosEstoquePage from "@/pages/admin/gestao/MovimentosEstoquePage";
+import MargemPage from "@/pages/admin/gestao/MargemPage";
+import ReposicaoPage from "@/pages/admin/gestao/ReposicaoPage";
+
+// Phase 5
+import CRMPage from "@/pages/admin/gestao/CRMPage";
+import SegmentosPage from "@/pages/admin/gestao/SegmentosPage";
+import NewsletterGestaoPage from "@/pages/admin/gestao/NewsletterGestaoPage";
+import ReativacaoPage from "@/pages/admin/gestao/ReativacaoPage";
+
+// Phase 6
+import ExecutivoPage from "@/pages/admin/gestao/ExecutivoPage";
+import CanaisPage from "@/pages/admin/gestao/CanaisPage";
+import ProdutosResultadoPage from "@/pages/admin/gestao/ProdutosResultadoPage";
+import ExportacoesPage from "@/pages/admin/gestao/ExportacoesPage";
+import AuditoriaPage from "@/pages/admin/gestao/AuditoriaPage";
+import IntegracoesAvancadasPage from "@/pages/admin/gestao/IntegracoesAvancadasPage";
+
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
