@@ -27,6 +27,10 @@ const navSections = [
       { label: "Contas a Pagar", href: "/admin/gestao/pagar", icon: CreditCard },
       { label: "Vencimentos", href: "/admin/gestao/vencimentos", icon: CalendarDays },
       { label: "Projeção", href: "/admin/gestao/projecao", icon: TrendingUp },
+      { label: "Cat. Financeiras", href: "/admin/gestao/categorias-financeiras", icon: Tag },
+      { label: "Centros de Custo", href: "/admin/gestao/centros-custo", icon: Landmark },
+      { label: "Relatórios", href: "/admin/gestao/relatorios", icon: FileBarChart },
+      { label: "Resultado", href: "/admin/gestao/resultado", icon: PieChart },
     ],
   },
   {
