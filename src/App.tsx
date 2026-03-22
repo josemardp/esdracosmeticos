@@ -50,6 +50,11 @@ import VendasConsolidadasPage from "@/pages/admin/gestao/VendasConsolidadasPage"
 import ReceberPage from "@/pages/admin/gestao/ReceberPage";
 import CaixaPage from "@/pages/admin/gestao/CaixaPage";
 import GestaoClientesPage from "@/pages/admin/gestao/GestaoClientesPage";
+import FornecedoresPage from "@/pages/admin/gestao/FornecedoresPage";
+import ComprasPage from "@/pages/admin/gestao/ComprasPage";
+import PagarPage from "@/pages/admin/gestao/PagarPage";
+import VencimentosPage from "@/pages/admin/gestao/VencimentosPage";
+import ProjecaoPage from "@/pages/admin/gestao/ProjecaoPage";
 
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
@@ -137,6 +142,11 @@ const App = () => (
               <Route path="/admin/gestao/receber" element={<ReceberPage />} />
               <Route path="/admin/gestao/caixa" element={<CaixaPage />} />
               <Route path="/admin/gestao/clientes" element={<GestaoClientesPage />} />
+              <Route path="/admin/gestao/fornecedores" element={<FornecedoresPage />} />
+              <Route path="/admin/gestao/compras" element={<ComprasPage />} />
+              <Route path="/admin/gestao/pagar" element={<PagarPage />} />
+              <Route path="/admin/gestao/vencimentos" element={<VencimentosPage />} />
+              <Route path="/admin/gestao/projecao" element={<ProjecaoPage />} />
             </Route>
 
             {/* Catch-all */}

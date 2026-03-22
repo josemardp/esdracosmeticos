@@ -4,7 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Package, FolderTree, ShoppingCart, Users,
   Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight, Megaphone,
-  Briefcase, Zap, Clock, Wallet, UserCheck, BarChart3
+  Briefcase, Zap, Clock, Wallet, UserCheck, BarChart3,
+  Building2, ShoppingBag, CreditCard, CalendarDays, TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
@@ -20,6 +21,11 @@ const navSections = [
       { label: "Contas a Receber", href: "/admin/gestao/receber", icon: Clock },
       { label: "Caixa", href: "/admin/gestao/caixa", icon: Wallet },
       { label: "Clientes Gestão", href: "/admin/gestao/clientes", icon: UserCheck },
+      { label: "Fornecedores", href: "/admin/gestao/fornecedores", icon: Building2 },
+      { label: "Compras", href: "/admin/gestao/compras", icon: ShoppingBag },
+      { label: "Contas a Pagar", href: "/admin/gestao/pagar", icon: CreditCard },
+      { label: "Vencimentos", href: "/admin/gestao/vencimentos", icon: CalendarDays },
+      { label: "Projeção", href: "/admin/gestao/projecao", icon: TrendingUp },
     ],
   },
   {
