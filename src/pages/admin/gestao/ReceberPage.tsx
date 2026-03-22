@@ -48,48 +48,12 @@ export default function ReceberPage() {
     const remaining = title.amount - title.paid_amount;
     if (remaining <= 0) return;
 
-    // Get cash account
-    const { data: accounts } = await supabase.from("cash_accounts").select("id").eq("active", true).limit(1);
-    const cashId = accounts?.[0]?.id;
-    if (!cashId) { toast({ title: "Crie um caixa primeiro", variant: "destructive" }); return; }
-
-    // Get payment method from title
-    const pmId = (title as any).payment_method_id;
-
-    // Create receipt
-    const { error: e1 } = await supabase.from("receivable_receipts").insert({
-      title_id: title.id,
-      amount: remaining,
-      receipt_date: new Date().toISOString().split("T")[0],
-      cash_account_id: cashId,
-      owner_user_id: (await supabase.auth.getUser()).data.user?.id,
+    const { error } = await supabase.rpc("register_receipt", {
+      p_title_id: title.id,
     });
 
-    // Update title
-    const { error: e2 } = await supabase.from("receivable_titles").update({
-      status: "paid",
-      paid_amount: title.amount,
-    }).eq("id", title.id);
-
-    // Create cash movement
-    const { error: e3 } = await supabase.from("cash_movements").insert({
-      cash_account_id: cashId,
-      type: "credit",
-      amount: remaining,
-      description: `Recebimento: ${title.description}`,
-      reference_type: "receipt",
-      reference_id: title.id,
-      owner_user_id: (await supabase.auth.getUser()).data.user?.id,
-    });
-
-    // Update balance
-    const { data: acc } = await supabase.from("cash_accounts").select("balance").eq("id", cashId).single();
-    if (acc) {
-      await supabase.from("cash_accounts").update({ balance: acc.balance + remaining }).eq("id", cashId);
-    }
-
-    if (e1 || e2 || e3) {
-      toast({ title: "Erro ao registrar recebimento", variant: "destructive" });
+    if (error) {
+      toast({ title: error.message || "Erro ao registrar recebimento", variant: "destructive" });
     } else {
       toast({ title: "Recebimento registrado!" });
       load();
