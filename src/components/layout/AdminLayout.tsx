@@ -19,6 +19,7 @@ const navSections = [
     title: "Gestão",
     items: [
       { label: "Painel Gestão", href: "/admin/gestao/dashboard", icon: Briefcase },
+      { label: "Executivo", href: "/admin/gestao/executivo", icon: Gauge },
       { label: "Venda Rápida", href: "/admin/gestao/venda-rapida", icon: Zap },
       { label: "Vendas", href: "/admin/gestao/vendas", icon: ShoppingCart },
       { label: "Consolidado", href: "/admin/gestao/consolidado", icon: BarChart3 },
@@ -34,6 +35,34 @@ const navSections = [
       { label: "Centros de Custo", href: "/admin/gestao/centros-custo", icon: Landmark },
       { label: "Relatórios", href: "/admin/gestao/relatorios", icon: FileBarChart },
       { label: "Resultado", href: "/admin/gestao/resultado", icon: PieChart },
+      { label: "Canais", href: "/admin/gestao/canais", icon: Radio },
+    ],
+  },
+  {
+    title: "Estoque & Margem",
+    items: [
+      { label: "Receb. Compras", href: "/admin/gestao/recebimento-compras", icon: PackageCheck },
+      { label: "Mov. Estoque", href: "/admin/gestao/movimentos-estoque", icon: ArrowDownUp },
+      { label: "Margem", href: "/admin/gestao/margem", icon: Percent },
+      { label: "Reposição", href: "/admin/gestao/reposicao", icon: AlertTriangle },
+      { label: "Prod. Resultado", href: "/admin/gestao/produtos-resultado", icon: PackageSearch },
+    ],
+  },
+  {
+    title: "CRM",
+    items: [
+      { label: "CRM", href: "/admin/gestao/crm", icon: UserPlus },
+      { label: "Segmentos", href: "/admin/gestao/segmentos", icon: Filter },
+      { label: "Newsletter", href: "/admin/gestao/newsletter", icon: Mail },
+      { label: "Reativação", href: "/admin/gestao/reativacao", icon: UserMinus },
+    ],
+  },
+  {
+    title: "BI & Escala",
+    items: [
+      { label: "Exportações", href: "/admin/gestao/exportacoes", icon: Download },
+      { label: "Auditoria", href: "/admin/gestao/auditoria", icon: Shield },
+      { label: "Integ. Avançadas", href: "/admin/gestao/integracoes-avancadas", icon: LinkIcon },
     ],
   },
   {
