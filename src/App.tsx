@@ -60,6 +60,26 @@ import CentrosCustoPage from "@/pages/admin/gestao/CentrosCustoPage";
 import RelatoriosPage from "@/pages/admin/gestao/RelatoriosPage";
 import ResultadoPage from "@/pages/admin/gestao/ResultadoPage";
 
+// Phase 4
+import RecebimentoComprasPage from "@/pages/admin/gestao/RecebimentoComprasPage";
+import MovimentosEstoquePage from "@/pages/admin/gestao/MovimentosEstoquePage";
+import MargemPage from "@/pages/admin/gestao/MargemPage";
+import ReposicaoPage from "@/pages/admin/gestao/ReposicaoPage";
+
+// Phase 5
+import CRMPage from "@/pages/admin/gestao/CRMPage";
+import SegmentosPage from "@/pages/admin/gestao/SegmentosPage";
+import NewsletterGestaoPage from "@/pages/admin/gestao/NewsletterGestaoPage";
+import ReativacaoPage from "@/pages/admin/gestao/ReativacaoPage";
+
+// Phase 6
+import ExecutivoPage from "@/pages/admin/gestao/ExecutivoPage";
+import CanaisPage from "@/pages/admin/gestao/CanaisPage";
+import ProdutosResultadoPage from "@/pages/admin/gestao/ProdutosResultadoPage";
+import ExportacoesPage from "@/pages/admin/gestao/ExportacoesPage";
+import AuditoriaPage from "@/pages/admin/gestao/AuditoriaPage";
+import IntegracoesAvancadasPage from "@/pages/admin/gestao/IntegracoesAvancadasPage";
+
 // Account pages
 import ProfilePage from "@/pages/conta/ProfilePage";
 import OrdersPage from "@/pages/conta/OrdersPage";
@@ -155,6 +175,23 @@ const App = () => (
               <Route path="/admin/gestao/centros-custo" element={<CentrosCustoPage />} />
               <Route path="/admin/gestao/relatorios" element={<RelatoriosPage />} />
               <Route path="/admin/gestao/resultado" element={<ResultadoPage />} />
+              {/* Phase 4 */}
+              <Route path="/admin/gestao/recebimento-compras" element={<RecebimentoComprasPage />} />
+              <Route path="/admin/gestao/movimentos-estoque" element={<MovimentosEstoquePage />} />
+              <Route path="/admin/gestao/margem" element={<MargemPage />} />
+              <Route path="/admin/gestao/reposicao" element={<ReposicaoPage />} />
+              {/* Phase 5 */}
+              <Route path="/admin/gestao/crm" element={<CRMPage />} />
+              <Route path="/admin/gestao/segmentos" element={<SegmentosPage />} />
+              <Route path="/admin/gestao/newsletter" element={<NewsletterGestaoPage />} />
+              <Route path="/admin/gestao/reativacao" element={<ReativacaoPage />} />
+              {/* Phase 6 */}
+              <Route path="/admin/gestao/executivo" element={<ExecutivoPage />} />
+              <Route path="/admin/gestao/canais" element={<CanaisPage />} />
+              <Route path="/admin/gestao/produtos-resultado" element={<ProdutosResultadoPage />} />
+              <Route path="/admin/gestao/exportacoes" element={<ExportacoesPage />} />
+              <Route path="/admin/gestao/auditoria" element={<AuditoriaPage />} />
+              <Route path="/admin/gestao/integracoes-avancadas" element={<IntegracoesAvancadasPage />} />
             </Route>
 
             {/* Catch-all */}
