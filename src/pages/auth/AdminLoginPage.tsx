@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Shield } from "lucide-react";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import logoEsdra from "@/assets/logo-esdra.png";
 
 export default function AdminLoginPage() {
