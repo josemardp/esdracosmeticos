@@ -9,6 +9,13 @@
     <meta name="theme-color" content="#111111">
     <link rel="icon" href="/favicon.ico" />
     <link rel="manifest" id="pwa-manifest" href="/manifest.webmanifest" />
+    <script>
+      (function(){
+        if(location.pathname.indexOf('/admin')===0){
+          document.getElementById('pwa-manifest').setAttribute('href','/admin.webmanifest');
+        }
+      })();
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Esdra Cosméticos" />
