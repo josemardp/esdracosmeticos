@@ -26,15 +26,24 @@ export function InstallPrompt({
 
   // Listen for beforeinstallprompt
   useEffect(() => {
-    // Already standalone — never show
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
-    // Already dismissed this session
-    if (sessionStorage.getItem(dismissKey)) return;
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+    if (isStandalone) {
+      console.log(`[PWA][${dismissKey}] standalone — skipping`);
+      return;
+    }
+    if (sessionStorage.getItem(dismissKey)) {
+      console.log(`[PWA][${dismissKey}] dismissed-session`);
+      return;
+    }
+
+    console.log(`[PWA][${dismissKey}] eligible — listening`);
 
     const handler = (e: Event) => {
       e.preventDefault();
+      console.log(`[PWA][${dismissKey}] beforeinstallprompt captured`);
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setVisible(true);
+      console.log(`[PWA][${dismissKey}] visible`);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
