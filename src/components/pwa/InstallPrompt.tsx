@@ -56,6 +56,7 @@ export function InstallPrompt({
   }, []);
 
   const dismiss = useCallback(() => {
+    console.log(`[PWA][${dismissKey}] dismissed-session`);
     sessionStorage.setItem(dismissKey, "1");
     hidePrompt();
   }, [dismissKey, hidePrompt]);
@@ -65,18 +66,23 @@ export function InstallPrompt({
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
+      console.log(`[PWA][${dismissKey}] accepted`);
       hidePrompt();
     } else {
+      console.log(`[PWA][${dismissKey}] declined`);
       dismiss();
     }
-  }, [deferredPrompt, hidePrompt, dismiss]);
+  }, [deferredPrompt, hidePrompt, dismiss, dismissKey]);
 
   // Hide on native install (e.g. via browser menu)
   useEffect(() => {
-    const onInstalled = () => hidePrompt();
+    const onInstalled = () => {
+      console.log(`[PWA][${dismissKey}] appinstalled`);
+      hidePrompt();
+    };
     window.addEventListener("appinstalled", onInstalled);
     return () => window.removeEventListener("appinstalled", onInstalled);
-  }, [hidePrompt]);
+  }, [hidePrompt, dismissKey]);
 
   // Hide on desktop, if dismissed, or if no prompt available
   if (!isMobile || !visible || !deferredPrompt) return null;
