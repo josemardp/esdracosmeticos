@@ -26,15 +26,24 @@ export function InstallPrompt({
 
   // Listen for beforeinstallprompt
   useEffect(() => {
-    // Already standalone — never show
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
-    // Already dismissed this session
-    if (sessionStorage.getItem(dismissKey)) return;
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+    if (isStandalone) {
+      console.log(`[PWA][${dismissKey}] standalone — skipping`);
+      return;
+    }
+    if (sessionStorage.getItem(dismissKey)) {
+      console.log(`[PWA][${dismissKey}] dismissed-session`);
+      return;
+    }
+
+    console.log(`[PWA][${dismissKey}] eligible — listening`);
 
     const handler = (e: Event) => {
       e.preventDefault();
+      console.log(`[PWA][${dismissKey}] beforeinstallprompt captured`);
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setVisible(true);
+      console.log(`[PWA][${dismissKey}] visible`);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -47,6 +56,7 @@ export function InstallPrompt({
   }, []);
 
   const dismiss = useCallback(() => {
+    console.log(`[PWA][${dismissKey}] dismissed-session`);
     sessionStorage.setItem(dismissKey, "1");
     hidePrompt();
   }, [dismissKey, hidePrompt]);
@@ -56,18 +66,23 @@ export function InstallPrompt({
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
+      console.log(`[PWA][${dismissKey}] accepted`);
       hidePrompt();
     } else {
+      console.log(`[PWA][${dismissKey}] declined`);
       dismiss();
     }
-  }, [deferredPrompt, hidePrompt, dismiss]);
+  }, [deferredPrompt, hidePrompt, dismiss, dismissKey]);
 
   // Hide on native install (e.g. via browser menu)
   useEffect(() => {
-    const onInstalled = () => hidePrompt();
+    const onInstalled = () => {
+      console.log(`[PWA][${dismissKey}] appinstalled`);
+      hidePrompt();
+    };
     window.addEventListener("appinstalled", onInstalled);
     return () => window.removeEventListener("appinstalled", onInstalled);
-  }, [hidePrompt]);
+  }, [hidePrompt, dismissKey]);
 
   // Hide on desktop, if dismissed, or if no prompt available
   if (!isMobile || !visible || !deferredPrompt) return null;

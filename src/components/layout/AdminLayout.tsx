@@ -219,12 +219,10 @@ export function AdminLayout() {
           <Outlet />
         </div>
       </main>
-      {location.pathname === "/admin" && (
-        <InstallPrompt
-          dismissKey="pwa-install-dismissed-admin"
-          label="Instalar Esdra Admin"
-        />
-      )}
+      <InstallPrompt
+        dismissKey="pwa-install-dismissed-admin"
+        label="Instalar Esdra Admin"
+      />
     </div>
   );
 }
