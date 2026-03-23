@@ -36,11 +36,18 @@ export function InstallPrompt({
       return;
     }
 
-    console.log(`[PWA][${dismissKey}] eligible — listening`);
+    const existingPrompt = window.__esdraDeferredInstallPrompt;
+    if (existingPrompt) {
+      console.log(`[PWA][${dismissKey}] eligible`);
+      setDeferredPrompt(existingPrompt as BeforeInstallPromptEvent);
+      setVisible(true);
+      console.log(`[PWA][${dismissKey}] visible`);
+    }
 
     const handler = (e: Event) => {
       e.preventDefault();
-      console.log(`[PWA][${dismissKey}] beforeinstallprompt captured`);
+      window.__esdraDeferredInstallPrompt = e;
+      console.log(`[PWA][${dismissKey}] eligible`);
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setVisible(true);
       console.log(`[PWA][${dismissKey}] visible`);
