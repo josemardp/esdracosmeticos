@@ -60,6 +60,7 @@ export function InstallPrompt({
   const hidePrompt = useCallback(() => {
     setVisible(false);
     setDeferredPrompt(null);
+    window.__esdraDeferredInstallPrompt = undefined;
   }, []);
 
   const dismiss = useCallback(() => {
