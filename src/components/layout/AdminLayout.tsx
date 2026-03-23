@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 const navSections = [
   {
