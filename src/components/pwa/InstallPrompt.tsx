@@ -41,20 +41,33 @@ export function InstallPrompt({
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, [dismissKey]);
 
-  const dismiss = useCallback(() => {
-    sessionStorage.setItem(dismissKey, "1");
+  const hidePrompt = useCallback(() => {
     setVisible(false);
     setDeferredPrompt(null);
-  }, [dismissKey]);
+  }, []);
+
+  const dismiss = useCallback(() => {
+    sessionStorage.setItem(dismissKey, "1");
+    hidePrompt();
+  }, [dismissKey, hidePrompt]);
 
   const install = useCallback(async () => {
     if (!deferredPrompt) return;
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
+      hidePrompt();
+    } else {
       dismiss();
     }
-  }, [deferredPrompt, dismiss]);
+  }, [deferredPrompt, hidePrompt, dismiss]);
+
+  // Hide on native install (e.g. via browser menu)
+  useEffect(() => {
+    const onInstalled = () => hidePrompt();
+    window.addEventListener("appinstalled", onInstalled);
+    return () => window.removeEventListener("appinstalled", onInstalled);
+  }, [hidePrompt]);
 
   // Hide on desktop, if dismissed, or if no prompt available
   if (!isMobile || !visible || !deferredPrompt) return null;
