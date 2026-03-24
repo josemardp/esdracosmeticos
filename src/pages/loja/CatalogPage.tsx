@@ -611,7 +611,7 @@ export default function CatalogPage() {
                 <button
                   key={f.key}
                   onClick={f.clear}
-                  className="inline-flex items-center gap-1 bg-secondary text-foreground font-body text-xs px-2.5 py-1 rounded-full hover:bg-secondary/80 transition-colors"
+                  className="inline-flex items-center gap-1 bg-secondary text-foreground font-body text-xs px-3 py-1.5 rounded-full hover:bg-secondary/80 transition-colors"
                 >
                   {f.label}
                   <X className="w-3 h-3" />
@@ -757,20 +757,20 @@ const ProductCard = memo(function ProductCard({
             {/* Badges top-left */}
             <div className="absolute top-2 left-2 flex flex-col gap-1">
               {p.new_arrival && (
-                <span className="bg-primary text-primary-foreground text-[10px] font-body font-semibold px-2 py-0.5 rounded-full">
-                  Novo
-                </span>
+                 <span className="bg-primary text-primary-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
+                   Novo
+                 </span>
               )}
               {p.bestseller && (
-                <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2 py-0.5 rounded-full">
-                  Mais Vendido
-                </span>
+                 <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
+                   Mais Vendido
+                 </span>
               )}
             </div>
 
             {/* Discount badge top-right */}
             {discount > 0 && (
-              <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-semibold px-2 py-0.5 rounded-full">
+              <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
                 -{discount}%
               </span>
             )}
@@ -810,7 +810,7 @@ const ProductCard = memo(function ProductCard({
             )}
           </div>
 
-          <p className="font-body text-[10px] sm:text-[11px] text-muted-foreground mb-3 flex items-center gap-1">
+          <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-3 flex items-center gap-1">
             <CreditCard className="w-3 h-3 shrink-0" />
             {fmtInstallment(finalPrice)}
           </p>
