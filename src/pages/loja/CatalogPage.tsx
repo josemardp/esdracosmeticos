@@ -770,7 +770,7 @@ const ProductCard = memo(function ProductCard({
 
             {/* Discount badge top-right */}
             {discount > 0 && (
-              <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-semibold px-2 py-0.5 rounded-full">
+              <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
                 -{discount}%
               </span>
             )}
