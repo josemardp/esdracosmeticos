@@ -184,12 +184,12 @@ export default function CheckoutPage() {
           </div>
 
           {/* Próximos passos */}
-          <div className="bg-secondary/50 border rounded-xl px-6 py-5 mb-8 max-w-md mx-auto text-left">
-            <p className="font-body text-sm font-semibold text-foreground mb-3">O que acontece agora?</p>
+          <div className="bg-accent/10 border border-accent/30 rounded-xl px-6 py-5 mb-8 max-w-md mx-auto text-left">
+            <p className="font-body text-sm font-semibold text-foreground mb-3">⚠ Próximo passo obrigatório</p>
             <ol className="space-y-2 font-body text-sm text-muted-foreground">
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>Finalize o pagamento pelo WhatsApp</li>
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>Confirmamos e preparamos seu pedido</li>
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>Enviamos com rastreamento pelo WhatsApp</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span><strong>Clique em "Finalizar pelo WhatsApp"</strong> para combinar o pagamento</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>Após pagamento confirmado, preparamos seu pedido</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>Enviamos com código de rastreamento</li>
             </ol>
           </div>
 
