@@ -201,11 +201,28 @@ const FilterSidebar = memo(function FilterSidebar({
   );
 });
 
+/* ─── route presets ─── */
+const ROUTE_PRESETS: Record<string, { filter: string; filterValue: string; title: string; seoTitle: string; seoDesc: string }> = {
+  "/lancamentos": {
+    filter: "novidades", filterValue: "1",
+    title: "Lançamentos",
+    seoTitle: "Lançamentos | Esdra Cosméticos",
+    seoDesc: "Confira os lançamentos da Esdra Cosméticos. Novidades em perfumes, maquiagem e skincare com frete grátis acima de R$ 199.",
+  },
+  "/promocoes": {
+    filter: "promocao", filterValue: "1",
+    title: "Promoções",
+    seoTitle: "Promoções | Esdra Cosméticos",
+    seoDesc: "Aproveite as promoções da Esdra Cosméticos. Descontos em perfumes, maquiagem e skincare com frete grátis acima de R$ 199.",
+  },
+};
+
 /* ─── main ─── */
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const { addItem } = useCart();
+  const routePreset = ROUTE_PRESETS[location.pathname] || null;
 
   /* raw data */
   const [allProducts, setAllProducts] = useState<Product[]>([]);
