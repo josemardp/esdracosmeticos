@@ -8,6 +8,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "https://khnrwskgpedwerbpohfe.supabase.co/functions/v1/sitemap" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/admin/(.*)", "destination": "/admin.html" },
     { "source": "/((?!assets/).*)", "destination": "/index.html" }

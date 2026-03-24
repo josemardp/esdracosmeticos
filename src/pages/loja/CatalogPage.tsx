@@ -467,10 +467,20 @@ export default function CatalogPage() {
     : brandName
     ? `Encontre todos os produtos ${brandName} na Esdra Cosméticos. Qualidade premium com parcela em até 3x sem juros.`
     : "Explore nossa coleção completa de cosméticos premium. Maquiagem, Skincare, Cabelos, Perfumaria e muito mais.";
+  /* Canonical: include categoria/marca when indexable, strip noise */
+  const isNoindex = !!(urlQ || urlMinPrice || urlMaxPrice);
+  const catalogCanonical = useMemo(() => {
+    const parts: string[] = [];
+    if (urlCat) parts.push(`categoria=${urlCat}`);
+    if (urlBrand) parts.push(`marca=${urlBrand}`);
+    return parts.length ? `/loja?${parts.join("&")}` : "/loja";
+  }, [urlCat, urlBrand]);
+
   useSEO({
     title: seoTitle,
     description: seoDesc,
-    noindex: !!(urlQ || urlMinPrice || urlMaxPrice),
+    canonical: catalogCanonical,
+    noindex: isNoindex,
   });
 
   return (
