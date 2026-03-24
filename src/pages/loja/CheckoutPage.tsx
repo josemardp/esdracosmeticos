@@ -25,7 +25,11 @@ export default function CheckoutPage() {
     zip: "", street: "", number: "", complement: "",
     neighborhood: "", city: "", state: "",
   });
-  const [payment, setPayment] = useState("");
+  const [payment, setPayment] = useState(() => {
+    try {
+      return sessionStorage.getItem("esdra_order_payment") || "";
+    } catch { return ""; }
+  });
   const [submitting, setSubmitting] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
 
@@ -40,13 +44,6 @@ export default function CheckoutPage() {
       const raw = sessionStorage.getItem("esdra_order_result");
       return raw ? JSON.parse(raw) : null;
     } catch { return null; }
-  });
-
-  // Restore payment from session too
-  const [payment, setPayment] = useState(() => {
-    try {
-      return sessionStorage.getItem("esdra_order_payment") || "";
-    } catch { return ""; }
   });
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
