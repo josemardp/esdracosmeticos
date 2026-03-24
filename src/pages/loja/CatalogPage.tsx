@@ -422,7 +422,7 @@ export default function CatalogPage() {
       });
     }
     return chips;
-  }, [urlQ, urlCat, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, categories, priceBounds, setFilter, updateURL]);
+  }, [urlQ, urlCat, urlBrand, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, categories, priceBounds, setFilter, updateURL]);
 
   const clearAll = useCallback(() => {
     setSearchInput("");
