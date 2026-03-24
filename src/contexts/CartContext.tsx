@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -73,6 +73,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const itemCount = items.reduce((s, i) => s + i.qty, 0);
   const subtotal = items.reduce((s, i) => s + (i.sale_price ?? i.price) * i.qty, 0);
+
+  // Auto-remove coupon when cart changes (subtotal drift)
+  const prevSubtotalRef = useRef(subtotal);
+  useEffect(() => {
+    if (coupon && prevSubtotalRef.current !== subtotal && prevSubtotalRef.current > 0) {
+      setCoupon(null);
+      toast({ title: "Cupom removido", description: "O carrinho foi alterado. Reaplique o cupom se desejar." });
+    }
+    prevSubtotalRef.current = subtotal;
+  }, [subtotal, coupon]);
 
   // Recalc discount when subtotal changes
   const discount = coupon ? coupon.discount_value : 0;

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
+import { trackAddToCart } from "@/lib/analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { whatsappUrl } from "@/lib/whatsapp";
 import heroImg from "@/assets/hero-cosmetics.jpg";
@@ -100,10 +101,12 @@ export default function HomePage() {
 
   const handleQuickAdd = useCallback((p: Product) => {
     if (p.inventory_count <= 0) return;
+    const finalPrice = p.sale_price ?? p.price;
     addItem({
       id: p.id, name: p.name, slug: p.slug, price: p.price,
       sale_price: p.sale_price, cover_image: p.cover_image, inventory_count: p.inventory_count,
     });
+    trackAddToCart({ id: p.id, name: p.name, price: finalPrice, quantity: 1 });
   }, [addItem]);
 
   const formatInstallment = useCallback((price: number) => {

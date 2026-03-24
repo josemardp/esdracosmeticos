@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
+import { trackAddToCart } from "@/lib/analytics";
 
 /* ─── types ─── */
 interface Product {
@@ -201,11 +202,28 @@ const FilterSidebar = memo(function FilterSidebar({
   );
 });
 
+/* ─── route presets ─── */
+const ROUTE_PRESETS: Record<string, { filter: string; filterValue: string; title: string; seoTitle: string; seoDesc: string }> = {
+  "/lancamentos": {
+    filter: "novidades", filterValue: "1",
+    title: "Lançamentos",
+    seoTitle: "Lançamentos | Esdra Cosméticos",
+    seoDesc: "Confira os lançamentos da Esdra Cosméticos. Novidades em perfumes, maquiagem e skincare com frete grátis acima de R$ 199.",
+  },
+  "/promocoes": {
+    filter: "promocao", filterValue: "1",
+    title: "Promoções",
+    seoTitle: "Promoções | Esdra Cosméticos",
+    seoDesc: "Aproveite as promoções da Esdra Cosméticos. Descontos em perfumes, maquiagem e skincare com frete grátis acima de R$ 199.",
+  },
+};
+
 /* ─── main ─── */
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const { addItem } = useCart();
+  const routePreset = ROUTE_PRESETS[location.pathname] || null;
 
   /* raw data */
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -222,8 +240,8 @@ export default function CatalogPage() {
   const urlBrand = searchParams.get("marca") || "";
   const urlSort = searchParams.get("ordem") || "relevance";
   const urlInStock = searchParams.get("estoque") === "1";
-  const urlOnSale = searchParams.get("promocao") === "1";
-  const urlNew = searchParams.get("novidades") === "1";
+  const urlOnSale = searchParams.get("promocao") === "1" || routePreset?.filter === "promocao";
+  const urlNew = searchParams.get("novidades") === "1" || routePreset?.filter === "novidades";
   const urlMinPrice = searchParams.get("preco_min") ? Number(searchParams.get("preco_min")) : 0;
   const urlMaxPrice = searchParams.get("preco_max") ? Number(searchParams.get("preco_max")) : 0;
 
@@ -422,10 +440,12 @@ export default function CatalogPage() {
   const handleQuickAdd = useCallback(
     (p: Product) => {
       if (p.inventory_count <= 0) return;
+      const finalPrice = p.sale_price ?? p.price;
       addItem({
         id: p.id, name: p.name, slug: p.slug, price: p.price,
         sale_price: p.sale_price, cover_image: p.cover_image, inventory_count: p.inventory_count,
       });
+      trackAddToCart({ id: p.id, name: p.name, price: finalPrice, quantity: 1 });
       setAddedIds((prev) => new Set(prev).add(p.id));
       setTimeout(() => setAddedIds((prev) => { const n = new Set(prev); n.delete(p.id); return n; }), 1200);
     },
@@ -457,25 +477,28 @@ export default function CatalogPage() {
   /* SEO */
   const catName = urlCat ? categories.find((c) => c.slug === urlCat)?.name : null;
   const brandName = urlBrand || null;
-  const seoTitle = catName
-    ? `${catName}${brandName ? ` ${brandName}` : ""} | Esdra Cosméticos`
-    : brandName
-    ? `Produtos ${brandName} | Esdra Cosméticos`
-    : "Loja | Esdra Cosméticos – Cosméticos Premium";
-  const seoDesc = catName
-    ? `Compre ${catName}${brandName ? ` ${brandName}` : ""} na Esdra Cosméticos. Frete grátis acima de R$ 199. Entrega para todo o Brasil.`
-    : brandName
-    ? `Encontre todos os produtos ${brandName} na Esdra Cosméticos. Qualidade premium com parcela em até 3x sem juros.`
-    : "Explore nossa coleção completa de cosméticos premium. Maquiagem, Skincare, Cabelos, Perfumaria e muito mais.";
+  const seoTitle = routePreset?.seoTitle
+    ?? (catName
+      ? `${catName}${brandName ? ` ${brandName}` : ""} | Esdra Cosméticos`
+      : brandName
+      ? `Produtos ${brandName} | Esdra Cosméticos`
+      : "Loja | Esdra Cosméticos – Cosméticos Premium");
+  const seoDesc = routePreset?.seoDesc
+    ?? (catName
+      ? `Compre ${catName}${brandName ? ` ${brandName}` : ""} na Esdra Cosméticos. Frete grátis acima de R$ 199. Entrega para todo o Brasil.`
+      : brandName
+      ? `Encontre todos os produtos ${brandName} na Esdra Cosméticos. Qualidade premium com parcela em até 3x sem juros.`
+      : "Explore nossa coleção completa de cosméticos premium. Maquiagem, Skincare, Cabelos, Perfumaria e muito mais.");
   /* Canonical: include categoria/marca when indexable, strip noise */
   const isNoindex = !!(urlQ || urlMinPrice || urlMaxPrice);
   const catalogCanonical = useMemo(() => {
+    if (routePreset) return location.pathname;
     const params = new URLSearchParams();
     if (urlCat) params.set("categoria", urlCat);
     if (urlBrand) params.set("marca", urlBrand);
     const qs = params.toString();
     return qs ? `/loja?${qs}` : "/loja";
-  }, [urlCat, urlBrand]);
+  }, [urlCat, urlBrand, routePreset, location.pathname]);
 
   useSEO({
     title: seoTitle,
@@ -525,7 +548,7 @@ export default function CatalogPage() {
         {/* ─── Header ─── */}
         <div className="mb-6">
           <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-1">
-            {catName || "Nossa Loja"}
+            {routePreset?.title || catName || "Nossa Loja"}
           </h1>
           {urlQ && (
             <p className="font-body text-sm text-muted-foreground">
