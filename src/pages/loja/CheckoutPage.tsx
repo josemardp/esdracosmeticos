@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShieldCheck, MessageCircle, CheckCircle2, Loader2, Lock, Truck, CreditCard } from "lucide-react";
+import { ShieldCheck, MessageCircle, CheckCircle2, Loader2, Lock, Truck, CreditCard, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
