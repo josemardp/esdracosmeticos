@@ -231,6 +231,7 @@ export default function CatalogPage() {
 
   const urlQ = searchParams.get("q") || "";
   const urlCat = searchParams.get("categoria") || "";
+  const urlBrand = searchParams.get("marca") || "";
   const urlSort = searchParams.get("ordem") || "relevance";
   const urlInStock = searchParams.get("estoque") === "1";
   const urlOnSale = searchParams.get("promocao") === "1";
