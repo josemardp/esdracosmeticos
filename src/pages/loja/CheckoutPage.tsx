@@ -25,7 +25,11 @@ export default function CheckoutPage() {
     zip: "", street: "", number: "", complement: "",
     neighborhood: "", city: "", state: "",
   });
-  const [payment, setPayment] = useState("");
+  const [payment, setPayment] = useState(() => {
+    try {
+      return sessionStorage.getItem("esdra_order_payment") || "";
+    } catch { return ""; }
+  });
   const [submitting, setSubmitting] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
 
@@ -35,7 +39,12 @@ export default function CheckoutPage() {
     subtotal: number;
     discount: number;
     total: number;
-  } | null>(null);
+  } | null>(() => {
+    try {
+      const raw = sessionStorage.getItem("esdra_order_result");
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  });
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
 
@@ -120,6 +129,10 @@ export default function CheckoutPage() {
       );
 
       setOrderResult(result);
+      try {
+        sessionStorage.setItem("esdra_order_result", JSON.stringify(result));
+        sessionStorage.setItem("esdra_order_payment", payment);
+      } catch {}
       clearCart();
       toast({ title: "Pedido criado com sucesso!", description: `Código: ${result.order_code}` });
 
@@ -219,8 +232,8 @@ export default function CheckoutPage() {
                 <MessageCircle className="w-4 h-4 mr-2" /> Finalizar pelo WhatsApp
               </Button>
             </a>
-            {user && <Link to="/conta/pedidos"><Button size="lg" variant="outline">Ver Meus Pedidos</Button></Link>}
-            <Link to="/loja"><Button size="lg" variant="outline">Continuar Comprando</Button></Link>
+            {user && <Link to="/conta/pedidos" onClick={() => { try { sessionStorage.removeItem("esdra_order_result"); sessionStorage.removeItem("esdra_order_payment"); } catch {} }}><Button size="lg" variant="outline">Ver Meus Pedidos</Button></Link>}
+            <Link to="/loja" onClick={() => { try { sessionStorage.removeItem("esdra_order_result"); sessionStorage.removeItem("esdra_order_payment"); } catch {} }}><Button size="lg" variant="outline">Continuar Comprando</Button></Link>
           </div>
         </motion.div>
       </div>
