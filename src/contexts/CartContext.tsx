@@ -75,7 +75,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const subtotal = items.reduce((s, i) => s + (i.sale_price ?? i.price) * i.qty, 0);
 
   // Auto-remove coupon when cart changes (subtotal drift)
-  const prevSubtotalRef = React.useRef(subtotal);
+  const prevSubtotalRef = useRef(subtotal);
   useEffect(() => {
     if (coupon && prevSubtotalRef.current !== subtotal && prevSubtotalRef.current > 0) {
       setCoupon(null);
