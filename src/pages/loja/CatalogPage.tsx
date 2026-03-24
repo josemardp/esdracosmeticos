@@ -611,7 +611,7 @@ export default function CatalogPage() {
                 <button
                   key={f.key}
                   onClick={f.clear}
-                  className="inline-flex items-center gap-1 bg-secondary text-foreground font-body text-xs px-2.5 py-1 rounded-full hover:bg-secondary/80 transition-colors"
+                  className="inline-flex items-center gap-1 bg-secondary text-foreground font-body text-xs px-3 py-1.5 rounded-full hover:bg-secondary/80 transition-colors"
                 >
                   {f.label}
                   <X className="w-3 h-3" />
