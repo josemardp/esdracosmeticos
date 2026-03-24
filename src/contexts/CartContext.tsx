@@ -74,15 +74,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const itemCount = items.reduce((s, i) => s + i.qty, 0);
   const subtotal = items.reduce((s, i) => s + (i.sale_price ?? i.price) * i.qty, 0);
 
-  // Auto-remove coupon when cart changes (subtotal drift)
-  const prevSubtotalRef = useRef(subtotal);
+  // Auto-remove coupon when cart changes (item signature drift)
+  const cartSignature = items.map(i => `${i.id}:${i.qty}:${i.sale_price ?? i.price}`).join("|");
+  const prevSignatureRef = useRef(cartSignature);
   useEffect(() => {
-    if (coupon && prevSubtotalRef.current !== subtotal && prevSubtotalRef.current > 0) {
+    if (coupon && prevSignatureRef.current !== cartSignature && prevSignatureRef.current !== "") {
       setCoupon(null);
       toast({ title: "Cupom removido", description: "O carrinho foi alterado. Reaplique o cupom se desejar." });
     }
-    prevSubtotalRef.current = subtotal;
-  }, [subtotal, coupon]);
+    prevSignatureRef.current = cartSignature;
+  }, [cartSignature, coupon]);
 
   // Recalc discount when subtotal changes
   const discount = coupon ? coupon.discount_value : 0;
