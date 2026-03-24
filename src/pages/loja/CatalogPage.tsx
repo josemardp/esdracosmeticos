@@ -807,20 +807,19 @@ const ProductCard = memo(function ProductCard({
                 <span className="font-body text-xs text-muted-foreground line-through tabular-nums">
                   {fmt(p.price)}
                 </span>
-                <span className="font-body text-base font-bold text-primary tabular-nums">
+                <span className="font-body text-lg font-bold text-primary tabular-nums">
                   {fmt(p.sale_price)}
                 </span>
               </>
             ) : (
-              <span className="font-body text-base font-bold text-foreground tabular-nums">
+              <span className="font-body text-lg font-bold text-foreground tabular-nums">
                 {fmt(p.price)}
               </span>
             )}
           </div>
 
-          <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-3 flex items-center gap-1">
-            <CreditCard className="w-3 h-3 shrink-0" />
-            {fmtInstallment(finalPrice)}
+          <p className="font-body text-xs text-muted-foreground mb-3">
+            {fmtInstallment(finalPrice)} s/ juros
           </p>
 
           {outOfStock ? (
