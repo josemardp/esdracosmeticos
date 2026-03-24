@@ -232,8 +232,8 @@ export default function CheckoutPage() {
                 <MessageCircle className="w-4 h-4 mr-2" /> Finalizar pelo WhatsApp
               </Button>
             </a>
-            {user && <Link to="/conta/pedidos"><Button size="lg" variant="outline">Ver Meus Pedidos</Button></Link>}
-            <Link to="/loja"><Button size="lg" variant="outline">Continuar Comprando</Button></Link>
+            {user && <Link to="/conta/pedidos" onClick={() => { try { sessionStorage.removeItem("esdra_order_result"); sessionStorage.removeItem("esdra_order_payment"); } catch {} }}><Button size="lg" variant="outline">Ver Meus Pedidos</Button></Link>}
+            <Link to="/loja" onClick={() => { try { sessionStorage.removeItem("esdra_order_result"); sessionStorage.removeItem("esdra_order_payment"); } catch {} }}><Button size="lg" variant="outline">Continuar Comprando</Button></Link>
           </div>
         </motion.div>
       </div>
