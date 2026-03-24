@@ -257,6 +257,17 @@ export default function CatalogPage() {
     return { min: Math.floor(Math.min(...prices)), max: Math.ceil(Math.max(...prices)) };
   }, [allProducts]);
 
+  /* available brands (with counts) */
+  const brands = useMemo(() => {
+    const map = new Map<string, number>();
+    allProducts.forEach((p) => {
+      if (p.brand) map.set(p.brand, (map.get(p.brand) || 0) + 1);
+    });
+    return Array.from(map.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  }, [allProducts]);
+
   /* stable updateURL */
   const updateURL = useCallback(
     (updates: Record<string, string | undefined>) => {
