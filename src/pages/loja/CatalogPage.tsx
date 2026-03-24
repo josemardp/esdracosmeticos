@@ -453,6 +453,14 @@ export default function CatalogPage() {
     [setFilter]
   );
 
+  const handleBrandChange = useCallback(
+    (brand: string | undefined) => {
+      setFilter("marca", brand);
+      setMobileOpen(false);
+    },
+    [setFilter]
+  );
+
   const handleToggleFilter = useCallback(
     (key: string, value: string | undefined) => setFilter(key, value),
     [setFilter]
