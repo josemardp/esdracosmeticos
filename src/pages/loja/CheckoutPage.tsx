@@ -306,7 +306,10 @@ export default function CheckoutPage() {
                   </div>
                   <div className="space-y-2 font-body text-sm border-b pb-4 mb-4">
                     <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>R$ {subtotal.toFixed(2)}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Frete</span><span className="text-xs text-success font-medium">Grátis</span></div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Frete</span>
+                      <span className={`text-xs font-medium ${qualifiesForFreeShipping(subtotal) ? "text-success" : "text-muted-foreground"}`}>{getShippingLabel(subtotal)}</span>
+                    </div>
                     {discount > 0 && (
                       <div className="flex justify-between text-primary">
                         <span>Desconto {coupon?.code && `(${coupon.code})`}</span>
