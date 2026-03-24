@@ -94,7 +94,7 @@ export default function CartPage() {
               <span>{qualifiesForFreeShipping(subtotal) ? "Total" : "Total (sem frete)"}</span><span>R$ {total.toFixed(2)}</span>
             </div>
             {!qualifiesForFreeShipping(subtotal) && (
-              <p className="font-body text-[10px] text-muted-foreground mb-4">* Frete será informado pelo WhatsApp antes do pagamento</p>
+              <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-4">* Frete será informado pelo WhatsApp antes do pagamento</p>
             )}
             {qualifiesForFreeShipping(subtotal) && <div className="mb-5" />}
 
