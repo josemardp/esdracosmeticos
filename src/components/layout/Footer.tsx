@@ -12,7 +12,8 @@ export function Footer() {
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !email.includes("@")) return;
+    if (!email.trim() || !email.includes("@") || loading) return;
+    setLoading(true);
     try {
       const { error } = await supabase.from("newsletter_subscribers").insert({ email: email.trim(), source: "footer" });
       if (error && error.code === "23505") {
@@ -26,6 +27,8 @@ export function Footer() {
     } catch (err) {
       console.error("Newsletter subscription error:", err);
       toast.error("Não foi possível concluir a inscrição. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
