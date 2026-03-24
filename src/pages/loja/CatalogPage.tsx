@@ -544,7 +544,7 @@ export default function CatalogPage() {
         {/* ─── Header ─── */}
         <div className="mb-6">
           <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-1">
-            {catName || "Nossa Loja"}
+            {routePreset?.title || catName || "Nossa Loja"}
           </h1>
           {urlQ && (
             <p className="font-body text-sm text-muted-foreground">
