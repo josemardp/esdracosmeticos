@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
+import { useSEO } from "@/hooks/use-seo";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
@@ -52,20 +53,7 @@ function useDebounce<T>(value: T, ms: number): T {
   return debounced;
 }
 
-/* ─── SEO head ─── */
-function useSEO(title: string, desc: string) {
-  useEffect(() => {
-    document.title = title;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", desc);
-    else {
-      const m = document.createElement("meta");
-      m.name = "description";
-      m.content = desc;
-      document.head.appendChild(m);
-    }
-  }, [title, desc]);
-}
+/* (useSEO imported from @/hooks/use-seo) */
 
 /* ─── sort options ─── */
 const SORT_OPTIONS = [
@@ -468,13 +456,22 @@ export default function CatalogPage() {
 
   /* SEO */
   const catName = urlCat ? categories.find((c) => c.slug === urlCat)?.name : null;
+  const brandName = urlBrand || null;
   const seoTitle = catName
-    ? `${catName} | Esdra Cosméticos`
+    ? `${catName}${brandName ? ` ${brandName}` : ""} | Esdra Cosméticos`
+    : brandName
+    ? `Produtos ${brandName} | Esdra Cosméticos`
     : "Loja | Esdra Cosméticos – Cosméticos Premium";
   const seoDesc = catName
-    ? `Encontre os melhores produtos de ${catName} na Esdra Cosméticos. Qualidade premium com entrega para todo o Brasil.`
+    ? `Compre ${catName}${brandName ? ` ${brandName}` : ""} na Esdra Cosméticos. Frete grátis acima de R$ 199. Entrega para todo o Brasil.`
+    : brandName
+    ? `Encontre todos os produtos ${brandName} na Esdra Cosméticos. Qualidade premium com parcela em até 3x sem juros.`
     : "Explore nossa coleção completa de cosméticos premium. Maquiagem, Skincare, Cabelos, Perfumaria e muito mais.";
-  useSEO(seoTitle, seoDesc);
+  useSEO({
+    title: seoTitle,
+    description: seoDesc,
+    noindex: !!(urlQ || urlMinPrice || urlMaxPrice),
+  });
 
   return (
     <div className="py-6 lg:py-10">

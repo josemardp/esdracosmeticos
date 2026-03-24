@@ -14,5 +14,11 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /conta
+Disallow: /checkout
+Disallow: /loja?q=*
+Disallow: /loja?busca=*
+Disallow: /loja?preco_min=*
+Disallow: /loja?preco_max=*
 
 Sitemap: https://www.esdracosmeticos.com.br/sitemap.xml
+Sitemap: https://khnrwskgpedwerbpohfe.supabase.co/functions/v1/sitemap
