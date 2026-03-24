@@ -757,9 +757,9 @@ const ProductCard = memo(function ProductCard({
             {/* Badges top-left */}
             <div className="absolute top-2 left-2 flex flex-col gap-1">
               {p.new_arrival && (
-                <span className="bg-primary text-primary-foreground text-[10px] font-body font-semibold px-2 py-0.5 rounded-full">
-                  Novo
-                </span>
+                 <span className="bg-primary text-primary-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
+                   Novo
+                 </span>
               )}
               {p.bestseller && (
                 <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2 py-0.5 rounded-full">
