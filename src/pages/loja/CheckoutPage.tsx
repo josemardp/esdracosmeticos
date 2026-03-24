@@ -129,6 +129,10 @@ export default function CheckoutPage() {
       );
 
       setOrderResult(result);
+      try {
+        sessionStorage.setItem("esdra_order_result", JSON.stringify(result));
+        sessionStorage.setItem("esdra_order_payment", payment);
+      } catch {}
       clearCart();
       toast({ title: "Pedido criado com sucesso!", description: `Código: ${result.order_code}` });
 
