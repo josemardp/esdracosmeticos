@@ -839,7 +839,7 @@ const ProductCard = memo(function ProductCard({
                 <>✓ Adicionado</>
               ) : (
                 <>
-                  <ShoppingBag className="w-3.5 h-3.5 mr-1.5" /> Adicionar
+                  <ShoppingBag className="w-3.5 h-3.5 mr-1.5" /> Comprar
                 </>
               )}
             </Button>
