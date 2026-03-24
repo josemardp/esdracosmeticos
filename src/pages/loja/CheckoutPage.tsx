@@ -128,11 +128,11 @@ export default function CheckoutPage() {
     return (
       <div className="container mx-auto px-4 py-16 lg:py-24 text-center">
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-primary" />
+          <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-10 h-10 text-accent-foreground" />
           </div>
-          <h1 className="font-display text-3xl text-foreground mb-2">Pedido Confirmado!</h1>
-          <p className="font-body text-sm text-muted-foreground mb-1">Obrigada por comprar na Esdra Cosméticos 💜</p>
+          <h1 className="font-display text-3xl text-foreground mb-2">Pedido Registrado!</h1>
+          <p className="font-body text-sm text-muted-foreground mb-1">Seu pedido foi criado. <strong>O pagamento ainda não foi realizado.</strong></p>
           <p className="font-body text-lg font-bold text-primary mb-4">Código: {orderResult.order_code}</p>
 
           {/* Resumo financeiro */}
