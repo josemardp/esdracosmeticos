@@ -1,0 +1,86 @@
+Mapeamento de Produtos De Sírius (Esdra Cosméticos vs Oficial):
+
+1. Acidificante Capilar:
+   - Shampoo Acidificante 250ml: shampoo_acidificante_250ml_official.webp
+   - Condicionador Acidificante 250ml: condicionador_acidificante_250ml_official.webp
+
+2. Ella Hair & Body Splash:
+   - Ella Leve 200ml: ella_leve_200ml_official.webp
+   - Ella Intensa 200ml: ella_intensa_200ml_official.webp
+
+3. Iluminador Absoluto:
+   - Shampoo 300ml: shampoo_iluminador_absoluto_300ml_official.webp
+   - Condicionador 300ml: condicionador_iluminador_absoluto_300ml_official.webp
+   - Creme 300g: creme_iluminador_absoluto_300g_official.webp
+   - Elixir 12 em 1 120ml: elixir_12_em_1_iluminador_absoluto_120ml_official.webp
+   - Shampoo 1L: shampoo_iluminador_absoluto_1l_official_alt.webp
+   - Condicionador 1L: condicionador_iluminador_absoluto_1l_official_alt.webp
+   - Creme 1kg: creme_iluminador_absoluto_1kg_official_alt.webp
+
+4. Kerativa:
+   - Shampoo 300ml: shampoo_reconstrutor_kerativa_300ml_official.webp
+   - Creme 300ml: creme_reconstrutor_kerativa_300ml_official.webp
+   - Shampoo 1L: shampoo_reconstrutor_kerativa_1l_official_alt.webp
+   - Creme 1L: creme_reconstrutor_kerativa_1l_official.webp
+
+5. Restaurador Intenso:
+   - Shampoo 300ml: shampoo_restaurador_intenso_300ml_official.webp
+   - Condicionador 300ml: condicionador_restaurador_intenso_300ml_official.webp
+   - Creme 300g: creme_restaurador_intenso_300g_official.webp
+   - Fluido p/ Escova 300ml: fluido_restaurador_intenso_para_escova_300ml_official.webp
+   - Shampoo 1L: shampoo_restaurador_intenso_1l_official.webp
+   - Condicionador 1L: condicionador_restaurador_intenso_1l_official.webp
+   - Creme 1kg: creme_restaurador_intenso_1kg_official.webp
+
+6. Nutrição Profunda:
+   - Shampoo 300ml: shampoo_nutricao_profunda_300ml_official.webp
+   - Condicionador 300ml: condicionador_nutricao_profunda_300ml_official.webp
+   - Creme 300g: creme_nutricao_profunda_300g_official.webp
+   - Shampoo 1L: shampoo_nutricao_profunda_1l_official.webp
+   - Condicionador 1L: condicionador_nutricao_profunda_1l_official.webp
+   - Creme 1kg: creme_nutricao_profunda_1kg_official.webp
+   - DD Spray 120ml: dd_spray_nutricao_profunda_120ml_official.webp
+
+7. Reconstrutor S.O.S:
+   - Shampoo 300ml: shampoo_reconstrutor_sos_300ml_official.webp
+   - Creme 300g: creme_reconstrutor_sos_300g_official.webp
+
+8. O Indispensável:
+   - Leave-in 120ml: o_indispensavel_120ml_official.webp
+
+9. Cachos Divinos:
+   - Shampoo 300ml: shampoo_cachos_divinos_300ml_official.webp
+   - Condicionador 300ml: leave_in_cachos_divinos_300ml_official.webp (Confirmado no site como Leave-in)
+   - Creme 300g: creme_cachos_divinos_300g_official.webp
+
+10. Baru Oil:
+    - Óleo 60ml: baru_oil_60ml_official_alt2.webp
+
+11. BAH:
+    - Shampoo 250ml: shampoo_regenerador_bah_250ml_official.webp
+    - Condicionador 250g: condicionador_regenerador_bah_250g_official.webp
+    - Creme 250g: creme_regenerador_bah_250g_official.webp
+
+12. K Liss:
+    - Unik Keratin 1L: k_liss_unik_keratin_1l_official.webp
+    - Unik Keratin Silver 1L: k_liss_unik_keratin_silver_1l_official.webp
+
+13. Tonalizantes:
+    - Spray Loira Platinada: spray_loira_platinada_official_alt.webp
+
+14. Organker / Detox Therapy:
+    - Shampoo 500ml: shampoo_detox_therapy_500ml_official.webp
+    - Tônico 30ml: tonico_detox_therapy_30ml_official.webp
+    - Condicionador 300ml: condicionador_detox_therapy_300ml_official.webp
+
+15. Conscience:
+    - Shampoo 250ml: shampoo_conscience_250ml_official.webp
+    - Creme 250g: creme_conscience_250g_official.webp
+    - Creme 500g: creme_conscience_500g_official.webp
+    - Condicionador 1L: condicionador_conscience_1l_official.webp
+
+16. Clarium:
+    - Pó Descolorante 500g: po_descolorante_clarium_500g_official.webp
+
+17. Loiro Supremo:
+    - Creme 1kg: creme_loiro_supremo_1kg_official.webp
