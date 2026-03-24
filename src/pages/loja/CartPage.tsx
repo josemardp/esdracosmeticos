@@ -116,7 +116,7 @@ export default function CartPage() {
             <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t">
               {[
                 { icon: ShieldCheck, label: "Compra Segura" },
-                { icon: Truck, label: "Frete Grátis +R$199" },
+                { icon: Truck, label: `Frete Grátis +R$${FREE_SHIPPING_THRESHOLD}` },
                 { icon: CreditCard, label: "3x sem juros" },
               ].map(t => (
                 <div key={t.label} className="text-center">
