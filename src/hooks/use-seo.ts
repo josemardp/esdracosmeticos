@@ -38,7 +38,9 @@ export function useSEO(titleOrOpts: string | SEOOptions, description?: string) {
     const suffix = ` | ${SITE_NAME}`;
     document.title = opts.title.includes("Esdra") ? opts.title : opts.title + suffix;
     const fullTitle = document.title;
-    const canonicalUrl = SITE_URL + window.location.pathname;
+    const canonicalUrl = opts.canonical
+      ? (opts.canonical.startsWith("http") ? opts.canonical : SITE_URL + opts.canonical)
+      : SITE_URL + window.location.pathname;
 
     // Meta description
     if (opts.description) {
