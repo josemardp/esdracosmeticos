@@ -470,10 +470,11 @@ export default function CatalogPage() {
   /* Canonical: include categoria/marca when indexable, strip noise */
   const isNoindex = !!(urlQ || urlMinPrice || urlMaxPrice);
   const catalogCanonical = useMemo(() => {
-    const parts: string[] = [];
-    if (urlCat) parts.push(`categoria=${urlCat}`);
-    if (urlBrand) parts.push(`marca=${urlBrand}`);
-    return parts.length ? `/loja?${parts.join("&")}` : "/loja";
+    const params = new URLSearchParams();
+    if (urlCat) params.set("categoria", urlCat);
+    if (urlBrand) params.set("marca", urlBrand);
+    const qs = params.toString();
+    return qs ? `/loja?${qs}` : "/loja";
   }, [urlCat, urlBrand]);
 
   useSEO({
