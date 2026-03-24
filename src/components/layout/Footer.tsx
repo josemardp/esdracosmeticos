@@ -8,10 +8,12 @@ import { toast } from "sonner";
 export function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !email.includes("@")) return;
+    if (!email.trim() || !email.includes("@") || loading) return;
+    setLoading(true);
     try {
       const { error } = await supabase.from("newsletter_subscribers").insert({ email: email.trim(), source: "footer" });
       if (error && error.code === "23505") {
@@ -25,6 +27,8 @@ export function Footer() {
     } catch (err) {
       console.error("Newsletter subscription error:", err);
       toast.error("Não foi possível concluir a inscrição. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,13 +56,15 @@ export function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary"
+                disabled={loading}
+                className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
               />
               <button
                 type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-sm font-medium hover:opacity-90 transition-opacity"
+                disabled={loading}
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                Inscrever-se
+                {loading ? "Enviando..." : "Inscrever-se"}
               </button>
             </form>
           )}
