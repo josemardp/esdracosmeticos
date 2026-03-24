@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { trackViewItem, trackAddToCart, trackWhatsAppClick } from "@/lib/analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { useProductJsonLd } from "@/hooks/use-product-jsonld";
 import { WHATSAPP_PHONE } from "@/lib/whatsapp";
 
 interface Product {
@@ -69,11 +70,31 @@ export default function ProductPage() {
     fetchData();
   }, [slug]);
 
-  // SEO
-  useSEO(
-    product ? `${product.name} | Esdra Cosméticos` : "Produto | Esdra Cosméticos",
-    product?.short_description || "Produto de beleza premium na Esdra Cosméticos."
-  );
+  // SEO — rich meta + JSON-LD
+  const seoDesc = product
+    ? product.short_description || `Compre ${product.name} na Esdra Cosméticos. Entrega para todo o Brasil, parcele em até 3x sem juros.`
+    : "Produto de beleza premium na Esdra Cosméticos.";
+  useSEO({
+    title: product ? `${product.name} | Esdra Cosméticos` : "Produto | Esdra Cosméticos",
+    description: seoDesc,
+    ogImage: product ? getProductImage(product.slug, product.cover_image) || undefined : undefined,
+    ogType: "product",
+  });
+
+  const avgRatingForSeo = reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
+  useProductJsonLd(product ? {
+    name: product.name,
+    slug: product.slug,
+    description: seoDesc,
+    price: product.price,
+    salePrice: product.sale_price,
+    sku: product.sku,
+    brand: product.brand,
+    image: getProductImage(product.slug, product.cover_image),
+    inStock: product.inventory_count > 0,
+    ratingValue: avgRatingForSeo,
+    reviewCount: reviews.length,
+  } : null);
 
   const handleAddToCart = () => {
     if (!product) return;
