@@ -397,7 +397,7 @@ export default function CatalogPage() {
     const inStock = result.filter((p) => p.inventory_count > 0).sort(sortFn);
     const outStock = result.filter((p) => p.inventory_count <= 0).sort(sortFn);
     return [...inStock, ...outStock];
-  }, [allProducts, urlQ, urlCat, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, urlSort, categories, priceBounds]);
+  }, [allProducts, urlQ, urlCat, urlBrand, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, urlSort, categories, priceBounds]);
 
   /* active filters for chips */
   const activeFilters = useMemo(() => {
