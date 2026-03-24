@@ -27,6 +27,7 @@ interface Product {
   featured: boolean;
   new_arrival: boolean;
   bestseller: boolean;
+  brand: string | null;
 }
 
 interface Category {
