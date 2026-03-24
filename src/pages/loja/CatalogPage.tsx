@@ -80,6 +80,8 @@ const SORT_OPTIONS = [
 const FilterSidebar = memo(function FilterSidebar({
   categories,
   urlCat,
+  brands,
+  urlBrand,
   priceBounds,
   priceRange,
   urlInStock,
@@ -87,12 +89,15 @@ const FilterSidebar = memo(function FilterSidebar({
   urlNew,
   activeFilterCount,
   onCategoryChange,
+  onBrandChange,
   onPriceChange,
   onToggleFilter,
   onClearAll,
 }: {
   categories: Category[];
   urlCat: string;
+  brands: { name: string; count: number }[];
+  urlBrand: string;
   priceBounds: { min: number; max: number };
   priceRange: [number, number];
   urlInStock: boolean;
@@ -100,6 +105,7 @@ const FilterSidebar = memo(function FilterSidebar({
   urlNew: boolean;
   activeFilterCount: number;
   onCategoryChange: (slug: string | undefined) => void;
+  onBrandChange: (brand: string | undefined) => void;
   onPriceChange: (range: [number, number]) => void;
   onToggleFilter: (key: string, value: string | undefined) => void;
   onClearAll: () => void;
@@ -127,6 +133,31 @@ const FilterSidebar = memo(function FilterSidebar({
           ))}
         </div>
       </div>
+
+      {/* Brands */}
+      {brands.length > 0 && (
+        <div>
+          <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Marca</h3>
+          <div className="space-y-0.5">
+            <button
+              onClick={() => onBrandChange(undefined)}
+              className={`block w-full text-left px-3 py-2 rounded-lg font-body text-sm transition-colors ${!urlBrand ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
+            >
+              Todas as marcas
+            </button>
+            {brands.map((b) => (
+              <button
+                key={b.name}
+                onClick={() => onBrandChange(b.name)}
+                className={`flex w-full items-center justify-between px-3 py-2 rounded-lg font-body text-sm transition-colors ${urlBrand === b.name ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
+              >
+                <span>{b.name}</span>
+                <span className="text-[11px] text-muted-foreground">{b.count}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Price range */}
       <div>
