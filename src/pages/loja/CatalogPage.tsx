@@ -474,16 +474,18 @@ export default function CatalogPage() {
   /* SEO */
   const catName = urlCat ? categories.find((c) => c.slug === urlCat)?.name : null;
   const brandName = urlBrand || null;
-  const seoTitle = catName
-    ? `${catName}${brandName ? ` ${brandName}` : ""} | Esdra Cosméticos`
-    : brandName
-    ? `Produtos ${brandName} | Esdra Cosméticos`
-    : "Loja | Esdra Cosméticos – Cosméticos Premium";
-  const seoDesc = catName
-    ? `Compre ${catName}${brandName ? ` ${brandName}` : ""} na Esdra Cosméticos. Frete grátis acima de R$ 199. Entrega para todo o Brasil.`
-    : brandName
-    ? `Encontre todos os produtos ${brandName} na Esdra Cosméticos. Qualidade premium com parcela em até 3x sem juros.`
-    : "Explore nossa coleção completa de cosméticos premium. Maquiagem, Skincare, Cabelos, Perfumaria e muito mais.";
+  const seoTitle = routePreset?.seoTitle
+    ?? (catName
+      ? `${catName}${brandName ? ` ${brandName}` : ""} | Esdra Cosméticos`
+      : brandName
+      ? `Produtos ${brandName} | Esdra Cosméticos`
+      : "Loja | Esdra Cosméticos – Cosméticos Premium");
+  const seoDesc = routePreset?.seoDesc
+    ?? (catName
+      ? `Compre ${catName}${brandName ? ` ${brandName}` : ""} na Esdra Cosméticos. Frete grátis acima de R$ 199. Entrega para todo o Brasil.`
+      : brandName
+      ? `Encontre todos os produtos ${brandName} na Esdra Cosméticos. Qualidade premium com parcela em até 3x sem juros.`
+      : "Explore nossa coleção completa de cosméticos premium. Maquiagem, Skincare, Cabelos, Perfumaria e muito mais.");
   /* Canonical: include categoria/marca when indexable, strip noise */
   const isNoindex = !!(urlQ || urlMinPrice || urlMaxPrice);
   const catalogCanonical = useMemo(() => {
