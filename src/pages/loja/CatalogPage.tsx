@@ -53,20 +53,7 @@ function useDebounce<T>(value: T, ms: number): T {
   return debounced;
 }
 
-/* ─── SEO head ─── */
-function useSEO(title: string, desc: string) {
-  useEffect(() => {
-    document.title = title;
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", desc);
-    else {
-      const m = document.createElement("meta");
-      m.name = "description";
-      m.content = desc;
-      document.head.appendChild(m);
-    }
-  }, [title, desc]);
-}
+/* (useSEO imported from @/hooks/use-seo) */
 
 /* ─── sort options ─── */
 const SORT_OPTIONS = [
