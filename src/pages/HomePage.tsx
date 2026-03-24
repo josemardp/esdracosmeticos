@@ -147,7 +147,7 @@ export default function HomePage() {
                 <span className="font-body text-base font-bold text-foreground">R$ {p.price.toFixed(2)}</span>
               )}
             </div>
-            <p className="font-body text-[11px] text-muted-foreground mb-3 flex items-center gap-1">
+            <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-3 flex items-center gap-1">
               <CreditCard className="w-3 h-3" />
               {formatInstallment(finalPrice)}
             </p>
