@@ -631,7 +631,7 @@ export default function CatalogPage() {
         <div className="flex gap-8">
           {/* Desktop sidebar */}
           <aside className="hidden lg:block w-56 shrink-0">
-            <div className="sticky top-24">
+            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-1">
               <FilterSidebar
                 categories={categories}
                 urlCat={urlCat}
