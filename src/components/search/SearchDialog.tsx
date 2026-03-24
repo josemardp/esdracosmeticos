@@ -81,7 +81,7 @@ export function SearchDialog({
   const handleSearchAll = () => {
     if (query.trim()) {
       onOpenChange(false);
-      navigate(`/loja?busca=${encodeURIComponent(query.trim())}`);
+      navigate(`/loja?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
