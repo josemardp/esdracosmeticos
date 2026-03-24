@@ -635,6 +635,8 @@ export default function CatalogPage() {
               <FilterSidebar
                 categories={categories}
                 urlCat={urlCat}
+                brands={brands}
+                urlBrand={urlBrand}
                 priceBounds={priceBounds}
                 priceRange={priceRange}
                 urlInStock={urlInStock}
@@ -642,6 +644,7 @@ export default function CatalogPage() {
                 urlNew={urlNew}
                 activeFilterCount={activeFilters.length}
                 onCategoryChange={handleCategoryChange}
+                onBrandChange={handleBrandChange}
                 onPriceChange={setPriceRange}
                 onToggleFilter={handleToggleFilter}
                 onClearAll={clearAll}
