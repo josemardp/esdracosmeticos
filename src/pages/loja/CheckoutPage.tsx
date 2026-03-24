@@ -81,7 +81,6 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      trackBeginCheckout(total, items.map(i => ({ id: i.id, name: i.name, price: i.sale_price ?? i.price, quantity: i.qty })));
 
       // ─────────────────────────────────────────────────────────
       // SEGURANÇA: uma única chamada RPC server-side.
