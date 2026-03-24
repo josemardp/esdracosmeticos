@@ -8,6 +8,7 @@ import { toast } from "sonner";
 export function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
