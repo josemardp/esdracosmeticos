@@ -489,12 +489,13 @@ export default function CatalogPage() {
   /* Canonical: include categoria/marca when indexable, strip noise */
   const isNoindex = !!(urlQ || urlMinPrice || urlMaxPrice);
   const catalogCanonical = useMemo(() => {
+    if (routePreset) return location.pathname;
     const params = new URLSearchParams();
     if (urlCat) params.set("categoria", urlCat);
     if (urlBrand) params.set("marca", urlBrand);
     const qs = params.toString();
     return qs ? `/loja?${qs}` : "/loja";
-  }, [urlCat, urlBrand]);
+  }, [urlCat, urlBrand, routePreset, location.pathname]);
 
   useSEO({
     title: seoTitle,
