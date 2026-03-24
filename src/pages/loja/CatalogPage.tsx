@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
+import { trackAddToCart } from "@/lib/analytics";
 
 /* ─── types ─── */
 interface Product {
