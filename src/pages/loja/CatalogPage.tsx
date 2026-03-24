@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback, memo } from "react";
+import { useSEO } from "@/hooks/use-seo";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
