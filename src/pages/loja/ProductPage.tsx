@@ -188,7 +188,6 @@ export default function ProductPage() {
                {product.brand && <span className="bg-secondary text-foreground font-body text-xs font-semibold px-3 py-1 rounded-full">{product.brand}</span>}
                {product.new_arrival && <span className="bg-primary/10 text-primary font-body text-xs font-semibold px-3 py-1 rounded-full">Lançamento</span>}
                {product.bestseller && <span className="bg-gold/10 text-gold font-body text-xs font-semibold px-3 py-1 rounded-full">Mais Vendido</span>}
-               {!outOfStock && <span className="bg-success/10 text-success font-body text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Em estoque</span>}
                {product.tags?.includes("kit") && <span className="bg-info/10 text-info font-body text-xs font-semibold px-3 py-1 rounded-full">Kit</span>}
                {product.tags?.includes("combo") && <span className="bg-gold/10 text-gold font-body text-xs font-semibold px-3 py-1 rounded-full">Combo</span>}
             </div>
