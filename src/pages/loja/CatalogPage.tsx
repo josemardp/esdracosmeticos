@@ -229,7 +229,7 @@ export default function CatalogPage() {
   /* filter state from URL */
   const [catalogBanner, setCatalogBanner] = useState<Tables<"campaign_banners"> | null>(null);
 
-  const urlQ = searchParams.get("q") || "";
+  const urlQ = searchParams.get("q") || searchParams.get("busca") || "";
   const urlCat = searchParams.get("categoria") || "";
   const urlBrand = searchParams.get("marca") || "";
   const urlSort = searchParams.get("ordem") || "relevance";

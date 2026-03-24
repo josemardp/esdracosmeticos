@@ -1,9 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShieldCheck, MessageCircle, CheckCircle2, Loader2, Lock, Truck, CreditCard } from "lucide-react";
+import { ShieldCheck, MessageCircle, CheckCircle2, Loader2, Lock, Truck, CreditCard, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +13,7 @@ import { fetchCep } from "@/lib/viacep";
 import { getProductImage } from "@/lib/product-images";
 import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
+import { getShippingLabel, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
@@ -37,6 +38,15 @@ export default function CheckoutPage() {
   } | null>(null);
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
+
+  // GA4: begin_checkout ao entrar na página (uma vez)
+  const beginCheckoutFired = useRef(false);
+  useEffect(() => {
+    if (items.length > 0 && !beginCheckoutFired.current) {
+      beginCheckoutFired.current = true;
+      trackBeginCheckout(total, items.map(i => ({ id: i.id, name: i.name, price: i.sale_price ?? i.price, quantity: i.qty })));
+    }
+  }, [items, total]);
 
   const handleCepBlur = useCallback(async () => {
     const clean = form.zip.replace(/\D/g, "");
@@ -71,7 +81,6 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      trackBeginCheckout(total, items.map(i => ({ id: i.id, name: i.name, price: i.sale_price ?? i.price, quantity: i.qty })));
 
       // ─────────────────────────────────────────────────────────
       // SEGURANÇA: uma única chamada RPC server-side.
@@ -127,11 +136,11 @@ export default function CheckoutPage() {
     return (
       <div className="container mx-auto px-4 py-16 lg:py-24 text-center">
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-10 h-10 text-primary" />
+          <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-10 h-10 text-accent-foreground" />
           </div>
-          <h1 className="font-display text-3xl text-foreground mb-2">Pedido Confirmado!</h1>
-          <p className="font-body text-sm text-muted-foreground mb-1">Obrigada por comprar na Esdra Cosméticos 💜</p>
+          <h1 className="font-display text-3xl text-foreground mb-2">Pedido Registrado!</h1>
+          <p className="font-body text-sm text-muted-foreground mb-1">Seu pedido foi criado. <strong>O pagamento ainda não foi realizado.</strong></p>
           <p className="font-body text-lg font-bold text-primary mb-4">Código: {orderResult.order_code}</p>
 
           {/* Resumo financeiro */}
@@ -183,12 +192,12 @@ export default function CheckoutPage() {
           </div>
 
           {/* Próximos passos */}
-          <div className="bg-secondary/50 border rounded-xl px-6 py-5 mb-8 max-w-md mx-auto text-left">
-            <p className="font-body text-sm font-semibold text-foreground mb-3">O que acontece agora?</p>
+          <div className="bg-accent/10 border border-accent/30 rounded-xl px-6 py-5 mb-8 max-w-md mx-auto text-left">
+            <p className="font-body text-sm font-semibold text-foreground mb-3">⚠ Próximo passo obrigatório</p>
             <ol className="space-y-2 font-body text-sm text-muted-foreground">
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>Finalize o pagamento pelo WhatsApp</li>
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>Confirmamos e preparamos seu pedido</li>
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>Enviamos com rastreamento pelo WhatsApp</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span><strong>Clique em "Finalizar pelo WhatsApp"</strong> para combinar o pagamento</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>Após pagamento confirmado, preparamos seu pedido</li>
+              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>Enviamos com código de rastreamento</li>
             </ol>
           </div>
 
@@ -305,7 +314,10 @@ export default function CheckoutPage() {
                   </div>
                   <div className="space-y-2 font-body text-sm border-b pb-4 mb-4">
                     <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>R$ {subtotal.toFixed(2)}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Frete</span><span className="text-xs text-success font-medium">Grátis</span></div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Frete</span>
+                      <span className={`text-xs font-medium ${qualifiesForFreeShipping(subtotal) ? "text-success" : "text-muted-foreground"}`}>{getShippingLabel(subtotal)}</span>
+                    </div>
                     {discount > 0 && (
                       <div className="flex justify-between text-primary">
                         <span>Desconto {coupon?.code && `(${coupon.code})`}</span>
@@ -317,10 +329,11 @@ export default function CheckoutPage() {
                     <span>Total</span><span>R$ {total.toFixed(2)}</span>
                   </div>
                   <Button className="w-full h-12 font-semibold" size="lg" disabled={submitting || items.length === 0} onClick={handleSubmit}>
-                    {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</> : <>Confirmar Pedido</>}
+                    {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</> : <>Registrar Pedido</>}
                   </Button>
+                  <p className="font-body text-[10px] text-muted-foreground text-center mt-1">O pagamento será combinado pelo WhatsApp</p>
                   <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t">
-                    {[{ icon: ShieldCheck, label: "Seguro" }, { icon: Truck, label: "Frete Grátis" }, { icon: CreditCard, label: "3x s/ juros" }].map(t => (
+                    {[{ icon: ShieldCheck, label: "Seguro" }, { icon: Truck, label: qualifiesForFreeShipping(subtotal) ? "Frete Grátis" : `Grátis +R$${FREE_SHIPPING_THRESHOLD}` }, { icon: CreditCard, label: "3x s/ juros" }].map(t => (
                       <div key={t.label} className="text-center">
                         <t.icon className="w-3.5 h-3.5 text-primary mx-auto mb-0.5" />
                         <p className="font-body text-[10px] text-muted-foreground">{t.label}</p>
