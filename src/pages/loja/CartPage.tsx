@@ -125,7 +125,7 @@ export default function CartPage() {
               ].map(t => (
                 <div key={t.label} className="text-center">
                   <t.icon className="w-4 h-4 text-primary mx-auto mb-1" />
-                  <p className="font-body text-[10px] text-muted-foreground leading-tight">{t.label}</p>
+                  <p className="font-body text-[11px] sm:text-xs text-muted-foreground leading-tight">{t.label}</p>
                 </div>
               ))}
             </div>
