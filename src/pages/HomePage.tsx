@@ -227,8 +227,8 @@ export default function HomePage() {
               <div key={b.title} className="flex items-center gap-3 py-4 lg:py-5 px-3 lg:px-6">
                 <b.icon className="w-5 h-5 text-primary shrink-0" />
                 <div>
-                  <p className="font-body text-xs sm:text-sm font-semibold text-foreground leading-tight">{b.title}</p>
-                  <p className="font-body text-[10px] sm:text-xs text-muted-foreground hidden sm:block">{b.desc}</p>
+                   <p className="font-body text-xs sm:text-sm font-semibold text-foreground leading-tight">{b.title}</p>
+                   <p className="font-body text-[11px] sm:text-xs text-muted-foreground hidden sm:block">{b.desc}</p>
                 </div>
               </div>
             ))}
