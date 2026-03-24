@@ -170,6 +170,7 @@ export default function CheckoutPage() {
             {!qualifiesForFreeShipping(orderResult.subtotal) && (
               <p className="font-body text-[10px] text-muted-foreground mt-2">* Frete será informado pelo WhatsApp</p>
             )}
+          </div>
 
           {/* Instruções por forma de pagamento */}
           <div className="bg-card border rounded-xl px-6 py-5 mb-6 max-w-md mx-auto text-left">
