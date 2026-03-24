@@ -312,7 +312,7 @@ export default function CatalogPage() {
         supabase.from("categories").select("id, name, slug").eq("active", true).order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, slug, price, sale_price, cover_image, category_id, inventory_count, featured, new_arrival, bestseller")
+          .select("id, name, slug, price, sale_price, cover_image, category_id, inventory_count, featured, new_arrival, bestseller, brand")
           .eq("active", true),
         supabase
           .from("campaign_banners")
