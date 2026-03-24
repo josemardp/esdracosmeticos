@@ -24,7 +24,7 @@ export function Header() {
   return (
     <>
       <div className="bg-primary text-primary-foreground text-center text-[11px] sm:text-xs py-2 px-4 font-body tracking-wide">
-        ✦ Frete grátis acima de R$ 199 · Parcele em até 3x sem juros · Use <strong>ESDRA10</strong> e ganhe 10% off ✦
+        ✦ Frete grátis acima de R$ 199 · Parcele em até 3x sem juros ✦
       </div>
 
       <header className="sticky top-0 z-50 bg-background/98 backdrop-blur-md border-b">
