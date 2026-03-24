@@ -27,6 +27,7 @@ interface Product {
   featured: boolean;
   new_arrival: boolean;
   bestseller: boolean;
+  brand: string | null;
 }
 
 interface Category {
@@ -79,6 +80,8 @@ const SORT_OPTIONS = [
 const FilterSidebar = memo(function FilterSidebar({
   categories,
   urlCat,
+  brands,
+  urlBrand,
   priceBounds,
   priceRange,
   urlInStock,
@@ -86,12 +89,15 @@ const FilterSidebar = memo(function FilterSidebar({
   urlNew,
   activeFilterCount,
   onCategoryChange,
+  onBrandChange,
   onPriceChange,
   onToggleFilter,
   onClearAll,
 }: {
   categories: Category[];
   urlCat: string;
+  brands: { name: string; count: number }[];
+  urlBrand: string;
   priceBounds: { min: number; max: number };
   priceRange: [number, number];
   urlInStock: boolean;
@@ -99,6 +105,7 @@ const FilterSidebar = memo(function FilterSidebar({
   urlNew: boolean;
   activeFilterCount: number;
   onCategoryChange: (slug: string | undefined) => void;
+  onBrandChange: (brand: string | undefined) => void;
   onPriceChange: (range: [number, number]) => void;
   onToggleFilter: (key: string, value: string | undefined) => void;
   onClearAll: () => void;
@@ -126,6 +133,31 @@ const FilterSidebar = memo(function FilterSidebar({
           ))}
         </div>
       </div>
+
+      {/* Brands */}
+      {brands.length > 0 && (
+        <div>
+          <h3 className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Marca</h3>
+          <div className="space-y-0.5">
+            <button
+              onClick={() => onBrandChange(undefined)}
+              className={`block w-full text-left px-3 py-2 rounded-lg font-body text-sm transition-colors ${!urlBrand ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
+            >
+              Todas as marcas
+            </button>
+            {brands.map((b) => (
+              <button
+                key={b.name}
+                onClick={() => onBrandChange(b.name)}
+                className={`flex w-full items-center justify-between px-3 py-2 rounded-lg font-body text-sm transition-colors ${urlBrand === b.name ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-secondary"}`}
+              >
+                <span>{b.name}</span>
+                <span className="text-[11px] text-muted-foreground">{b.count}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Price range */}
       <div>
@@ -199,6 +231,7 @@ export default function CatalogPage() {
 
   const urlQ = searchParams.get("q") || "";
   const urlCat = searchParams.get("categoria") || "";
+  const urlBrand = searchParams.get("marca") || "";
   const urlSort = searchParams.get("ordem") || "relevance";
   const urlInStock = searchParams.get("estoque") === "1";
   const urlOnSale = searchParams.get("promocao") === "1";
@@ -222,6 +255,17 @@ export default function CatalogPage() {
     if (allProducts.length === 0) return { min: 0, max: 500 };
     const prices = allProducts.map((p) => p.sale_price ?? p.price);
     return { min: Math.floor(Math.min(...prices)), max: Math.ceil(Math.max(...prices)) };
+  }, [allProducts]);
+
+  /* available brands (with counts) */
+  const brands = useMemo(() => {
+    const map = new Map<string, number>();
+    allProducts.forEach((p) => {
+      if (p.brand) map.set(p.brand, (map.get(p.brand) || 0) + 1);
+    });
+    return Array.from(map.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
   }, [allProducts]);
 
   /* stable updateURL */
@@ -279,7 +323,7 @@ export default function CatalogPage() {
         supabase.from("categories").select("id, name, slug").eq("active", true).order("sort_order"),
         supabase
           .from("products")
-          .select("id, name, slug, price, sale_price, cover_image, category_id, inventory_count, featured, new_arrival, bestseller")
+          .select("id, name, slug, price, sale_price, cover_image, category_id, inventory_count, featured, new_arrival, bestseller, brand")
           .eq("active", true),
         supabase
           .from("campaign_banners")
@@ -315,6 +359,10 @@ export default function CatalogPage() {
     if (urlCat) {
       const cat = categories.find((c) => c.slug === urlCat);
       if (cat) result = result.filter((p) => p.category_id === cat.id);
+    }
+
+    if (urlBrand) {
+      result = result.filter((p) => p.brand === urlBrand);
     }
 
     if (urlInStock) result = result.filter((p) => p.inventory_count > 0);
@@ -359,6 +407,7 @@ export default function CatalogPage() {
       const cat = categories.find((c) => c.slug === urlCat);
       chips.push({ key: "cat", label: cat?.name || urlCat, clear: () => setFilter("categoria", undefined) });
     }
+    if (urlBrand) chips.push({ key: "brand", label: `Marca: ${urlBrand}`, clear: () => setFilter("marca", undefined) });
     if (urlInStock) chips.push({ key: "stock", label: "Em estoque", clear: () => setFilter("estoque", undefined) });
     if (urlOnSale) chips.push({ key: "sale", label: "Promoção", clear: () => setFilter("promocao", undefined) });
     if (urlNew) chips.push({ key: "new", label: "Lançamentos", clear: () => setFilter("novidades", undefined) });
@@ -373,7 +422,7 @@ export default function CatalogPage() {
       });
     }
     return chips;
-  }, [urlQ, urlCat, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, categories, priceBounds, setFilter, updateURL]);
+  }, [urlQ, urlCat, urlBrand, urlInStock, urlOnSale, urlNew, urlMinPrice, urlMaxPrice, categories, priceBounds, setFilter, updateURL]);
 
   const clearAll = useCallback(() => {
     setSearchInput("");
@@ -399,6 +448,14 @@ export default function CatalogPage() {
   const handleCategoryChange = useCallback(
     (slug: string | undefined) => {
       setFilter("categoria", slug);
+      setMobileOpen(false);
+    },
+    [setFilter]
+  );
+
+  const handleBrandChange = useCallback(
+    (brand: string | undefined) => {
+      setFilter("marca", brand);
       setMobileOpen(false);
     },
     [setFilter]
@@ -511,6 +568,8 @@ export default function CatalogPage() {
                   <FilterSidebar
                     categories={categories}
                     urlCat={urlCat}
+                    brands={brands}
+                    urlBrand={urlBrand}
                     priceBounds={priceBounds}
                     priceRange={priceRange}
                     urlInStock={urlInStock}
@@ -518,6 +577,7 @@ export default function CatalogPage() {
                     urlNew={urlNew}
                     activeFilterCount={activeFilters.length}
                     onCategoryChange={handleCategoryChange}
+                    onBrandChange={handleBrandChange}
                     onPriceChange={setPriceRange}
                     onToggleFilter={handleToggleFilter}
                     onClearAll={clearAll}
@@ -575,6 +635,8 @@ export default function CatalogPage() {
               <FilterSidebar
                 categories={categories}
                 urlCat={urlCat}
+                brands={brands}
+                urlBrand={urlBrand}
                 priceBounds={priceBounds}
                 priceRange={priceRange}
                 urlInStock={urlInStock}
@@ -582,6 +644,7 @@ export default function CatalogPage() {
                 urlNew={urlNew}
                 activeFilterCount={activeFilters.length}
                 onCategoryChange={handleCategoryChange}
+                onBrandChange={handleBrandChange}
                 onPriceChange={setPriceRange}
                 onToggleFilter={handleToggleFilter}
                 onClearAll={clearAll}
