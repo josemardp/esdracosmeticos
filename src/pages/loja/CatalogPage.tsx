@@ -239,8 +239,8 @@ export default function CatalogPage() {
   const urlBrand = searchParams.get("marca") || "";
   const urlSort = searchParams.get("ordem") || "relevance";
   const urlInStock = searchParams.get("estoque") === "1";
-  const urlOnSale = searchParams.get("promocao") === "1";
-  const urlNew = searchParams.get("novidades") === "1";
+  const urlOnSale = searchParams.get("promocao") === "1" || routePreset?.filter === "promocao";
+  const urlNew = searchParams.get("novidades") === "1" || routePreset?.filter === "novidades";
   const urlMinPrice = searchParams.get("preco_min") ? Number(searchParams.get("preco_min")) : 0;
   const urlMaxPrice = searchParams.get("preco_max") ? Number(searchParams.get("preco_max")) : 0;
 
