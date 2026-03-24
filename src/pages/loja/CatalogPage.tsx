@@ -361,6 +361,10 @@ export default function CatalogPage() {
       if (cat) result = result.filter((p) => p.category_id === cat.id);
     }
 
+    if (urlBrand) {
+      result = result.filter((p) => p.brand === urlBrand);
+    }
+
     if (urlInStock) result = result.filter((p) => p.inventory_count > 0);
     if (urlOnSale) result = result.filter((p) => p.sale_price !== null);
     if (urlNew) result = result.filter((p) => p.new_arrival);
