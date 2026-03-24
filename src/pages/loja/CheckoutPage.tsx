@@ -325,13 +325,17 @@ export default function CheckoutPage() {
                       </div>
                     )}
                   </div>
-                  <div className="flex justify-between font-body font-bold text-foreground text-lg border-b pb-4 mb-4">
-                    <span>Total</span><span>R$ {total.toFixed(2)}</span>
-                  </div>
-                  <Button className="w-full h-12 font-semibold" size="lg" disabled={submitting || items.length === 0} onClick={handleSubmit}>
-                    {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</> : <>Registrar Pedido</>}
-                  </Button>
-                  <p className="font-body text-[10px] text-muted-foreground text-center mt-1">O pagamento será combinado pelo WhatsApp</p>
+                   <div className="flex justify-between font-body font-bold text-foreground text-lg mb-1">
+                     <span>{qualifiesForFreeShipping(subtotal) ? "Total" : "Total (sem frete)"}</span><span>R$ {total.toFixed(2)}</span>
+                   </div>
+                   {!qualifiesForFreeShipping(subtotal) && (
+                     <p className="font-body text-[10px] text-muted-foreground mb-3">* Frete será informado pelo WhatsApp antes do pagamento</p>
+                   )}
+                   {qualifiesForFreeShipping(subtotal) && <div className="mb-3" />}
+                   <Button className="w-full h-12 font-semibold border-b pb-4 mb-4" size="lg" disabled={submitting || items.length === 0} onClick={handleSubmit}>
+                     {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</> : <>Registrar Pedido</>}
+                   </Button>
+                   <p className="font-body text-[10px] text-muted-foreground text-center mt-1">O pagamento será combinado pelo WhatsApp</p>
                   <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t">
                     {[{ icon: ShieldCheck, label: "Seguro" }, { icon: Truck, label: qualifiesForFreeShipping(subtotal) ? "Frete Grátis" : `Grátis +R$${FREE_SHIPPING_THRESHOLD}` }, { icon: CreditCard, label: "3x s/ juros" }].map(t => (
                       <div key={t.label} className="text-center">
