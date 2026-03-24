@@ -407,6 +407,7 @@ export default function CatalogPage() {
       const cat = categories.find((c) => c.slug === urlCat);
       chips.push({ key: "cat", label: cat?.name || urlCat, clear: () => setFilter("categoria", undefined) });
     }
+    if (urlBrand) chips.push({ key: "brand", label: `Marca: ${urlBrand}`, clear: () => setFilter("marca", undefined) });
     if (urlInStock) chips.push({ key: "stock", label: "Em estoque", clear: () => setFilter("estoque", undefined) });
     if (urlOnSale) chips.push({ key: "sale", label: "Promoção", clear: () => setFilter("promocao", undefined) });
     if (urlNew) chips.push({ key: "new", label: "Lançamentos", clear: () => setFilter("novidades", undefined) });
