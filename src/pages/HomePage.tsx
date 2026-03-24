@@ -120,15 +120,15 @@ export default function HomePage() {
             <div className="aspect-square bg-secondary relative overflow-hidden">
               {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
               <div className="absolute top-2 left-2 flex flex-col gap-1">
-                {p.new_arrival && <span className="bg-primary text-primary-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Novo</span>}
-                {p.bestseller && <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Mais Vendido</span>}
-                {p.tags?.includes("kit") && <span className="bg-info text-info-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Kit</span>}
-                {p.tags?.includes("combo") && <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">Combo</span>}
+                 {p.new_arrival && <span className="bg-primary text-primary-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Novo</span>}
+                {p.bestseller && <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Mais Vendido</span>}
+                {p.tags?.includes("kit") && <span className="bg-info text-info-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Kit</span>}
+                {p.tags?.includes("combo") && <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Combo</span>}
               </div>
-              {p.sale_price && (
-                <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">
-                  -{Math.round((1 - p.sale_price / p.price) * 100)}%
-                </span>
+               {p.sale_price && (
+                 <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
+                   -{Math.round((1 - p.sale_price / p.price) * 100)}%
+                 </span>
               )}
               {p.inventory_count <= 0 && <div className="absolute inset-0 bg-foreground/50 backdrop-blur-[2px] flex items-center justify-center"><span className="bg-foreground text-primary-foreground font-body text-xs font-semibold px-4 py-1.5 rounded-full">Esgotado</span></div>}
             </div>
@@ -147,7 +147,7 @@ export default function HomePage() {
                 <span className="font-body text-base font-bold text-foreground">R$ {p.price.toFixed(2)}</span>
               )}
             </div>
-            <p className="font-body text-[11px] text-muted-foreground mb-3 flex items-center gap-1">
+            <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-3 flex items-center gap-1">
               <CreditCard className="w-3 h-3" />
               {formatInstallment(finalPrice)}
             </p>
@@ -227,8 +227,8 @@ export default function HomePage() {
               <div key={b.title} className="flex items-center gap-3 py-4 lg:py-5 px-3 lg:px-6">
                 <b.icon className="w-5 h-5 text-primary shrink-0" />
                 <div>
-                  <p className="font-body text-xs sm:text-sm font-semibold text-foreground leading-tight">{b.title}</p>
-                  <p className="font-body text-[10px] sm:text-xs text-muted-foreground hidden sm:block">{b.desc}</p>
+                   <p className="font-body text-xs sm:text-sm font-semibold text-foreground leading-tight">{b.title}</p>
+                   <p className="font-body text-[11px] sm:text-xs text-muted-foreground hidden sm:block">{b.desc}</p>
                 </div>
               </div>
             ))}

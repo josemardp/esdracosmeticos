@@ -87,14 +87,14 @@ export default function CartPage() {
                 <span className={`text-xs font-medium ${getShippingLabel(subtotal) === "Grátis" ? "text-success" : "text-muted-foreground"}`}>{getShippingLabel(subtotal)}</span>
               </div>
               {getFreeShippingMessage(subtotal) && (
-                <p className="font-body text-[11px] text-primary">{getFreeShippingMessage(subtotal)}</p>
+                <p className="font-body text-xs text-primary">{getFreeShippingMessage(subtotal)}</p>
               )}
             </div>
             <div className="flex justify-between font-body font-bold text-foreground text-lg mb-1">
               <span>{qualifiesForFreeShipping(subtotal) ? "Total" : "Total (sem frete)"}</span><span>R$ {total.toFixed(2)}</span>
             </div>
             {!qualifiesForFreeShipping(subtotal) && (
-              <p className="font-body text-[10px] text-muted-foreground mb-4">* Frete será informado pelo WhatsApp antes do pagamento</p>
+              <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-4">* Frete será informado pelo WhatsApp antes do pagamento</p>
             )}
             {qualifiesForFreeShipping(subtotal) && <div className="mb-5" />}
 
@@ -125,7 +125,7 @@ export default function CartPage() {
               ].map(t => (
                 <div key={t.label} className="text-center">
                   <t.icon className="w-4 h-4 text-primary mx-auto mb-1" />
-                  <p className="font-body text-[10px] text-muted-foreground leading-tight">{t.label}</p>
+                  <p className="font-body text-[11px] sm:text-xs text-muted-foreground leading-tight">{t.label}</p>
                 </div>
               ))}
             </div>
