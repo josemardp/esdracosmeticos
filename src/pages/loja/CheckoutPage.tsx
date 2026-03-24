@@ -324,7 +324,7 @@ export default function CheckoutPage() {
                     {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</> : <>Confirmar Pedido</>}
                   </Button>
                   <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t">
-                    {[{ icon: ShieldCheck, label: "Seguro" }, { icon: Truck, label: "Frete Grátis" }, { icon: CreditCard, label: "3x s/ juros" }].map(t => (
+                    {[{ icon: ShieldCheck, label: "Seguro" }, { icon: Truck, label: qualifiesForFreeShipping(subtotal) ? "Frete Grátis" : `Grátis +R$${FREE_SHIPPING_THRESHOLD}` }, { icon: CreditCard, label: "3x s/ juros" }].map(t => (
                       <div key={t.label} className="text-center">
                         <t.icon className="w-3.5 h-3.5 text-primary mx-auto mb-0.5" />
                         <p className="font-body text-[10px] text-muted-foreground">{t.label}</p>
