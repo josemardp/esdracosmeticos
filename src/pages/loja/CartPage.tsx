@@ -7,6 +7,7 @@ import { whatsappUrl } from "@/lib/whatsapp";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { getProductImage } from "@/lib/product-images";
+import { getShippingLabel, getFreeShippingMessage, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 export default function CartPage() {
   const { items, itemCount, subtotal, discount, total, coupon, addItem, removeItem, updateQty, applyCoupon, removeCoupon } = useCart();
