@@ -125,10 +125,10 @@ export default function HomePage() {
                 {p.tags?.includes("kit") && <span className="bg-info text-info-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Kit</span>}
                 {p.tags?.includes("combo") && <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Combo</span>}
               </div>
-              {p.sale_price && (
-                <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">
-                  -{Math.round((1 - p.sale_price / p.price) * 100)}%
-                </span>
+               {p.sale_price && (
+                 <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
+                   -{Math.round((1 - p.sale_price / p.price) * 100)}%
+                 </span>
               )}
               {p.inventory_count <= 0 && <div className="absolute inset-0 bg-foreground/50 backdrop-blur-[2px] flex items-center justify-center"><span className="bg-foreground text-primary-foreground font-body text-xs font-semibold px-4 py-1.5 rounded-full">Esgotado</span></div>}
             </div>
