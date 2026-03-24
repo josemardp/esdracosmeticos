@@ -75,5 +75,5 @@ export function useSEO(titleOrOpts: string | SEOOptions, description?: string) {
       const robots = document.querySelector('meta[name="robots"]');
       if (robots) robots.remove();
     }
-  }, [opts.title, opts.description, opts.ogImage, opts.ogType, opts.noindex]);
+  }, [opts.title, opts.description, opts.canonical, opts.ogImage, opts.ogType, opts.noindex]);
 }
