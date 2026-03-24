@@ -39,6 +39,15 @@ export default function CheckoutPage() {
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
 
+  // GA4: begin_checkout ao entrar na página (uma vez)
+  const beginCheckoutFired = useRef(false);
+  useEffect(() => {
+    if (items.length > 0 && !beginCheckoutFired.current) {
+      beginCheckoutFired.current = true;
+      trackBeginCheckout(total, items.map(i => ({ id: i.id, name: i.name, price: i.sale_price ?? i.price, quantity: i.qty })));
+    }
+  }, [items, total]);
+
   const handleCepBlur = useCallback(async () => {
     const clean = form.zip.replace(/\D/g, "");
     if (clean.length !== 8) return;
