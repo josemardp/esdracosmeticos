@@ -253,7 +253,7 @@ export default function ProductPage() {
                   {justAdded ? (
                     <><CheckCircle className="w-4 h-4 mr-2" /> Adicionado ao Carrinho!</>
                   ) : (
-                    <><ShoppingBag className="w-4 h-4 mr-2" /> Comprar — R$ {(finalPrice * qty).toFixed(2)}</>
+                    <><ShoppingBag className="w-4 h-4 mr-2" /> Adicionar à sacola — R$ {(finalPrice * qty).toFixed(2)}</>
                   )}
                 </Button>
                 <a href={`https://wa.me/${WHATSAPP_PHONE}?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick("product_page")} className="block">
