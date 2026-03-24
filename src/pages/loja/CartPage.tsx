@@ -82,7 +82,13 @@ export default function CartPage() {
             <div className="space-y-2.5 font-body text-sm border-b pb-4 mb-4">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="font-medium">R$ {subtotal.toFixed(2)}</span></div>
               {discount > 0 && <div className="flex justify-between text-primary"><span>Desconto</span><span className="font-medium">- R$ {discount.toFixed(2)}</span></div>}
-              <div className="flex justify-between"><span className="text-muted-foreground">Frete</span><span className="text-xs text-muted-foreground">Calculado no checkout</span></div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Frete</span>
+                <span className={`text-xs font-medium ${getShippingLabel(subtotal) === "Grátis" ? "text-success" : "text-muted-foreground"}`}>{getShippingLabel(subtotal)}</span>
+              </div>
+              {getFreeShippingMessage(subtotal) && (
+                <p className="font-body text-[11px] text-primary">{getFreeShippingMessage(subtotal)}</p>
+              )}
             </div>
             <div className="flex justify-between font-body font-bold text-foreground text-lg mb-5">
               <span>Total</span><span>R$ {total.toFixed(2)}</span>
