@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getProductImage } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
+import { trackAddToCart } from "@/lib/analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { whatsappUrl } from "@/lib/whatsapp";
 import heroImg from "@/assets/hero-cosmetics.jpg";
