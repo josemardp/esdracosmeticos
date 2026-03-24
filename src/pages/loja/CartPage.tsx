@@ -7,7 +7,7 @@ import { whatsappUrl } from "@/lib/whatsapp";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { getProductImage } from "@/lib/product-images";
-import { getShippingLabel, getFreeShippingMessage, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
+import { getShippingLabel, getFreeShippingMessage, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 export default function CartPage() {
   const { items, itemCount, subtotal, discount, total, coupon, addItem, removeItem, updateQty, applyCoupon, removeCoupon } = useCart();
@@ -90,9 +90,13 @@ export default function CartPage() {
                 <p className="font-body text-[11px] text-primary">{getFreeShippingMessage(subtotal)}</p>
               )}
             </div>
-            <div className="flex justify-between font-body font-bold text-foreground text-lg mb-5">
-              <span>Total</span><span>R$ {total.toFixed(2)}</span>
+            <div className="flex justify-between font-body font-bold text-foreground text-lg mb-1">
+              <span>{qualifiesForFreeShipping(subtotal) ? "Total" : "Total (sem frete)"}</span><span>R$ {total.toFixed(2)}</span>
             </div>
+            {!qualifiesForFreeShipping(subtotal) && (
+              <p className="font-body text-[10px] text-muted-foreground mb-4">* Frete será informado pelo WhatsApp antes do pagamento</p>
+            )}
+            {qualifiesForFreeShipping(subtotal) && <div className="mb-5" />}
 
             {/* Coupon */}
             {coupon ? (

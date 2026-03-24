@@ -19,7 +19,13 @@ export function qualifiesForFreeShipping(subtotal: number): boolean {
 /** Mensagem de frete para exibição ao cliente. */
 export function getShippingLabel(subtotal: number): string {
   if (qualifiesForFreeShipping(subtotal)) return "Grátis";
-  return "Calculado na finalização";
+  return "A combinar via WhatsApp";
+}
+
+/** Nota explicativa quando o frete ainda não está incluso no total. */
+export function getShippingDisclaimer(subtotal: number): string | null {
+  if (qualifiesForFreeShipping(subtotal)) return null;
+  return "* Total sem frete. O valor do frete será informado pelo WhatsApp antes do pagamento.";
 }
 
 /** Mensagem de incentivo para atingir frete grátis. */
