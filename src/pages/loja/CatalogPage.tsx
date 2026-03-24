@@ -810,7 +810,7 @@ const ProductCard = memo(function ProductCard({
             )}
           </div>
 
-          <p className="font-body text-[10px] sm:text-[11px] text-muted-foreground mb-3 flex items-center gap-1">
+          <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-3 flex items-center gap-1">
             <CreditCard className="w-3 h-3 shrink-0" />
             {fmtInstallment(finalPrice)}
           </p>
