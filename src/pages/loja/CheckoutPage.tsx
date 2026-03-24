@@ -156,12 +156,20 @@ export default function CheckoutPage() {
                   <span>− R$ {orderResult.discount.toFixed(2)}</span>
                 </div>
               )}
+              <div className="flex justify-between gap-8">
+                <span className="text-muted-foreground">Frete</span>
+                <span className={`text-xs font-medium ${qualifiesForFreeShipping(orderResult.subtotal) ? "text-success" : "text-muted-foreground"}`}>
+                  {qualifiesForFreeShipping(orderResult.subtotal) ? "Grátis" : "A combinar"}
+                </span>
+              </div>
               <div className="flex justify-between gap-8 font-semibold text-foreground border-t pt-1.5 mt-1">
-                <span>Total</span>
+                <span>{qualifiesForFreeShipping(orderResult.subtotal) ? "Total" : "Total (sem frete)"}</span>
                 <span>R$ {orderResult.total.toFixed(2)}</span>
               </div>
             </div>
-          </div>
+            {!qualifiesForFreeShipping(orderResult.subtotal) && (
+              <p className="font-body text-[10px] text-muted-foreground mt-2">* Frete será informado pelo WhatsApp</p>
+            )}
 
           {/* Instruções por forma de pagamento */}
           <div className="bg-card border rounded-xl px-6 py-5 mb-6 max-w-md mx-auto text-left">
