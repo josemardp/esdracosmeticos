@@ -56,13 +56,15 @@ export function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary"
+                disabled={loading}
+                className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
               />
               <button
                 type="submit"
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-sm font-medium hover:opacity-90 transition-opacity"
+                disabled={loading}
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                Inscrever-se
+                {loading ? "Enviando..." : "Inscrever-se"}
               </button>
             </form>
           )}
