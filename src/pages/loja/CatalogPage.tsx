@@ -762,9 +762,9 @@ const ProductCard = memo(function ProductCard({
                  </span>
               )}
               {p.bestseller && (
-                <span className="bg-gold text-gold-foreground text-[10px] font-body font-semibold px-2 py-0.5 rounded-full">
-                  Mais Vendido
-                </span>
+                 <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
+                   Mais Vendido
+                 </span>
               )}
             </div>
 
