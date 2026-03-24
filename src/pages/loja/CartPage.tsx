@@ -87,7 +87,7 @@ export default function CartPage() {
                 <span className={`text-xs font-medium ${getShippingLabel(subtotal) === "Grátis" ? "text-success" : "text-muted-foreground"}`}>{getShippingLabel(subtotal)}</span>
               </div>
               {getFreeShippingMessage(subtotal) && (
-                <p className="font-body text-[11px] text-primary">{getFreeShippingMessage(subtotal)}</p>
+                <p className="font-body text-xs text-primary">{getFreeShippingMessage(subtotal)}</p>
               )}
             </div>
             <div className="flex justify-between font-body font-bold text-foreground text-lg mb-1">
