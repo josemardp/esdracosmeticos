@@ -7,6 +7,7 @@ const DEFAULT_OG_IMAGE = `${SITE_URL}/og-esdra-cosmeticos.png`;
 interface SEOOptions {
   title: string;
   description?: string;
+  canonical?: string;
   ogImage?: string;
   ogType?: string;
   noindex?: boolean;
