@@ -13,6 +13,7 @@ import { fetchCep } from "@/lib/viacep";
 import { getProductImage } from "@/lib/product-images";
 import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
+import { getShippingLabel, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
