@@ -9,7 +9,7 @@ import {
   Tag, Landmark, FileBarChart, PieChart,
   PackageCheck, ArrowDownUp, Percent, AlertTriangle,
   UserPlus, Filter, Mail, UserMinus,
-  Gauge, Radio, PackageSearch, Download, Shield, Link as LinkIcon
+  Gauge, Radio, PackageSearch, Download, Shield, Link as LinkIcon, Calculator
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
@@ -37,6 +37,7 @@ const navSections = [
       { label: "Relatórios", href: "/admin/gestao/relatorios", icon: FileBarChart },
       { label: "Resultado", href: "/admin/gestao/resultado", icon: PieChart },
       { label: "Canais", href: "/admin/gestao/canais", icon: Radio },
+      { label: "Calculadora", href: "/admin/crediario-calculadora", icon: Calculator },
     ],
   },
   {
@@ -179,7 +180,7 @@ export function AdminLayout() {
               </button>
             </div>
             <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
-              {navSections.map((section) => (
+              {navSections.map((section) => ( section.title !== "E-commerce" && (
                 <div key={section.title}>
                   <p className="font-body text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">{section.title}</p>
                   <div className="space-y-0.5">
@@ -201,7 +202,7 @@ export function AdminLayout() {
                     ))}
                   </div>
                 </div>
-              ))}
+              )))}
             </nav>
             <div className="p-3 border-t">
               <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm text-destructive w-full">
