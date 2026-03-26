@@ -42,6 +42,7 @@ import AdminSupportPage from "@/pages/admin/AdminSupportPage";
 import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
 import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
 import AdminCampaignsPage from "@/pages/admin/AdminCampaignsPage";
+import CrediarioPage from "@/pages/admin/CrediarioPage";
 
 // Gestão pages
 import GestaoDashboardPage from "@/pages/admin/gestao/GestaoDashboardPage";
@@ -167,6 +168,7 @@ const App = () => (
               <Route path="/admin/cupons" element={<AdminCouponsPage />} />
               <Route path="/admin/conteudo" element={<AdminContentPage />} />
               <Route path="/admin/campanhas" element={<AdminCampaignsPage />} />
+              <Route path="/admin/crediario-calculadora" element={<CrediarioPage />} />
               <Route path="/admin/suporte" element={<AdminSupportPage />} />
               <Route path="/admin/integracoes" element={<AdminIntegrationsPage />} />
               <Route path="/admin/configuracoes" element={<AdminSettingsPage />} />
