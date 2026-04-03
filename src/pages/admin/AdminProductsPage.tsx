@@ -28,6 +28,7 @@ export default function AdminProductsPage() {
   const [form, setForm] = useState<Partial<Product>>({});
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState<string>("all");
+  const [extraFilter, setExtraFilter] = useState<string>("all");
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -98,12 +99,17 @@ export default function AdminProductsPage() {
 
   const filtered = products.filter(p => {
     if (catFilter !== "all" && p.category_id !== catFilter) return false;
+    if (extraFilter === "sem_preco" && p.price > 0) return false;
+    if (extraFilter === "sem_foto" && p.cover_image) return false;
     if (search) {
       const q = search.toLowerCase();
       return p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q);
     }
     return true;
   });
+
+  const semPrecoCount = products.filter(p => !p.price || p.price === 0).length;
+  const semFotoCount = products.filter(p => !p.cover_image).length;
 
   const getCatName = (id: string | null) => categories.find(c => c.id === id)?.name || "";
 
@@ -113,6 +119,46 @@ export default function AdminProductsPage() {
         <h1 className="font-display text-2xl lg:text-3xl text-foreground">Produtos</h1>
         <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Novo Produto</Button>
       </div>
+
+      {/* Alertas de pendências */}
+      {(semPrecoCount > 0 || semFotoCount > 0) && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {semPrecoCount > 0 && (
+            <button
+              onClick={() => setExtraFilter(extraFilter === "sem_preco" ? "all" : "sem_preco")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                extraFilter === "sem_preco"
+                  ? "bg-amber-100 border-amber-400 text-amber-800"
+                  : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
+              }`}
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+              {semPrecoCount} sem preço
+            </button>
+          )}
+          {semFotoCount > 0 && (
+            <button
+              onClick={() => setExtraFilter(extraFilter === "sem_foto" ? "all" : "sem_foto")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                extraFilter === "sem_foto"
+                  ? "bg-blue-100 border-blue-400 text-blue-800"
+                  : "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              }`}
+            >
+              <Package className="w-3.5 h-3.5" />
+              {semFotoCount} sem foto
+            </button>
+          )}
+          {extraFilter !== "all" && (
+            <button
+              onClick={() => setExtraFilter("all")}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border border-muted text-muted-foreground hover:bg-secondary transition-colors"
+            >
+              <X className="w-3 h-3" /> Limpar filtro
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Search & filters */}
       <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -202,9 +248,9 @@ export default function AdminProductsPage() {
       ) : filtered.length === 0 ? (
         <div className="bg-card border rounded-xl p-12 text-center">
           <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="font-body text-sm text-muted-foreground mb-4">{search || catFilter !== "all" ? "Nenhum produto encontrado com esses filtros." : "Nenhum produto cadastrado."}</p>
-          {search || catFilter !== "all" ? (
-            <Button variant="outline" onClick={() => { setSearch(""); setCatFilter("all"); }}>Limpar filtros</Button>
+          <p className="font-body text-sm text-muted-foreground mb-4">{search || catFilter !== "all" || extraFilter !== "all" ? "Nenhum produto encontrado com esses filtros." : "Nenhum produto cadastrado."}</p>
+          {search || catFilter !== "all" || extraFilter !== "all" ? (
+            <Button variant="outline" onClick={() => { setSearch(""); setCatFilter("all"); setExtraFilter("all"); }}>Limpar filtros</Button>
           ) : (
             <Button onClick={openNew}>Cadastrar primeiro produto</Button>
           )}
@@ -223,6 +269,8 @@ export default function AdminProductsPage() {
                 <div className="flex items-center gap-2">
                   <h3 className="font-body text-sm font-medium text-foreground truncate">{p.name}</h3>
                   {!p.active && <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-body shrink-0">Inativo</span>}
+                  {(!p.price || p.price === 0) && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-body shrink-0">Sem preço</span>}
+                  {!p.cover_image && <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-body shrink-0">Sem foto</span>}
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-body text-xs text-muted-foreground">{p.sku || "Sem SKU"}</p>
