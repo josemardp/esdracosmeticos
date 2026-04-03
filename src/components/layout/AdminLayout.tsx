@@ -9,7 +9,7 @@ import {
   Tag, Landmark, FileBarChart, PieChart,
   PackageCheck, ArrowDownUp, Percent, AlertTriangle,
   UserPlus, Filter, Mail, UserMinus,
-  Gauge, Radio, PackageSearch, Download, Shield, Link as LinkIcon, Calculator
+  Gauge, Radio, PackageSearch, Download, Shield, Link as LinkIcon, Calculator, FileUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
@@ -43,6 +43,7 @@ const navSections = [
   {
     title: "Estoque & Margem",
     items: [
+      { label: "Importar NF-e", href: "/admin/importar-nfe", icon: FileUp },
       { label: "Receb. Compras", href: "/admin/gestao/recebimento-compras", icon: PackageCheck },
       { label: "Mov. Estoque", href: "/admin/gestao/movimentos-estoque", icon: ArrowDownUp },
       { label: "Margem", href: "/admin/gestao/margem", icon: Percent },
