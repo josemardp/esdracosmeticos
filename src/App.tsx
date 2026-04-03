@@ -43,6 +43,7 @@ import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
 import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
 import AdminCampaignsPage from "@/pages/admin/AdminCampaignsPage";
 import CrediarioPage from "@/pages/admin/CrediarioPage";
+import AdminImportNFePage from "@/pages/admin/AdminImportNFePage";
 
 // Gestão pages
 import GestaoDashboardPage from "@/pages/admin/gestao/GestaoDashboardPage";
@@ -165,6 +166,7 @@ const App = () => (
               <Route path="/admin/pedidos" element={<AdminOrdersPage />} />
               <Route path="/admin/clientes" element={<AdminCustomersPage />} />
               <Route path="/admin/estoque" element={<AdminStockPage />} />
+              <Route path="/admin/importar-nfe" element={<AdminImportNFePage />} />
               <Route path="/admin/cupons" element={<AdminCouponsPage />} />
               <Route path="/admin/conteudo" element={<AdminContentPage />} />
               <Route path="/admin/campanhas" element={<AdminCampaignsPage />} />
