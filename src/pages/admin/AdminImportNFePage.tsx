@@ -152,7 +152,7 @@ export default function AdminImportNFePage() {
 
     const { data: dbProducts, error: loadError } = await supabase
       .from("products")
-      .select("id, name, sku, inventory_count, price, cost_price, cover_image");
+      .select("id, name, sku, inventory_count, price, cover_image");
 
     if (loadError) {
       addLog("error", `Erro ao carregar produtos: ${loadError.message}`);
@@ -196,7 +196,6 @@ export default function AdminImportNFePage() {
         // Produto existe: soma estoque e atualiza custo se fornecido
         const newStock = (existing.inventory_count ?? 0) + data.totalQty;
         const updatePayload: Record<string, any> = { inventory_count: newStock };
-        if (data.unitCost > 0) updatePayload.cost_price = data.unitCost;
 
         const { error } = await supabase
           .from("products")
@@ -224,7 +223,6 @@ export default function AdminImportNFePage() {
           price: 0,
           active: false,
         };
-        if (data.unitCost > 0) insertPayload.cost_price = data.unitCost;
 
         const { error } = await supabase.from("products").insert(insertPayload);
 
