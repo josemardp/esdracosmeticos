@@ -32,7 +32,7 @@ const categoryImages: Record<string, string> = {
 };
 
 const benefits = [
-  { icon: Truck, title: "Frete Grátis", desc: "Em compras acima de R$ 199 para todo o Brasil" },
+  { icon: Truck, title: "Frete Grátis 🚚", desc: "Em compras acima de R$ 199 para todo o Brasil" },
   { icon: ShieldCheck, title: "Compra 100% Segura", desc: "Seus dados criptografados e protegidos" },
   { icon: RotateCcw, title: "Troca em até 30 dias", desc: "Devolução simples e sem burocracia" },
   { icon: Gift, title: "Brindes Exclusivos", desc: "Surpresas especiais em pedidos selecionados" },
