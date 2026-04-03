@@ -29,6 +29,10 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState<string>("all");
   const [extraFilter, setExtraFilter] = useState<string>("all");
+  const [brandFilter, setBrandFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [tagFilter, setTagFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("created_desc");
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -97,16 +101,39 @@ export default function AdminProductsPage() {
     fetchProducts();
   };
 
-  const filtered = products.filter(p => {
-    if (catFilter !== "all" && p.category_id !== catFilter) return false;
-    if (extraFilter === "sem_preco" && p.price > 0) return false;
-    if (extraFilter === "sem_foto" && p.cover_image) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      return p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q);
-    }
-    return true;
-  });
+  // Derived filter options
+  const uniqueBrands = Array.from(new Set(products.map(p => p.brand).filter(Boolean) as string[])).sort();
+  const uniqueTags = Array.from(new Set(products.flatMap(p => p.tags ?? []).filter(Boolean))).sort();
+
+  const filtered = products
+    .filter(p => {
+      if (catFilter !== "all" && p.category_id !== catFilter) return false;
+      if (brandFilter !== "all" && p.brand !== brandFilter) return false;
+      if (tagFilter !== "all" && !(p.tags ?? []).includes(tagFilter)) return false;
+      if (statusFilter === "ativo" && !p.active) return false;
+      if (statusFilter === "inativo" && p.active) return false;
+      if (statusFilter === "zerado" && p.inventory_count !== 0) return false;
+      if (statusFilter === "baixo" && (p.inventory_count === 0 || p.inventory_count >= 5)) return false;
+      if (statusFilter === "em_estoque" && p.inventory_count <= 0) return false;
+      if (extraFilter === "sem_preco" && p.price > 0) return false;
+      if (extraFilter === "sem_foto" && p.cover_image) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        return p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q);
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "name_asc":    return a.name.localeCompare(b.name, "pt-BR");
+        case "name_desc":   return b.name.localeCompare(a.name, "pt-BR");
+        case "price_asc":   return a.price - b.price;
+        case "price_desc":  return b.price - a.price;
+        case "stock_asc":   return a.inventory_count - b.inventory_count;
+        case "stock_desc":  return b.inventory_count - a.inventory_count;
+        default:            return 0; // mantém ordem do banco (created_at desc)
+      }
+    });
 
   const semPrecoCount = products.filter(p => !p.price || p.price === 0).length;
   const semFotoCount = products.filter(p => !p.cover_image).length;
@@ -161,15 +188,62 @@ export default function AdminProductsPage() {
       )}
 
       {/* Search & filters */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-4">
-        <div className="relative flex-1">
+      <div className="space-y-2 mb-4">
+        {/* Linha 1: busca */}
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Buscar por nome ou SKU..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+          <Input placeholder="Buscar por nome, SKU ou marca..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
         </div>
-        <select value={catFilter} onChange={e => setCatFilter(e.target.value)} className="border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground min-w-[150px]">
-          <option value="all">Todas categorias</option>
-          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+
+        {/* Linha 2: selects de filtro */}
+        <div className="flex flex-wrap gap-2">
+          <select value={catFilter} onChange={e => setCatFilter(e.target.value)} className="border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground">
+            <option value="all">Todas categorias</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+
+          {uniqueBrands.length > 0 && (
+            <select value={brandFilter} onChange={e => setBrandFilter(e.target.value)} className="border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground">
+              <option value="all">Todas marcas</option>
+              {uniqueBrands.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+          )}
+
+          {uniqueTags.length > 0 && (
+            <select value={tagFilter} onChange={e => setTagFilter(e.target.value)} className="border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground">
+              <option value="all">Todas tags</option>
+              {uniqueTags.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          )}
+
+          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground">
+            <option value="all">Todos status</option>
+            <option value="ativo">Ativos</option>
+            <option value="inativo">Inativos</option>
+            <option value="em_estoque">Em estoque</option>
+            <option value="baixo">Estoque baixo (&lt; 5)</option>
+            <option value="zerado">Estoque zerado</option>
+          </select>
+
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground">
+            <option value="created_desc">Mais recentes</option>
+            <option value="name_asc">Nome A → Z</option>
+            <option value="name_desc">Nome Z → A</option>
+            <option value="price_desc">Maior preço</option>
+            <option value="price_asc">Menor preço</option>
+            <option value="stock_desc">Maior estoque</option>
+            <option value="stock_asc">Menor estoque</option>
+          </select>
+
+          {(catFilter !== "all" || brandFilter !== "all" || tagFilter !== "all" || statusFilter !== "all" || sortBy !== "created_desc") && (
+            <button
+              onClick={() => { setCatFilter("all"); setBrandFilter("all"); setTagFilter("all"); setStatusFilter("all"); setSortBy("created_desc"); }}
+              className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium border border-muted text-muted-foreground hover:bg-secondary transition-colors"
+            >
+              <X className="w-3 h-3" /> Limpar filtros
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Edit/Create form modal */}
@@ -248,9 +322,9 @@ export default function AdminProductsPage() {
       ) : filtered.length === 0 ? (
         <div className="bg-card border rounded-xl p-12 text-center">
           <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="font-body text-sm text-muted-foreground mb-4">{search || catFilter !== "all" || extraFilter !== "all" ? "Nenhum produto encontrado com esses filtros." : "Nenhum produto cadastrado."}</p>
-          {search || catFilter !== "all" || extraFilter !== "all" ? (
-            <Button variant="outline" onClick={() => { setSearch(""); setCatFilter("all"); setExtraFilter("all"); }}>Limpar filtros</Button>
+          <p className="font-body text-sm text-muted-foreground mb-4">{search || catFilter !== "all" || brandFilter !== "all" || tagFilter !== "all" || statusFilter !== "all" || extraFilter !== "all" || sortBy !== "created_desc" ? "Nenhum produto encontrado com esses filtros." : "Nenhum produto cadastrado."}</p>
+          {search || catFilter !== "all" || brandFilter !== "all" || tagFilter !== "all" || statusFilter !== "all" || extraFilter !== "all" || sortBy !== "created_desc" ? (
+            <Button variant="outline" onClick={() => { setSearch(""); setCatFilter("all"); setBrandFilter("all"); setTagFilter("all"); setStatusFilter("all"); setExtraFilter("all"); setSortBy("created_desc"); }}>Limpar filtros</Button>
           ) : (
             <Button onClick={openNew}>Cadastrar primeiro produto</Button>
           )}
