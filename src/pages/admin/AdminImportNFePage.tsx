@@ -1,360 +1,299 @@
-import { useState, useCallback } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import { Plus, Pencil, Trash2, Package, X, Upload, Search, AlertTriangle, PackageX } from "lucide-react";
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
-);
-
-interface Produto {
-  sku: string;
-  name: string;
-  ean: string;
-  cost: number;
-  qty: number;
+interface Product {
+  id: string; name: string; slug: string; sku: string | null; price: number;
+  sale_price: number | null; inventory_count: number; active: boolean;
+  featured: boolean; new_arrival: boolean; bestseller: boolean;
+  category_id: string | null; short_description: string | null;
+  full_description: string | null; cover_image: string | null;
+  how_to_use: string | null; benefits: string | null; ingredients: string | null;
+  tags: string[] | null; brand: string | null; weight_volume: string | null;
 }
 
-interface NFeResult {
-  fileName: string;
-  nNF: string;
-  emitente: string;
-  dhEmi: string;
-  produtos: Produto[];
-}
+interface Category { id: string; name: string; }
 
-type Status = "idle" | "parsing" | "ready" | "saving" | "done" | "error";
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [isNew, setIsNew] = useState(false);
+  const [form, setForm] = useState<Partial<Product>>({});
+  const [search, setSearch] = useState("");
+  const [catFilter, setCatFilter] = useState<string>("all");
+  const [extraFilter, setExtraFilter] = useState<string>("all");
 
-function parseNFe(xmlText: string, fileName: string): NFeResult {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlText, "text/xml");
-
-  const ns = "http://www.portalfiscal.inf.br/nfe";
-  const get = (parent: Element | Document, tag: string) =>
-    parent.getElementsByTagNameNS(ns, tag)[0]?.textContent?.trim() ?? "";
-
-  const nNF = get(doc, "nNF");
-  const emitente = get(doc, "xNome");
-  const dhEmi = get(doc, "dhEmi");
-
-  const detNodes = doc.getElementsByTagNameNS(ns, "det");
-  const produtos: Produto[] = Array.from(detNodes).map((det) => {
-    const rawSku = get(det, "cProd");
-    const sku = rawSku.replace(/^0+/, "").padStart(6, "0");
-    const name = get(det, "xProd");
-    const ean = get(det, "cEAN");
-    const cost = parseFloat(get(det, "vUnCom") || "0");
-    const qty = Math.round(parseFloat(get(det, "qCom") || "0"));
-    return { sku, name, ean, cost, qty };
-  });
-
-  return { fileName, nNF, emitente, dhEmi, produtos };
-}
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-export default function AdminImportNFePage() {
-  const [status, setStatus] = useState<Status>("idle");
-  const [results, setResults] = useState<NFeResult[]>([]);
-  const [log, setLog] = useState<string[]>([]);
-  const [dragging, setDragging] = useState(false);
-
-  const addLog = (msg: string) => setLog((prev) => [...prev, msg]);
-
-  const processFiles = useCallback(async (files: FileList | File[]) => {
-    setStatus("parsing");
-    setLog([]);
-    const parsed: NFeResult[] = [];
-
-    for (const file of Array.from(files)) {
-      if (!file.name.toLowerCase().endsWith(".xml")) continue;
-      try {
-        const text = await file.text();
-        const result = parseNFe(text, file.name);
-        parsed.push(result);
-        addLog(`✓ ${file.name} — NF ${result.nNF} (${result.produtos.length} itens)`);
-      } catch (e) {
-        addLog(`✗ Erro ao ler ${file.name}: ${e}`);
-      }
-    }
-
-    if (parsed.length === 0) {
-      setStatus("error");
-      addLog("Nenhum XML válido encontrado.");
-      return;
-    }
-
-    setResults(parsed);
-    setStatus("ready");
-  }, []);
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) processFiles(e.target.files);
+  const fetchProducts = async () => {
+    setLoading(true);
+    const [{ data: prods }, { data: cats }] = await Promise.all([
+      supabase.from("products").select("id, name, slug, sku, price, sale_price, inventory_count, active, featured, new_arrival, bestseller, category_id, short_description, full_description, cover_image, how_to_use, benefits, ingredients, tags, brand, weight_volume").order("created_at", { ascending: false }),
+      supabase.from("categories").select("id, name").order("name"),
+    ]);
+    setProducts((prods as Product[]) ?? []);
+    setCategories((cats as Category[]) ?? []);
+    setLoading(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    if (e.dataTransfer.files) processFiles(e.dataTransfer.files);
+  useEffect(() => { fetchProducts(); }, []);
+
+  const openNew = () => {
+    setIsNew(true);
+    setForm({ name: "", slug: "", sku: "", price: 0, sale_price: null, inventory_count: 0, active: true, featured: false, new_arrival: false, bestseller: false, category_id: null, short_description: "", full_description: "", cover_image: "", how_to_use: "", benefits: "", ingredients: "", tags: [], brand: "", weight_volume: "" });
+    setEditing({} as Product);
   };
 
-  const totalProdutos = results.reduce((acc, r) => acc + r.produtos.length, 0);
+  const openEdit = (p: Product) => {
+    setIsNew(false);
+    setForm({ ...p });
+    setEditing(p);
+  };
+
+  const closeForm = () => { setEditing(null); setForm({}); };
+
+  const generateSlug = (name: string) => name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   const handleSave = async () => {
-    setStatus("saving");
-    addLog("Iniciando importação no Supabase...");
+    if (!form.name) { toast({ title: "Nome é obrigatório", variant: "destructive" }); return; }
+    const slug = form.slug || generateSlug(form.name);
+    const payload = {
+      ...form, slug,
+      price: Number(form.price) || 0,
+      sale_price: form.sale_price ? Number(form.sale_price) : null,
+      inventory_count: Number(form.inventory_count) || 0,
+    };
 
-    const allProdutos = results.flatMap((r) =>
-      r.produtos.map((p) => ({
-        sku: p.sku,
-        name: p.name,
-        slug: toSlug(p.name),
-        cost: p.cost,
-        inventory_count: p.qty,
-      }))
-    );
-
-    const BATCH = 50;
-    let total = 0;
-    for (let i = 0; i < allProdutos.length; i += BATCH) {
-      const batch = allProdutos.slice(i, i + BATCH);
-      const { error } = await supabase.rpc("upsert_products_from_nfe", {
-        products: batch,
-      });
-
-      if (error) {
-        for (const p of batch) {
-          const { error: e2 } = await supabase
-            .from("products")
-            .upsert(p, { onConflict: "sku", ignoreDuplicates: false });
-          if (e2) {
-            addLog(`✗ Erro no SKU ${p.sku}: ${e2.message}`);
-          } else {
-            total++;
-          }
-        }
-      } else {
-        total += batch.length;
-        addLog(`✓ Lote ${Math.floor(i / BATCH) + 1} salvo (${batch.length} produtos)`);
-      }
+    if (isNew) {
+      const { error } = await supabase.from("products").insert(payload as any);
+      if (error) { toast({ title: "Erro ao criar", description: error.message, variant: "destructive" }); return; }
+      toast({ title: "Produto criado com sucesso! ✓" });
+    } else {
+      const { error } = await supabase.from("products").update(payload as any).eq("id", editing!.id);
+      if (error) { toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" }); return; }
+      toast({ title: "Produto atualizado ✓" });
     }
-
-    addLog(`\nImportação concluída: ${total}/${allProdutos.length} produtos processados.`);
-    setStatus("done");
+    closeForm();
+    fetchProducts();
   };
 
-  const handleReset = () => {
-    setStatus("idle");
-    setResults([]);
-    setLog([]);
+  const toggleActive = async (p: Product) => {
+    const { error } = await supabase.from("products").update({ active: !p.active }).eq("id", p.id);
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    toast({ title: p.active ? "Produto desativado" : "Produto ativado ✓" });
+    fetchProducts();
   };
+
+  const deleteProduct = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.")) return;
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) { toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Produto excluído" });
+    fetchProducts();
+  };
+
+  const filtered = products.filter(p => {
+    if (catFilter !== "all" && p.category_id !== catFilter) return false;
+    if (extraFilter === "sem_preco" && p.price > 0) return false;
+    if (extraFilter === "sem_foto" && p.cover_image) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q);
+    }
+    return true;
+  });
+
+  const semPrecoCount = products.filter(p => !p.price || p.price === 0).length;
+  const semFotoCount = products.filter(p => !p.cover_image).length;
+
+  const getCatName = (id: string | null) => categories.find(c => c.id === id)?.name || "";
 
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto", padding: "2rem 1rem", fontFamily: "inherit" }}>
-      <div style={{ marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: 22, fontWeight: 500, margin: "0 0 4px" }}>
-          Importar NF-e
-        </h1>
-        <p style={{ fontSize: 14, color: "var(--muted, #6b7280)", margin: 0 }}>
-          Faça upload dos XMLs das notas fiscais para atualizar o estoque automaticamente.
-        </p>
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="font-display text-2xl lg:text-3xl text-foreground">Produtos</h1>
+        <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" /> Novo Produto</Button>
       </div>
 
-      {(status === "idle" || status === "error") && (
-        <div
-          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={handleDrop}
-          style={{
-            border: `2px dashed ${dragging ? "#6366f1" : "#d1d5db"}`,
-            borderRadius: 12,
-            padding: "3rem 2rem",
-            textAlign: "center",
-            background: dragging ? "#f5f3ff" : "transparent",
-            transition: "all 0.15s",
-            cursor: "pointer",
-          }}
-          onClick={() => document.getElementById("nfe-input")?.click()}
-        >
-          <div style={{ fontSize: 32, marginBottom: 12 }}>📄</div>
-          <p style={{ fontWeight: 500, margin: "0 0 4px", fontSize: 15 }}>
-            Arraste os XMLs aqui ou clique para selecionar
-          </p>
-          <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>
-            Aceita múltiplos arquivos .xml de NF-e
-          </p>
-          <input
-            id="nfe-input"
-            type="file"
-            accept=".xml"
-            multiple
-            style={{ display: "none" }}
-            onChange={handleFileInput}
-          />
+      {/* Alertas de pendências */}
+      {(semPrecoCount > 0 || semFotoCount > 0) && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {semPrecoCount > 0 && (
+            <button
+              onClick={() => setExtraFilter(extraFilter === "sem_preco" ? "all" : "sem_preco")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                extraFilter === "sem_preco"
+                  ? "bg-amber-100 border-amber-400 text-amber-800"
+                  : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100"
+              }`}
+            >
+              <AlertTriangle className="w-3.5 h-3.5" />
+              {semPrecoCount} sem preço
+            </button>
+          )}
+          {semFotoCount > 0 && (
+            <button
+              onClick={() => setExtraFilter(extraFilter === "sem_foto" ? "all" : "sem_foto")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                extraFilter === "sem_foto"
+                  ? "bg-blue-100 border-blue-400 text-blue-800"
+                  : "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              }`}
+            >
+              <Package className="w-3.5 h-3.5" />
+              {semFotoCount} sem foto
+            </button>
+          )}
+          {extraFilter !== "all" && (
+            <button
+              onClick={() => setExtraFilter("all")}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border border-muted text-muted-foreground hover:bg-secondary transition-colors"
+            >
+              <X className="w-3 h-3" /> Limpar filtro
+            </button>
+          )}
         </div>
       )}
 
-      {status === "parsing" && (
-        <div style={{ textAlign: "center", padding: "2rem" }}>
-          <p style={{ color: "#6366f1", fontWeight: 500 }}>Lendo arquivos...</p>
+      {/* Search & filters */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Buscar por nome ou SKU..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
         </div>
-      )}
+        <select value={catFilter} onChange={e => setCatFilter(e.target.value)} className="border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground min-w-[150px]">
+          <option value="all">Todas categorias</option>
+          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      </div>
 
-      {(status === "ready" || status === "done") && (
-        <div>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-            gap: 12,
-            marginBottom: "1.5rem",
-          }}>
-            {[
-              { label: "Notas fiscais", value: results.length },
-              { label: "Produtos", value: totalProdutos },
-              { label: "Fornecedor", value: results[0]?.emitente?.split(" ")[0] ?? "—" },
-            ].map((card) => (
-              <div key={card.label} style={{
-                background: "var(--card-bg, #f9fafb)",
-                border: "1px solid var(--border, #e5e7eb)",
-                borderRadius: 10,
-                padding: "14px 16px",
-              }}>
-                <p style={{ fontSize: 12, color: "#9ca3af", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  {card.label}
-                </p>
-                <p style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{card.value}</p>
+      {/* Edit/Create form modal */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-foreground/40 overflow-y-auto">
+          <div className="bg-card border rounded-xl p-6 w-full max-w-2xl mx-4 mb-10 animate-fade-in-scale">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-xl text-foreground">{isNew ? "Novo Produto" : "Editar Produto"}</h2>
+              <button onClick={closeForm}><X className="w-5 h-5 text-muted-foreground" /></button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-1">
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Nome *</Label><Input value={form.name || ""} onChange={e => setForm({ ...form, name: e.target.value, slug: generateSlug(e.target.value) })} /></div>
+              <div><Label className="font-body text-xs">Slug</Label><Input value={form.slug || ""} onChange={e => setForm({ ...form, slug: e.target.value })} /></div>
+              <div><Label className="font-body text-xs">SKU</Label><Input value={form.sku || ""} onChange={e => setForm({ ...form, sku: e.target.value })} /></div>
+              <div><Label className="font-body text-xs">Preço *</Label><Input type="number" step="0.01" value={form.price ?? 0} onChange={e => setForm({ ...form, price: parseFloat(e.target.value) })} /></div>
+              <div><Label className="font-body text-xs">Preço Promocional</Label><Input type="number" step="0.01" value={form.sale_price ?? ""} onChange={e => setForm({ ...form, sale_price: e.target.value ? parseFloat(e.target.value) : null })} placeholder="Opcional" /></div>
+              <div><Label className="font-body text-xs">Estoque</Label><Input type="number" value={form.inventory_count ?? 0} onChange={e => setForm({ ...form, inventory_count: parseInt(e.target.value) })} /></div>
+              <div>
+                <Label className="font-body text-xs">Categoria</Label>
+                <select value={form.category_id || ""} onChange={e => setForm({ ...form, category_id: e.target.value || null })} className="w-full border rounded-lg px-3 py-2 font-body text-sm bg-background text-foreground">
+                  <option value="">Sem categoria</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
               </div>
-            ))}
-          </div>
-
-          {results.map((nfe) => (
-            <div key={nfe.fileName} style={{
-              background: "var(--card-bg, #fff)",
-              border: "1px solid var(--border, #e5e7eb)",
-              borderRadius: 10,
-              marginBottom: "1rem",
-              overflow: "hidden",
-            }}>
-              <div style={{
-                padding: "12px 16px",
-                background: "var(--header-bg, #f3f4f6)",
-                borderBottom: "1px solid var(--border, #e5e7eb)",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: 8,
-              }}>
-                <div>
-                  <span style={{ fontWeight: 600, fontSize: 14 }}>NF {nfe.nNF}</span>
-                  <span style={{ marginLeft: 8, fontSize: 12, color: "#6b7280" }}>{nfe.emitente}</span>
+              <div className="sm:col-span-2">
+                <Label className="font-body text-xs">Imagem do produto</Label>
+                <div className="flex items-center gap-3 mt-1">
+                  {form.cover_image && (
+                    <img src={form.cover_image} alt="" className="w-16 h-16 object-cover rounded-lg border" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} />
+                  )}
+                  <label className="flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors font-body text-sm">
+                    <Upload className="w-4 h-4" />
+                    <span>Enviar imagem</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const ext = file.name.split(".").pop();
+                      const path = `product-${Date.now()}.${ext}`;
+                      toast({ title: "Enviando imagem..." });
+                      const { error } = await supabase.storage.from("products").upload(path, file);
+                      if (error) { toast({ title: "Erro no upload", description: error.message, variant: "destructive" }); return; }
+                      const { data: { publicUrl } } = supabase.storage.from("products").getPublicUrl(path);
+                      setForm({ ...form, cover_image: publicUrl });
+                      toast({ title: "Imagem enviada ✓" });
+                    }} />
+                  </label>
                 </div>
-                <span style={{ fontSize: 12, color: "#9ca3af" }}>
-                  {new Date(nfe.dhEmi).toLocaleDateString("pt-BR")}
-                  {" · "}
-                  {nfe.produtos.length} itens
-                </span>
+                <Input value={form.cover_image || ""} onChange={e => setForm({ ...form, cover_image: e.target.value })} placeholder="Ou cole a URL da imagem..." className="mt-2" />
               </div>
-
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ background: "var(--th-bg, #f9fafb)" }}>
-                      {["SKU", "Produto", "EAN", "Qtd", "Custo unit."].map((h) => (
-                        <th key={h} style={{
-                          textAlign: "left",
-                          padding: "8px 12px",
-                          fontWeight: 500,
-                          color: "#6b7280",
-                          borderBottom: "1px solid var(--border, #e5e7eb)",
-                          whiteSpace: "nowrap",
-                        }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {nfe.produtos.map((p, i) => (
-                      <tr key={p.sku + i} style={{ borderBottom: "1px solid var(--border, #f3f4f6)" }}>
-                        <td style={{ padding: "8px 12px", color: "#6366f1", fontWeight: 500 }}>{p.sku}</td>
-                        <td style={{ padding: "8px 12px", maxWidth: 240 }}>{p.name}</td>
-                        <td style={{ padding: "8px 12px", color: "#9ca3af", fontFamily: "monospace", fontSize: 12 }}>{p.ean}</td>
-                        <td style={{ padding: "8px 12px", textAlign: "center", fontWeight: 500 }}>{p.qty}</td>
-                        <td style={{ padding: "8px 12px", textAlign: "right" }}>
-                          {p.cost.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div><Label className="font-body text-xs">Marca</Label><Input value={form.brand || ""} onChange={e => setForm({ ...form, brand: e.target.value })} placeholder="Ex: Eudora, O Boticário" /></div>
+              <div><Label className="font-body text-xs">Volume/Peso</Label><Input value={form.weight_volume || ""} onChange={e => setForm({ ...form, weight_volume: e.target.value })} placeholder="Ex: 100ml, 400g" /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Tags (separadas por vírgula)</Label><Input value={(form.tags || []).join(", ")} onChange={e => setForm({ ...form, tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })} placeholder="kit, combo, dia-das-maes, natal" /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição curta</Label><Textarea value={form.short_description || ""} onChange={e => setForm({ ...form, short_description: e.target.value })} rows={2} /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Descrição completa</Label><Textarea value={form.full_description || ""} onChange={e => setForm({ ...form, full_description: e.target.value })} rows={4} /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Modo de uso</Label><Textarea value={form.how_to_use || ""} onChange={e => setForm({ ...form, how_to_use: e.target.value })} rows={2} /></div>
+              <div className="sm:col-span-2"><Label className="font-body text-xs">Ingredientes</Label><Textarea value={form.ingredients || ""} onChange={e => setForm({ ...form, ingredients: e.target.value })} rows={2} /></div>
+              <div className="sm:col-span-2 flex flex-wrap gap-4">
+                {(["active", "featured", "new_arrival", "bestseller"] as const).map(key => (
+                  <label key={key} className="flex items-center gap-2 font-body text-sm">
+                    <input type="checkbox" checked={!!form[key]} onChange={e => setForm({ ...form, [key]: e.target.checked })} className="accent-[hsl(var(--primary))]" />
+                    {{ active: "Ativo", featured: "Destaque", new_arrival: "Lançamento", bestseller: "Mais Vendido" }[key]}
+                  </label>
+                ))}
               </div>
             </div>
-          ))}
-
-          <div style={{ display: "flex", gap: 12, marginTop: "1.5rem", flexWrap: "wrap" }}>
-            {status === "ready" && (
-              <button
-                onClick={handleSave}
-                style={{
-                  padding: "10px 24px",
-                  background: "#6366f1",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 8,
-                  fontWeight: 600,
-                  fontSize: 14,
-                  cursor: "pointer",
-                }}
-              >
-                Confirmar e importar {totalProdutos} produtos
-              </button>
-            )}
-            <button
-              onClick={handleReset}
-              style={{
-                padding: "10px 20px",
-                background: "transparent",
-                color: "#6b7280",
-                border: "1px solid #d1d5db",
-                borderRadius: 8,
-                fontSize: 14,
-                cursor: "pointer",
-              }}
-            >
-              {status === "done" ? "Nova importação" : "Cancelar"}
-            </button>
+            <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
+              <Button variant="outline" onClick={closeForm}>Cancelar</Button>
+              <Button onClick={handleSave}>{isNew ? "Criar Produto" : "Salvar Alterações"}</Button>
+            </div>
           </div>
         </div>
       )}
 
-      {status === "saving" && (
-        <div style={{ textAlign: "center", padding: "2rem" }}>
-          <p style={{ color: "#6366f1", fontWeight: 500 }}>Salvando no Supabase...</p>
+      {loading ? (
+        <div className="space-y-3">{[1,2,3,4].map(i => <div key={i} className="h-16 bg-card border rounded-xl animate-pulse" />)}</div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-card border rounded-xl p-12 text-center">
+          <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+          <p className="font-body text-sm text-muted-foreground mb-4">{search || catFilter !== "all" || extraFilter !== "all" ? "Nenhum produto encontrado com esses filtros." : "Nenhum produto cadastrado."}</p>
+          {search || catFilter !== "all" || extraFilter !== "all" ? (
+            <Button variant="outline" onClick={() => { setSearch(""); setCatFilter("all"); setExtraFilter("all"); }}>Limpar filtros</Button>
+          ) : (
+            <Button onClick={openNew}>Cadastrar primeiro produto</Button>
+          )}
         </div>
-      )}
-
-      {log.length > 0 && (
-        <div style={{
-          marginTop: "1.5rem",
-          background: "#1e1e2e",
-          borderRadius: 10,
-          padding: "1rem 1.25rem",
-          fontFamily: "monospace",
-          fontSize: 13,
-          color: "#cdd6f4",
-          whiteSpace: "pre-wrap",
-          lineHeight: 1.7,
-          maxHeight: 220,
-          overflowY: "auto",
-        }}>
-          {log.map((line, i) => (
-            <div key={i} style={{ color: line.startsWith("✗") ? "#f38ba8" : line.startsWith("✓") ? "#a6e3a1" : "#cdd6f4" }}>
-              {line}
+      ) : (
+        <div className="space-y-2">
+          <p className="font-body text-xs text-muted-foreground mb-2">{filtered.length} produto(s)</p>
+          {filtered.map(p => (
+            <div key={p.id} className={`bg-card border rounded-xl p-4 flex items-center gap-4 ${
+              p.inventory_count === 0 ? 'border-destructive/20' : p.inventory_count < 5 ? 'border-warning/20' : ''
+            }`}>
+              <div className="w-12 h-12 bg-secondary rounded-lg shrink-0 overflow-hidden">
+                {p.cover_image ? <img src={p.cover_image} alt="" className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <Package className="w-6 h-6 text-muted-foreground m-3" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-body text-sm font-medium text-foreground truncate">{p.name}</h3>
+                  {!p.active && <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-body shrink-0">Inativo</span>}
+                  {(!p.price || p.price === 0) && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-body shrink-0">Sem preço</span>}
+                  {!p.cover_image && <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-body shrink-0">Sem foto</span>}
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-body text-xs text-muted-foreground">{p.sku || "Sem SKU"}</p>
+                  {p.brand && <span className="font-body text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">{p.brand}</span>}
+                  {getCatName(p.category_id) && <span className="font-body text-[10px] bg-secondary px-1.5 py-0.5 rounded">{getCatName(p.category_id)}</span>}
+                  {p.tags && p.tags.length > 0 && p.tags.map(tag => <span key={tag} className="font-body text-[10px] bg-gold/10 text-gold px-1.5 py-0.5 rounded">{tag}</span>)}
+                  <span className="font-body text-xs text-muted-foreground">R$ {p.price.toFixed(2)}</span>
+                  {p.sale_price && <span className="font-body text-xs text-primary font-medium">R$ {p.sale_price.toFixed(2)}</span>}
+                  {p.weight_volume && <span className="font-body text-[10px] text-muted-foreground">{p.weight_volume}</span>}
+                  {p.inventory_count === 0 ? (
+                    <span className="flex items-center gap-0.5 text-[10px] text-destructive font-medium"><PackageX className="w-3 h-3" /> Zerado</span>
+                  ) : p.inventory_count < 5 ? (
+                    <span className="flex items-center gap-0.5 text-[10px] text-warning font-medium"><AlertTriangle className="w-3 h-3" /> Est: {p.inventory_count}</span>
+                  ) : (
+                    <span className="font-body text-xs text-muted-foreground">Est: {p.inventory_count}</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="w-4 h-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={() => toggleActive(p)} className={p.active ? "text-success" : "text-muted-foreground"}>{p.active ? "✓" : "○"}</Button>
+                <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)} className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
+              </div>
             </div>
           ))}
         </div>
