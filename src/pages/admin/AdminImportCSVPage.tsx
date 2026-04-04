@@ -11,6 +11,15 @@ interface CSVProduct {
   qty: number;
   unitCost: number;
   total: number;
+  price?: number;
+  brand?: string;
+  weight_volume?: string;
+  active?: boolean;
+}
+
+function parseActive(val: string): boolean | undefined {
+  if (!val.trim()) return undefined;
+  return ["true", "1", "sim", "yes", "ativo", "active"].includes(val.trim().toLowerCase());
 }
 
 interface ParsedCSV {
@@ -53,65 +62,94 @@ function generateSlug(name: string): string {
 }
 
 /**
- * Faz o parse de um CSV e retorna os dados estruturados.
- * Espera um CSV com as colunas: sku, name, qty, unitCost, total
- * (ou variações com espaços/case diferentes)
+ * Parser CSV robusto — sem dependências externas.
+ * Suporta separador vírgula ou ponto e vírgula.
+ * Compatível com o export nativo do admin (colunas do banco) e
+ * com CSVs manuais simplificados.
  */
-function parseCSV(csvText: string, fileName: string): ParsedCSV {
-  const lines = csvText.trim().split("\n");
-  
-  if (lines.length < 2) {
-    throw new Error("CSV vazio ou sem dados");
+function parseCSV(
+  csvText: string,
+  fileName: string
+): { parsed: ParsedCSV; skippedLines: number } {
+  const rawLines = csvText.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+  const nonEmptyLines = rawLines.filter((l) => l.trim() !== "");
+
+  if (nonEmptyLines.length < 2) {
+    throw new Error("CSV vazio ou sem dados (precisa de cabeçalho + ao menos 1 linha)");
   }
 
-  // Parse do header (primeira linha)
-  const headerLine = lines[0];
-  const headers = headerLine.split(",").map((h) => h.trim().toLowerCase());
+  // Detecta separador pelo cabeçalho
+  const headerRaw = nonEmptyLines[0];
+  const sep = headerRaw.includes(";") ? ";" : ",";
 
-  // Encontra índices das colunas esperadas
-  const skuIdx = headers.findIndex((h) => h === "sku" || h === "código" || h === "codigo");
-  const nameIdx = headers.findIndex((h) => h === "name" || h === "nome" || h === "produto");
-  const qtyIdx = headers.findIndex(
-    (h) => h === "qty" || h === "quantidade" || h === "qtd" || h === "quantity"
-  );
-  const costIdx = headers.findIndex(
-    (h) => h === "unitcost" || h === "custo" || h === "custo unitário" || h === "custo unitario" || h === "unit_cost"
-  );
-  const totalIdx = headers.findIndex(
-    (h) => h === "total" || h === "valor total" || h === "valor_total"
-  );
+  // Parse dos cabeçalhos (lowercase + trim + remove aspas)
+  const headers = headerRaw
+    .split(sep)
+    .map((h) => h.trim().toLowerCase().replace(/^"|"$/g, ""));
 
-  if (skuIdx === -1 || nameIdx === -1 || qtyIdx === -1 || costIdx === -1) {
+  // Índices — aliases incluem nomes do export nativo do admin/Supabase
+  const idx = {
+    sku:           headers.findIndex((h) => ["sku", "código", "codigo", "cod"].includes(h)),
+    name:          headers.findIndex((h) => ["name", "nome", "produto", "descricao", "descrição"].includes(h)),
+    qty:           headers.findIndex((h) => ["qty", "qtd", "quantidade", "quantity", "estoque", "inventory_count"].includes(h)),
+    unitCost:      headers.findIndex((h) => ["unitcost", "custo", "custo unitário", "custo unitario", "unit_cost", "cost", "avg_cost"].includes(h)),
+    price:         headers.findIndex((h) => ["price", "preco", "preço", "venda", "selling_price", "sale_price"].includes(h)),
+    brand:         headers.findIndex((h) => ["brand", "marca"].includes(h)),
+    weight_volume: headers.findIndex((h) => ["weight_volume", "volume", "peso", "weight", "gramatura"].includes(h)),
+    active:        headers.findIndex((h) => ["active", "ativo", "ativa", "status"].includes(h)),
+  };
+
+  if (idx.sku === -1 || idx.name === -1 || idx.qty === -1 || idx.unitCost === -1) {
+    const missing = [
+      idx.sku === -1 ? "SKU" : null,
+      idx.name === -1 ? "Nome (name)" : null,
+      idx.qty === -1 ? "Quantidade (qty / inventory_count)" : null,
+      idx.unitCost === -1 ? "Custo (cost / avg_cost / unitCost)" : null,
+    ].filter(Boolean).join(", ");
     throw new Error(
-      "CSV deve conter as colunas: SKU, Nome, Quantidade, Custo Unitário (e opcionalmente Total)"
+      `Colunas obrigatórias não encontradas: ${missing}. Presentes: ${headers.join(", ")}`
     );
   }
 
   const items: CSVProduct[] = [];
+  let skippedLines = 0;
 
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue; // Pula linhas vazias
+  for (let i = 1; i < nonEmptyLines.length; i++) {
+    const line = nonEmptyLines[i];
+    if (!line.trim()) continue;
 
-    const cols = line.split(",").map((c) => c.trim());
+    const cols = line.split(sep).map((c) => c.trim().replace(/^["']|["']$/g, ""));
 
-    const rawSku = cols[skuIdx] ?? "";
+    const rawSku = cols[idx.sku] ?? "";
+    const rawName = cols[idx.name] ?? "";
+
+    if (!rawSku && !rawName) { skippedLines++; continue; }
+
     const sku = normalizeSku(rawSku);
-    const name = cols[nameIdx] ?? "";
-    const qty = Math.round(safeParseFloat(cols[qtyIdx] ?? "0"));
-    const unitCost = safeParseFloat(cols[costIdx] ?? "0");
-    const total = totalIdx !== -1 ? safeParseFloat(cols[totalIdx] ?? "0") : qty * unitCost;
+    const name = rawName;
+    const qty = Math.round(safeParseFloat(cols[idx.qty] ?? "0"));
+    const unitCost = safeParseFloat(cols[idx.unitCost] ?? "0");
+    const total = qty * unitCost;
 
-    if (sku && name) {
-      items.push({ sku, name, qty, unitCost, total });
-    }
+    const price = idx.price !== -1 && cols[idx.price]?.trim()
+      ? safeParseFloat(cols[idx.price]) : undefined;
+    const brand = idx.brand !== -1 && cols[idx.brand]?.trim()
+      ? cols[idx.brand].trim() : undefined;
+    const weight_volume = idx.weight_volume !== -1 && cols[idx.weight_volume]?.trim()
+      ? cols[idx.weight_volume].trim() : undefined;
+    const active = idx.active !== -1 && cols[idx.active]?.trim()
+      ? parseActive(cols[idx.active]) : undefined;
+
+    if (!sku || !name) { skippedLines++; continue; }
+
+    items.push({ sku, name, qty, unitCost, total, price, brand, weight_volume, active });
   }
 
   if (items.length === 0) {
     throw new Error("Nenhum produto válido encontrado no CSV");
   }
 
-  return { fileName, items };
+  return { parsed: { fileName, items }, skippedLines };
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -140,9 +178,11 @@ export default function AdminImportCSVPage() {
       }
       try {
         const text = await file.text();
-        const csv = parseCSV(text, file.name);
+        const { parsed: csv, skippedLines } = parseCSV(text, file.name);
         parsed.push(csv);
-        addLog("success", `${file.name} — ${csv.items.length} itens`);
+        addLog("success", `${file.name} — ${csv.items.length} itens válidos`);
+        if (skippedLines > 0)
+          addLog("info", `  → ${skippedLines} linha(s) ignorada(s) (vazias ou sem SKU/nome)`);
       } catch (e: any) {
         addLog("error", `${file.name}: ${e?.message ?? "Erro desconhecido"}`);
       }
@@ -188,19 +228,27 @@ export default function AdminImportCSVPage() {
     }
     addLog("info", `${productMap.size} produtos carregados do banco.`);
 
-    // Agrega itens de todos os CSVs pelo SKU normalizado
-    const aggregated = new Map<string, { name: string; totalQty: number; unitCost: number }>();
+    // Agrega por SKU — campos opcionais: última linha vence
+    type Agg = {
+      name: string; totalQty: number; unitCost: number;
+      price?: number; brand?: string; weight_volume?: string; active?: boolean;
+    };
+    const aggregated = new Map<string, Agg>();
     for (const csv of parsedCSVs) {
       for (const item of csv.items) {
-        const existing = aggregated.get(item.sku);
-        if (existing) {
-          existing.totalQty += item.qty;
-          existing.unitCost = item.unitCost; // mantém o custo mais recente
+        const ex = aggregated.get(item.sku);
+        if (ex) {
+          ex.totalQty += item.qty;
+          ex.unitCost = item.unitCost;
+          if (item.price !== undefined)         ex.price = item.price;
+          if (item.brand !== undefined)         ex.brand = item.brand;
+          if (item.weight_volume !== undefined) ex.weight_volume = item.weight_volume;
+          if (item.active !== undefined)        ex.active = item.active;
         } else {
           aggregated.set(item.sku, {
-            name: item.name,
-            totalQty: item.qty,
-            unitCost: item.unitCost,
+            name: item.name, totalQty: item.qty, unitCost: item.unitCost,
+            price: item.price, brand: item.brand,
+            weight_volume: item.weight_volume, active: item.active,
           });
         }
       }
@@ -212,9 +260,14 @@ export default function AdminImportCSVPage() {
       const existing = productMap.get(sku);
 
       if (existing) {
-        // Produto existe: soma estoque e atualiza custo se fornecido
+        // Produto existe: soma estoque + atualiza campos preenchidos
         const newStock = (existing.inventory_count ?? 0) + data.totalQty;
         const updatePayload: Record<string, any> = { inventory_count: newStock };
+        if (data.price !== undefined)         updatePayload.price = data.price;
+        if (data.unitCost > 0)                updatePayload.cost  = data.unitCost;
+        if (data.brand !== undefined)         updatePayload.brand = data.brand;
+        if (data.weight_volume !== undefined) updatePayload.weight_volume = data.weight_volume;
+        if (data.active !== undefined)        updatePayload.active = data.active;
 
         const { error } = await supabase
           .from("products")
@@ -233,15 +286,18 @@ export default function AdminImportCSVPage() {
           result.updated++;
         }
       } else {
-        // Produto não existe: cria com dados básicos do CSV
+        // Produto não existe: cria com todos os campos disponíveis
         const insertPayload: Record<string, any> = {
           name: data.name,
           slug: generateSlug(data.name),
           sku,
           inventory_count: data.totalQty,
-          price: 0,
-          active: false,
+          price: data.price ?? 0,
+          active: data.active ?? false,
         };
+        if (data.unitCost > 0)                insertPayload.cost = data.unitCost;
+        if (data.brand !== undefined)         insertPayload.brand = data.brand;
+        if (data.weight_volume !== undefined) insertPayload.weight_volume = data.weight_volume;
 
         const { error } = await supabase.from("products").insert(insertPayload);
 
@@ -287,11 +343,12 @@ export default function AdminImportCSVPage() {
           SKUs são normalizados (zeros à esquerda ignorados) para evitar duplicatas.
         </p>
         <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-900 dark:text-blue-200">
-          <p className="font-medium mb-2">Formato esperado do CSV:</p>
-          <p className="font-mono text-xs mb-2">SKU, Nome, Quantidade, Custo Unitário, Total</p>
-          <p className="text-xs">Exemplo:</p>
-          <p className="font-mono text-xs">001, Produto A, 10, 15.50, 155.00</p>
-          <p className="font-mono text-xs">002, Produto B, 5, 20.00, 100.00</p>
+          <p className="font-medium mb-1">Colunas aceitas (vírgula ou ponto e vírgula):</p>
+          <p className="font-mono text-xs">sku, name, inventory_count, cost, price, brand, weight_volume, active</p>
+          <p className="text-xs mt-1 opacity-80">
+            Compatível com o export desta tela. Colunas extras são ignoradas.
+            Campos opcionais vazios não sobrescrevem dados existentes no banco.
+          </p>
         </div>
       </div>
 
@@ -367,7 +424,7 @@ export default function AdminImportCSVPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b bg-muted/30">
-                      {["SKU", "Produto", "Qtd", "Custo unit.", "Total"].map((h) => (
+                      {["SKU", "Produto", "Qtd", "Custo", "Preço", "Marca", "Volume", "Ativo"].map((h) => (
                         <th
                           key={h}
                           className="text-left px-4 py-2 font-medium text-muted-foreground whitespace-nowrap"
@@ -387,22 +444,24 @@ export default function AdminImportCSVPage() {
                           {item.sku}
                         </td>
                         <td className="px-4 py-2 max-w-xs">
-                          <span className="line-clamp-1" title={item.name}>
-                            {item.name}
-                          </span>
+                          <span className="line-clamp-1" title={item.name}>{item.name}</span>
                         </td>
                         <td className="px-4 py-2 font-medium text-center">{item.qty}</td>
                         <td className="px-4 py-2 text-right whitespace-nowrap">
-                          {item.unitCost.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
+                          {item.unitCost.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                         </td>
-                        <td className="px-4 py-2 text-right text-muted-foreground whitespace-nowrap">
-                          {item.total.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
+                        <td className="px-4 py-2 text-right whitespace-nowrap text-muted-foreground">
+                          {item.price !== undefined
+                            ? item.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">{item.brand ?? "—"}</td>
+                        <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">{item.weight_volume ?? "—"}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          {item.active === undefined ? "—"
+                            : item.active
+                              ? <span className="text-green-600 font-medium">sim</span>
+                              : <span className="text-muted-foreground">não</span>}
                         </td>
                       </tr>
                     ))}
