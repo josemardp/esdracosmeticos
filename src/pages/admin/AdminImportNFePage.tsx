@@ -137,21 +137,28 @@ function parseCSV(csvText: string, fileName: string): { parsed: ParsedCSV; skipp
   // Parse dos cabeçalhos (lowercase + trim)
   const headers = headerRaw.split(sep).map((h) => h.trim().toLowerCase().replace(/^"|"$/g, ""));
 
-  // Índices das colunas (flexível)
+  // Índices das colunas (flexível — inclui aliases do export nativo do Supabase/admin)
   const idx = {
     sku:           headers.findIndex((h) => ["sku", "código", "codigo", "cod"].includes(h)),
     name:          headers.findIndex((h) => ["name", "nome", "produto", "descricao", "descrição"].includes(h)),
-    qty:           headers.findIndex((h) => ["qty", "qtd", "quantidade", "quantity", "estoque"].includes(h)),
-    unitCost:      headers.findIndex((h) => ["unitcost", "custo", "custo unitário", "custo unitario", "unit_cost", "cost"].includes(h)),
-    price:         headers.findIndex((h) => ["price", "preco", "preço", "venda", "selling_price"].includes(h)),
+    qty:           headers.findIndex((h) => ["qty", "qtd", "quantidade", "quantity", "estoque", "inventory_count"].includes(h)),
+    unitCost:      headers.findIndex((h) => ["unitcost", "custo", "custo unitário", "custo unitario", "unit_cost", "cost", "avg_cost"].includes(h)),
+    price:         headers.findIndex((h) => ["price", "preco", "preço", "venda", "selling_price", "sale_price"].includes(h)),
     brand:         headers.findIndex((h) => ["brand", "marca"].includes(h)),
     weight_volume: headers.findIndex((h) => ["weight_volume", "volume", "peso", "weight", "gramatura"].includes(h)),
     active:        headers.findIndex((h) => ["active", "ativo", "ativa", "status"].includes(h)),
   };
 
   if (idx.sku === -1 || idx.name === -1 || idx.qty === -1 || idx.unitCost === -1) {
+    // Monta mensagem útil mostrando o que foi encontrado vs o que falta
+    const missing = [
+      idx.sku === -1 ? "SKU" : null,
+      idx.name === -1 ? "Nome (name)" : null,
+      idx.qty === -1 ? "Quantidade (qty / inventory_count)" : null,
+      idx.unitCost === -1 ? "Custo (cost / avg_cost / unitCost)" : null,
+    ].filter(Boolean).join(", ");
     throw new Error(
-      `CSV deve ter ao menos as colunas: SKU, Nome, Quantidade e Custo. Colunas encontradas: ${headers.join(", ")}`
+      `Colunas obrigatórias não encontradas: ${missing}. Colunas presentes: ${headers.join(", ")}`
     );
   }
 
