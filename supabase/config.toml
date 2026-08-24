@@ -1,1 +1,7 @@
 project_id = "pehqvmaeehzfrsxkhlmt"
+
+# Sitemap e publico por natureza: buscador nao manda cabecalho de autorizacao.
+# Sem esta linha o deploy volta a exigir JWT e o rewrite de /sitemap.xml do
+# vercel.json passa a receber 401. Medido em 24/08/2026.
+[functions.sitemap]
+verify_jwt = false
