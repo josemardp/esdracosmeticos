@@ -1,5 +1,7 @@
 # Esdra Cosméticos — Loja virtual
 
+> **Organização Esdra — 09/09/2026:** [entrada do negócio](../central-ec/README.md) e [responsabilidades dos sistemas](../central-ec/DECISOES.md). Papel deste repositório: Loja pública. Seu código e publicação permanecem independentes.
+
 E-commerce completo da Esdra Cosméticos (MEI): catálogo, carrinho, checkout, contas de cliente, crediário e painel administrativo. PWA instalável.
 
 ## O que tem
