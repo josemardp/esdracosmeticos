@@ -39,7 +39,7 @@ export default function TrocasDevolucoesPage() {
           <section>
             <h2 className="font-display text-xl text-foreground mt-8 mb-3">Como solicitar</h2>
             <ol className="list-decimal pl-5 space-y-2 text-sm text-muted-foreground">
-              <li>Entre em contato pelo WhatsApp <strong className="text-foreground">(18) 99145-9429</strong> ou pelo e-mail <strong className="text-foreground">conta-secundaria@exemplo.com</strong></li>
+              <li>Entre em contato pelo WhatsApp <strong className="text-foreground">(18) 99145-9429</strong> ou pelo e-mail <strong className="text-foreground">lojadares@gmail.com</strong></li>
               <li>Informe o número do pedido e o motivo da troca ou devolução</li>
               <li>Aguarde as instruções para envio do produto</li>
               <li>Após receber e aprovar o produto devolvido, processaremos a troca ou reembolso em até 7 dias úteis</li>

@@ -70,13 +70,13 @@ export default function SupportPage() {
         {/* Contact Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-16">
           <a
-            href="mailto:conta-secundaria@exemplo.com"
+            href="mailto:lojadares@gmail.com"
             className="group bg-card border rounded-xl p-6 text-center hover:shadow-elegant transition-all"
           >
             <Mail className="w-8 h-8 text-primary mx-auto mb-3" />
             <h3 className="font-body text-sm font-semibold text-foreground mb-1">E-mail</h3>
             <p className="font-body text-xs text-muted-foreground group-hover:text-primary transition-colors">
-              conta-secundaria@exemplo.com
+              lojadares@gmail.com
             </p>
           </a>
           <a

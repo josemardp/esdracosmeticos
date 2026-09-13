@@ -48,14 +48,14 @@ export default function PoliticaPrivacidadePage() {
 
           <section>
             <h2 className="font-display text-xl text-foreground mt-8 mb-3">5. Seus direitos</h2>
-            <p className="text-sm text-muted-foreground">Conforme a Lei Geral de Proteção de Dados (LGPD), você tem direito a acessar, corrigir, excluir ou solicitar a portabilidade dos seus dados pessoais. Para exercer esses direitos, entre em contato pelo e-mail conta-secundaria@exemplo.com ou pelo WhatsApp (18) 99145-9429.</p>
+            <p className="text-sm text-muted-foreground">Conforme a Lei Geral de Proteção de Dados (LGPD), você tem direito a acessar, corrigir, excluir ou solicitar a portabilidade dos seus dados pessoais. Para exercer esses direitos, entre em contato pelo e-mail lojadares@gmail.com ou pelo WhatsApp (18) 99145-9429.</p>
           </section>
 
           <section>
             <h2 className="font-display text-xl text-foreground mt-8 mb-3">6. Contato</h2>
             <p className="text-sm text-muted-foreground">Em caso de dúvidas sobre esta política, entre em contato:</p>
             <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-              <li>E-mail: conta-secundaria@exemplo.com</li>
+              <li>E-mail: lojadares@gmail.com</li>
               <li>WhatsApp: (18) 99145-9429</li>
             </ul>
           </section>

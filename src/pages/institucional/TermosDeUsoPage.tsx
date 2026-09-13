@@ -62,7 +62,7 @@ export default function TermosDeUsoPage() {
 
           <section>
             <h2 className="font-display text-xl text-foreground mt-8 mb-3">9. Contato</h2>
-            <p className="text-sm text-muted-foreground">Para dúvidas sobre estes termos, entre em contato pelo e-mail conta-secundaria@exemplo.com ou WhatsApp (18) 99145-9429.</p>
+            <p className="text-sm text-muted-foreground">Para dúvidas sobre estes termos, entre em contato pelo e-mail lojadares@gmail.com ou WhatsApp (18) 99145-9429.</p>
           </section>
         </div>
 
