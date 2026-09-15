@@ -82,8 +82,8 @@ export default function HomePage() {
     ]).then(async ([f, n, b, c, r, camp]) => {
       // If not enough in-stock featured, fall back to any active
       let featuredData = (f.data as Product[]) ?? [];
-      let newData = (n.data as Product[]) ?? [];
-      let bestData = (b.data as Product[]) ?? [];
+      const newData = (n.data as Product[]) ?? [];
+      const bestData = (b.data as Product[]) ?? [];
       
       if (featuredData.length < 4) {
         const { data: fallback } = await supabase.from("products").select(cols).eq("active", true).gt("inventory_count", 0).limit(4);

@@ -132,7 +132,9 @@ export default function CheckoutPage() {
       try {
         sessionStorage.setItem("esdra_order_result", JSON.stringify(result));
         sessionStorage.setItem("esdra_order_payment", payment);
-      } catch {}
+      } catch {
+        // sessionStorage pode estar desabilitado em modo anônimo
+      }
       clearCart();
       toast({ title: "Pedido criado com sucesso!", description: `Código: ${result.order_code}` });
 
@@ -232,8 +234,34 @@ export default function CheckoutPage() {
                 <MessageCircle className="w-4 h-4 mr-2" /> Finalizar pelo WhatsApp
               </Button>
             </a>
-            {user && <Link to="/conta/pedidos" onClick={() => { try { sessionStorage.removeItem("esdra_order_result"); sessionStorage.removeItem("esdra_order_payment"); } catch {} }}><Button size="lg" variant="outline">Ver Meus Pedidos</Button></Link>}
-            <Link to="/loja" onClick={() => { try { sessionStorage.removeItem("esdra_order_result"); sessionStorage.removeItem("esdra_order_payment"); } catch {} }}><Button size="lg" variant="outline">Continuar Comprando</Button></Link>
+            {user && (
+              <Link
+                to="/conta/pedidos"
+                onClick={() => {
+                  try {
+                    sessionStorage.removeItem("esdra_order_result");
+                    sessionStorage.removeItem("esdra_order_payment");
+                  } catch {
+                    // sessionStorage indisponível
+                  }
+                }}
+              >
+                <Button size="lg" variant="outline">Ver Meus Pedidos</Button>
+              </Link>
+            )}
+            <Link
+              to="/loja"
+              onClick={() => {
+                try {
+                  sessionStorage.removeItem("esdra_order_result");
+                  sessionStorage.removeItem("esdra_order_payment");
+                } catch {
+                  // sessionStorage indisponível
+                }
+              }}
+            >
+              <Button size="lg" variant="outline">Continuar Comprando</Button>
+            </Link>
           </div>
         </motion.div>
       </div>
