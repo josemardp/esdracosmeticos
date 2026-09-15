@@ -144,6 +144,9 @@ A implementação técnica foi realizada com **forte suporte de ferramentas de I
 
 ## Status do Projeto
 
+- **Estado Atual e Próximos Passos:** Consulte [STATUS.md](STATUS.md) para o acompanhamento contínuo da operação e pendências.
+- **Auditoria Técnica (Setembro/2026):** Relatório detalhado disponível em [docs/AUDITORIA-2026-09.md](docs/AUDITORIA-2026-09.md).
+- **Histórico de Relatórios Legados:** Consulte [docs/HISTORICO.md](docs/HISTORICO.md).
 - **Fase:** Em produção no domínio oficial: [www.esdracosmeticos.com.br](https://www.esdracosmeticos.com.br/)
 - **Build de Produção:** 100% aprovado.
 - **PWA:** Ativo com service workers e manifesto instalável.
