@@ -39,3 +39,13 @@ Este documento consolida e contextualiza os relatórios técnicos, diagnósticos
   - Relatórios de mapeamento e execução: `de_sirius_final_execution_summary.md`, `de_sirius_final_mapping.md`, `de_sirius_audit_refined_38.md`, `de_sirius_public_urls_table.md`, etc.
   - Tabelas e listas de validação: `de_sirius_execution_report.csv`, `de_sirius_audit_refined_38.csv`, `de_sirius_catalog.txt`.
 - **Contexto:** Processo de extração, tratamento de imagens, enriquecimento de catálogo e carga de 38 produtos da marca De Sírius.
+
+---
+
+## 5. Migrações SQL sem Versionamento por Timestamp (Março/Abril 2026)
+- **Pasta de acervo:** [`docs/historico/sql/`](./historico/sql/)
+- **Arquivos preservados:**
+  - `update_de_sirius_final_real.sql`
+  - `update_de_sirius_final_v2.sql`
+  - `update_de_sirius_images.sql` (arquivado por tentar atualizar coluna inexistente `image_url`)
+- **Contexto:** Scripts auxiliares de atualização de imagens da linha De Sírius que estavam na pasta `supabase/migrations/` sem prefixo de timestamp. Foram transferidos para preservação histórica para não causar inconsistências na CLI do Supabase. O estado final de imagens encontra-se coberto pela migração oficial `20260405000000_update_desirius_cover_images.sql`.
