@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -28,71 +28,71 @@ import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
-import AdminLoginPage from "@/pages/auth/AdminLoginPage";
+const AdminLoginPage = lazy(() => import("@/pages/auth/AdminLoginPage"));
 
-// Admin pages
-import DashboardPage from "@/pages/admin/DashboardPage";
-import AdminProductsPage from "@/pages/admin/AdminProductsPage";
-import AdminCategoriesPage from "@/pages/admin/AdminCategoriesPage";
-import AdminOrdersPage from "@/pages/admin/AdminOrdersPage";
-import AdminCustomersPage from "@/pages/admin/AdminCustomersPage";
-import AdminStockPage from "@/pages/admin/AdminStockPage";
-import AdminCouponsPage from "@/pages/admin/AdminCouponsPage";
-import AdminSupportPage from "@/pages/admin/AdminSupportPage";
-import AdminIntegrationsPage from "@/pages/admin/AdminIntegrationsPage";
-import AdminPlaceholder from "@/pages/admin/AdminPlaceholder";
-import AdminCampaignsPage from "@/pages/admin/AdminCampaignsPage";
-import CrediarioPage from "@/pages/admin/CrediarioPage";
-import AdminImportNFePage from "@/pages/admin/AdminImportNFePage";
-import AdminImportCSVPage from "@/pages/admin/AdminImportCSVPage";
+// Admin pages (lazy)
+const DashboardPage = lazy(() => import("@/pages/admin/DashboardPage"));
+const AdminProductsPage = lazy(() => import("@/pages/admin/AdminProductsPage"));
+const AdminCategoriesPage = lazy(() => import("@/pages/admin/AdminCategoriesPage"));
+const AdminOrdersPage = lazy(() => import("@/pages/admin/AdminOrdersPage"));
+const AdminCustomersPage = lazy(() => import("@/pages/admin/AdminCustomersPage"));
+const AdminStockPage = lazy(() => import("@/pages/admin/AdminStockPage"));
+const AdminCouponsPage = lazy(() => import("@/pages/admin/AdminCouponsPage"));
+const AdminSupportPage = lazy(() => import("@/pages/admin/AdminSupportPage"));
+const AdminIntegrationsPage = lazy(() => import("@/pages/admin/AdminIntegrationsPage"));
+const AdminPlaceholder = lazy(() => import("@/pages/admin/AdminPlaceholder"));
+const AdminCampaignsPage = lazy(() => import("@/pages/admin/AdminCampaignsPage"));
+const CrediarioPage = lazy(() => import("@/pages/admin/CrediarioPage"));
+const AdminImportNFePage = lazy(() => import("@/pages/admin/AdminImportNFePage"));
+const AdminImportCSVPage = lazy(() => import("@/pages/admin/AdminImportCSVPage"));
+const AdminSettingsPage = lazy(() => import("@/pages/admin/AdminSettingsPage"));
+const AdminContentPage = lazy(() => import("@/pages/admin/AdminContentPage"));
 
-// Gestão pages
-import GestaoDashboardPage from "@/pages/admin/gestao/GestaoDashboardPage";
-import VendaRapidaPage from "@/pages/admin/gestao/VendaRapidaPage";
-import VendasPage from "@/pages/admin/gestao/VendasPage";
-import VendasConsolidadasPage from "@/pages/admin/gestao/VendasConsolidadasPage";
-import ReceberPage from "@/pages/admin/gestao/ReceberPage";
-import CaixaPage from "@/pages/admin/gestao/CaixaPage";
-import GestaoClientesPage from "@/pages/admin/gestao/GestaoClientesPage";
-import FornecedoresPage from "@/pages/admin/gestao/FornecedoresPage";
-import ComprasPage from "@/pages/admin/gestao/ComprasPage";
-import PagarPage from "@/pages/admin/gestao/PagarPage";
-import VencimentosPage from "@/pages/admin/gestao/VencimentosPage";
-import ProjecaoPage from "@/pages/admin/gestao/ProjecaoPage";
-import CategoriasFinanceirasPage from "@/pages/admin/gestao/CategoriasFinanceirasPage";
-import CentrosCustoPage from "@/pages/admin/gestao/CentrosCustoPage";
-import RelatoriosPage from "@/pages/admin/gestao/RelatoriosPage";
-import ResultadoPage from "@/pages/admin/gestao/ResultadoPage";
+// Gestão pages (lazy)
+const GestaoDashboardPage = lazy(() => import("@/pages/admin/gestao/GestaoDashboardPage"));
+const VendaRapidaPage = lazy(() => import("@/pages/admin/gestao/VendaRapidaPage"));
+const VendasPage = lazy(() => import("@/pages/admin/gestao/VendasPage"));
+const VendasConsolidadasPage = lazy(() => import("@/pages/admin/gestao/VendasConsolidadasPage"));
+const ReceberPage = lazy(() => import("@/pages/admin/gestao/ReceberPage"));
+const CaixaPage = lazy(() => import("@/pages/admin/gestao/CaixaPage"));
+const GestaoClientesPage = lazy(() => import("@/pages/admin/gestao/GestaoClientesPage"));
+const FornecedoresPage = lazy(() => import("@/pages/admin/gestao/FornecedoresPage"));
+const ComprasPage = lazy(() => import("@/pages/admin/gestao/ComprasPage"));
+const PagarPage = lazy(() => import("@/pages/admin/gestao/PagarPage"));
+const VencimentosPage = lazy(() => import("@/pages/admin/gestao/VencimentosPage"));
+const ProjecaoPage = lazy(() => import("@/pages/admin/gestao/ProjecaoPage"));
+const CategoriasFinanceirasPage = lazy(() => import("@/pages/admin/gestao/CategoriasFinanceirasPage"));
+const CentrosCustoPage = lazy(() => import("@/pages/admin/gestao/CentrosCustoPage"));
+const RelatoriosPage = lazy(() => import("@/pages/admin/gestao/RelatoriosPage"));
+const ResultadoPage = lazy(() => import("@/pages/admin/gestao/ResultadoPage"));
 
-// Phase 4
-import RecebimentoComprasPage from "@/pages/admin/gestao/RecebimentoComprasPage";
-import MovimentosEstoquePage from "@/pages/admin/gestao/MovimentosEstoquePage";
-import MargemPage from "@/pages/admin/gestao/MargemPage";
-import ReposicaoPage from "@/pages/admin/gestao/ReposicaoPage";
+// Phase 4 (lazy)
+const RecebimentoComprasPage = lazy(() => import("@/pages/admin/gestao/RecebimentoComprasPage"));
+const MovimentosEstoquePage = lazy(() => import("@/pages/admin/gestao/MovimentosEstoquePage"));
+const MargemPage = lazy(() => import("@/pages/admin/gestao/MargemPage"));
+const ReposicaoPage = lazy(() => import("@/pages/admin/gestao/ReposicaoPage"));
 
-// Phase 5
-import CRMPage from "@/pages/admin/gestao/CRMPage";
-import SegmentosPage from "@/pages/admin/gestao/SegmentosPage";
-import NewsletterGestaoPage from "@/pages/admin/gestao/NewsletterGestaoPage";
-import ReativacaoPage from "@/pages/admin/gestao/ReativacaoPage";
+// Phase 5 (lazy)
+const CRMPage = lazy(() => import("@/pages/admin/gestao/CRMPage"));
+const SegmentosPage = lazy(() => import("@/pages/admin/gestao/SegmentosPage"));
+const NewsletterGestaoPage = lazy(() => import("@/pages/admin/gestao/NewsletterGestaoPage"));
+const ReativacaoPage = lazy(() => import("@/pages/admin/gestao/ReativacaoPage"));
 
-// Phase 6
-import ExecutivoPage from "@/pages/admin/gestao/ExecutivoPage";
-import CanaisPage from "@/pages/admin/gestao/CanaisPage";
-import ProdutosResultadoPage from "@/pages/admin/gestao/ProdutosResultadoPage";
-import ExportacoesPage from "@/pages/admin/gestao/ExportacoesPage";
-import AuditoriaPage from "@/pages/admin/gestao/AuditoriaPage";
-import IntegracoesAvancadasPage from "@/pages/admin/gestao/IntegracoesAvancadasPage";
+// Phase 6 (lazy)
+const ExecutivoPage = lazy(() => import("@/pages/admin/gestao/ExecutivoPage"));
+const CanaisPage = lazy(() => import("@/pages/admin/gestao/CanaisPage"));
+const ProdutosResultadoPage = lazy(() => import("@/pages/admin/gestao/ProdutosResultadoPage"));
+const ExportacoesPage = lazy(() => import("@/pages/admin/gestao/ExportacoesPage"));
+const AuditoriaPage = lazy(() => import("@/pages/admin/gestao/AuditoriaPage"));
+const IntegracoesAvancadasPage = lazy(() => import("@/pages/admin/gestao/IntegracoesAvancadasPage"));
 
-// Account pages
-import ProfilePage from "@/pages/conta/ProfilePage";
-import OrdersPage from "@/pages/conta/OrdersPage";
-import OrderDetailPage from "@/pages/conta/OrderDetailPage";
-import FavoritesPage from "@/pages/conta/FavoritesPage";
-import AccountPlaceholder from "@/pages/conta/AccountPlaceholder";
-import AddressesPage from "@/pages/conta/AddressesPage";
-import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
-import AdminContentPage from "@/pages/admin/AdminContentPage";
+// Account pages (lazy)
+const ProfilePage = lazy(() => import("@/pages/conta/ProfilePage"));
+const OrdersPage = lazy(() => import("@/pages/conta/OrdersPage"));
+const OrderDetailPage = lazy(() => import("@/pages/conta/OrderDetailPage"));
+const FavoritesPage = lazy(() => import("@/pages/conta/FavoritesPage"));
+const AccountPlaceholder = lazy(() => import("@/pages/conta/AccountPlaceholder"));
+const AddressesPage = lazy(() => import("@/pages/conta/AddressesPage"));
 
 // Institutional pages
 import PoliticaPrivacidadePage from "@/pages/institucional/PoliticaPrivacidadePage";
@@ -111,6 +111,12 @@ const ManifestSwitcher = () => {
   }, [location.pathname]);
   return null;
 };
+
+const RouteLoading = () => (
+  <div className="flex h-64 w-full items-center justify-center">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -145,11 +151,11 @@ const App = () => (
             <Route path="/cadastro" element={<SignupPage />} />
             <Route path="/recuperar-senha" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/login" element={<Suspense fallback={<RouteLoading />}><AdminLoginPage /></Suspense>} />
 
             {/* Protected client routes */}
             <Route element={<ProtectedRoute><PublicLayout /></ProtectedRoute>}>
-              <Route element={<AccountLayout />}>
+              <Route element={<Suspense fallback={<RouteLoading />}><AccountLayout /></Suspense>}>
                 <Route path="/conta" element={<OrdersPage />} />
                 <Route path="/conta/pedidos" element={<OrdersPage />} />
                 <Route path="/conta/pedidos/:id" element={<OrderDetailPage />} />
@@ -160,7 +166,7 @@ const App = () => (
             </Route>
 
             {/* Protected admin routes */}
-            <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route element={<AdminRoute><Suspense fallback={<RouteLoading />}><AdminLayout /></Suspense></AdminRoute>}>
               <Route path="/admin" element={<DashboardPage />} />
               <Route path="/admin/produtos" element={<AdminProductsPage />} />
               <Route path="/admin/categorias" element={<AdminCategoriesPage />} />
