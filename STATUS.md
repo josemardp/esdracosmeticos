@@ -19,6 +19,7 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 ## Próximo passo
 
 1. **Supabase (Josemar):** Aplicar o script da migração `20260915120000_restrict_product_cost_anon.sql` no SQL Editor do painel do Supabase para efetivar o bloqueio do custo em produção.
+   Conferido em 15/09 que todas as consultas públicas a `products` (home, catálogo, produto, busca, pedidos da conta, sitemap) usam lista explícita de colunas, então o REVOKE não quebra a vitrine. Depois de aplicar, confirmar com o GET descrito em "Como rodar e verificar". Falta só saber qual conta (josemardp ou esdraaline) é dona do projeto no Supabase para aplicar pelo navegador.
 2. **Imagens 404 no Supabase Storage:** Corrigir no bucket/banco os 2 produtos com URL de imagem externa quebrada (`body-splash-cuide-se-bem-pessegura-200ml` e `body-splash-instance-baunilha-intensa-200ml`).
 3. **Substituição da imagem pesada:** Subir a versão otimizada da imagem da máscara Niina Secrets (reduzida de 617 KB para 161 KB, localizada em `docs/assets/mascara-cilios-super-brown-niina-secrets-10g-otimizada.jpg`) no bucket do Supabase.
 
