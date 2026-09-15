@@ -31,6 +31,9 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 | Aplicar `REVOKE SELECT (cost, avg_cost)` no SQL Editor do Supabase | Fecha exposição do custo de aquisição na API pública | Josemar |
 | Corrigir fotos com 404 externo (`body-splash-cuide-se-bem-pessegura-200ml` e `body-splash-instance-baunilha-intensa-200ml`) | Produto aparece sem imagem no catálogo | Esdra / Josemar |
 | Trocar imagem de 617 KB da máscara Niina Secrets pela versão de 161 KB | Melhora LCP da página de produto | Josemar |
+| Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
+| Custo (`cost`/`avg_cost`) continua legível para cliente logado (papel `authenticated`) | Brecha menor; solução futura é view pública ou RPC de admin | Código (futuro) |
+| Testes automatizados de checkout, frete e cupom | Hoje só existe 1 teste de exemplo; regressão passa despercebida | Código (futuro) |
 
 ---
 
