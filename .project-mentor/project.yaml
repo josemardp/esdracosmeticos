@@ -14,20 +14,46 @@ project:
     - docs/
 status:
   lifecycle: evolving
-  health: unknown
-  phase: null
+  health: healthy
+  phase: Em producao / Seguranca e otimizacao
   priority: null
-  updated_at: 2026-09-16T06:59:15-03:00
-  last_session_at: null
+  updated_at: 2026-09-16T08:14:45-03:00
+  last_session_at: 2026-09-16T08:14:45-03:00
   confidence: inferred
 focus:
-  objective: null
-  current: null
-  last_completed: null
-  recommended_next_action: null
-next_actions: []
+  objective: Plataforma de e-commerce e catalogo online da Esdra Cosmeticos
+  current: Aplicar script de REVOKE no SQL Editor do painel do Supabase da loja
+  last_completed: Mapeamento de estado, foco e próximas ações
+  recommended_next_action: act-002
+next_actions:
+  - id: act-001
+    title: Corrigir imagens com 404 externo e subir mascara Niina Secrets otimizada
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-16T08:14:43-03:00
+    done_at: null
+    note: null
+  - id: act-002
+    title: Aplicar script de REVOKE no SQL Editor do painel do Supabase da loja
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-16T08:14:45-03:00
+    done_at: null
+    note: null
 blockers: []
-decisions_recent: []
+decisions_recent:
+  - date: 2026-09-16
+    text: Estado preenchido com base em STATUS.md de 15/09/2026
 milestones: []
 review:
   stale_after_days: null
