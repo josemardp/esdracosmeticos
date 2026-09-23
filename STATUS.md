@@ -1,6 +1,6 @@
 # STATUS.md — Loja Esdra Cosméticos
 
-> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 15/09/2026
+> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 23/09/2026
 
 ---
 
@@ -16,12 +16,22 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 
 ---
 
+## Feito em 23/09/2026
+
+1. **Custo fechado na API pública:** migração `20260915120000_restrict_product_cost_anon.sql` corrigida e aplicada em produção. O REVOKE só das colunas não bastava, porque o `anon` tinha SELECT na tabela inteira. Agora o `anon` perde o SELECT da tabela e recebe de volta coluna a coluna, sem `cost` e `avg_cost`. Verificado: GET público de `cost`/`avg_cost` retorna `permission denied`; home, catálogo (`/loja`, 256 links) e páginas de produto seguem funcionando.
+2. **Fotos quebradas:** capas de `body-splash-cuide-se-bem-pessegura-200ml` (foto oficial Boticário) e `body-splash-instance-baunilha-intensa-200ml` (foto oficial Eudora; a origem antiga dava 403) agora estão no bucket `product-images` da loja. Migração `20260923200000_fix_broken_cover_images.sql`.
+3. **Imagem pesada:** capa da máscara Niina Secrets trocada pela versão de 165 KB no bucket da loja (antes: 632 KB em outro projeto Supabase).
+4. **Brecha na função de NF-e fechada:** `upsert_products_from_nfe` (SECURITY DEFINER, sem checagem de admin) era executável por qualquer visitante e permitia criar/alterar produtos, custo e estoque. Migração `20260923210000_lock_upsert_products_from_nfe.sql` tirou o EXECUTE de `PUBLIC`, `anon` e `authenticated`. Verificado: RPC anônima passou de HTTP 204 para 401 `permission denied`. Nenhuma tela usa a função.
+5. **Capas fora do projeto antigo:** as 42 capas restantes no projeto Supabase antigo (`khnrwskgpedwerbpohfe`) foram copiadas para o bucket `product-images` e o banco atualizado (migração `20260923220000_move_cover_images_to_store_bucket.sql`). Nenhuma capa, galeria, categoria ou banner aponta mais para o projeto antigo. Verificado no site: `/loja` carrega as 128 imagens, 0 quebradas.
+
+Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
+
+---
+
 ## Próximo passo
 
-1. **Supabase (Josemar):** Aplicar o script da migração `20260915120000_restrict_product_cost_anon.sql` no SQL Editor do painel do Supabase para efetivar o bloqueio do custo em produção.
-   Conferido em 15/09 que todas as consultas públicas a `products` (home, catálogo, produto, busca, pedidos da conta, sitemap) usam lista explícita de colunas, então o REVOKE não quebra a vitrine. Depois de aplicar, confirmar com o GET descrito em "Como rodar e verificar". Falta só saber qual conta (josemardp ou esdraaline) é dona do projeto no Supabase para aplicar pelo navegador.
-2. **Imagens 404 no Supabase Storage:** Corrigir no bucket/banco os 2 produtos com URL de imagem externa quebrada (`body-splash-cuide-se-bem-pessegura-200ml` e `body-splash-instance-baunilha-intensa-200ml`).
-3. **Substituição da imagem pesada:** Subir a versão otimizada da imagem da máscara Niina Secrets (reduzida de 617 KB para 161 KB, localizada em `docs/assets/mascara-cilios-super-brown-niina-secrets-10g-otimizada.jpg`) no bucket do Supabase.
+1. **Capas em sites de terceiros:** 17 capas ainda dependem de lojas externas (jequiti.vtexassets.com 6, res.cloudinary.com 3, mitiendanube 4, images.tcdn.com.br 2, cdn.awsli.com.br 2). Podem sumir como a da Baunilha. Copiar para o bucket `product-images` seguindo o mesmo processo das migrações de 23/09.
+2. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
 
 ---
 
@@ -29,9 +39,7 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 
 | Pendência | Impacto | Dono |
 |---|---|---|
-| Aplicar `REVOKE SELECT (cost, avg_cost)` no SQL Editor do Supabase | Fecha exposição do custo de aquisição na API pública | Josemar |
-| Corrigir fotos com 404 externo (`body-splash-cuide-se-bem-pessegura-200ml` e `body-splash-instance-baunilha-intensa-200ml`) | Produto aparece sem imagem no catálogo | Esdra / Josemar |
-| Trocar imagem de 617 KB da máscara Niina Secrets pela versão de 161 KB | Melhora LCP da página de produto | Josemar |
+| Copiar as 17 capas de sites de terceiros para o bucket da loja | Foto some quando o site de terceiro bloqueia | Josemar |
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
 | Custo (`cost`/`avg_cost`) continua legível para cliente logado (papel `authenticated`) | Brecha menor; solução futura é view pública ou RPC de admin | Código (futuro) |
 | Testes automatizados de checkout, frete e cupom | Hoje só existe 1 teste de exemplo; regressão passa despercebida | Código (futuro) |
@@ -45,6 +53,7 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 - **EC-003 (09/09/2026 / 15/09/2026):** ERP da loja congelado desde julho/2026. As migrações de gestão/estoque (`stock_movements`, `cash_movements`) **não serão aplicadas em produção**. O módulo `/admin/gestao` permanece estritamente como legado e não recebe expansão nem correções de schema.
 - **Repositório Público (13/09/2026):** O repositório `josemardp/esdracosmeticos` é público para exibição como portfólio. Proibido commitar segredos (`service_role`, senhas), dados pessoais de clientes ou relatórios internos na raiz.
 - **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco e manter a vitrine focada em frete grátis regional acima de R$ 199.
+- **Grants do `anon` em `products` (23/09/2026):** o `anon` tem SELECT só nas colunas listadas na migração `20260915120000`. Coluna nova que a vitrine precise ler exige `GRANT SELECT (coluna) ON public.products TO anon`. Consultas públicas com `select=*` em `products` falham.
 - **Qualidade e Lint (15/09/2026):** `@typescript-eslint/no-explicit-any` é mantido como warning para não travar o build de produção. Não despender esforço de tipagem nos 116 alertas no momento.
 
 ---
@@ -81,8 +90,8 @@ Após executar a migração no Supabase, testar se o papel anônimo consegue ler
 curl -i "https://pehqvmaeehzfrsxkhlmt.supabase.co/rest/v1/products?select=id,name,cost&limit=1" \
   -H "apikey: <VITE_SUPABASE_PUBLISHABLE_KEY>"
 
-# Resposta esperada pós-aplicação: HTTP 400 ou 403 com erro Postgres:
-# "permission denied for column cost of table products"
+# Resposta esperada (aplicado em 23/09/2026): HTTP 401 com
+# "permission denied for table products"
 ```
 
 ### Verificação em produção

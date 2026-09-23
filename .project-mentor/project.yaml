@@ -17,7 +17,7 @@ status:
   health: healthy
   phase: Em producao / Seguranca e otimizacao
   priority: 1
-  updated_at: 2026-09-16T09:40:00-03:00
+  updated_at: 2026-09-23T20:32:23-03:00
   last_session_at: 2026-09-16T09:14:40-03:00
   confidence: inferred
 focus:
@@ -52,7 +52,7 @@ next_actions:
     note: null
   - id: act-003
     title: Aplicar REVOKE de permissões públicas no banco conforme documentado no STATUS.md
-    status: pending
+    status: done_tested
     impact: null
     urgency: null
     effort: null
@@ -60,6 +60,42 @@ next_actions:
     unblocks: []
     blocked_by: []
     created_at: 2026-09-16T09:14:38-03:00
+    done_at: 2026-09-23T20:03:07-03:00
+    note: null
+  - id: act-004
+    title: Fechar upsert_products_from_nfe para anon (SECURITY DEFINER sem checagem de admin)
+    status: done_tested
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T20:03:09-03:00
+    done_at: 2026-09-23T20:32:20-03:00
+    note: null
+  - id: act-005
+    title: Migrar capas de produtos de hosts externos para o bucket product-images
+    status: done_tested
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T20:03:11-03:00
+    done_at: 2026-09-23T20:32:21-03:00
+    note: null
+  - id: act-006
+    title: Copiar as 17 capas de sites de terceiros para o bucket product-images
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T20:32:23-03:00
     done_at: null
     note: null
 blockers: []
