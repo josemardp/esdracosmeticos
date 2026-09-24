@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { withProductCosts } from "@/lib/product-costs";
 import { AlertTriangle, PackageX, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -19,11 +20,11 @@ export default function ReposicaoPage() {
     (async () => {
       const { data } = await supabase
         .from("products")
-        .select("id, name, sku, inventory_count, min_inventory, cost, avg_cost, active")
+        .select("id, name, sku, inventory_count, min_inventory, active")
         .lte("inventory_count", 999) // get all, filter client-side
         .order("inventory_count", { ascending: true });
       const needsReorder = ((data as any[]) || []).filter((p: Product) => p.inventory_count <= p.min_inventory);
-      setProducts(needsReorder);
+      setProducts(await withProductCosts(needsReorder));
       setLoading(false);
     })();
   }, []);

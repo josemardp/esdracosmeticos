@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { withProductCosts } from "@/lib/product-costs";
 import { Download, FileSpreadsheet, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -26,7 +27,8 @@ const exports = [
   {
     label: "Produtos", desc: "Nome, SKU, preço, custo, estoque, margem",
     fn: async () => {
-      const { data } = await supabase.from("products").select("name, sku, price, sale_price, cost, avg_cost, inventory_count, active").order("name");
+      const { data: prods } = await supabase.from("products").select("id, name, sku, price, sale_price, inventory_count, active").order("name");
+      const data = await withProductCosts(prods || []);
       downloadCSV("produtos.csv", ["Nome", "SKU", "Preço", "Promoção", "Custo", "Custo Médio", "Estoque", "Ativo"],
         (data || []).map((p: any) => [p.name, p.sku || "", String(p.price), String(p.sale_price || ""), String(p.cost || 0),
           String((p as any).avg_cost || 0), String(p.inventory_count), p.active ? "Sim" : "Não"]));

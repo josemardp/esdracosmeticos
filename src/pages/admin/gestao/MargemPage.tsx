@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { withProductCosts } from "@/lib/product-costs";
 import { TrendingUp, Search, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,9 +22,9 @@ export default function MargemPage() {
     (async () => {
       const { data } = await supabase
         .from("products")
-        .select("id, name, sku, price, sale_price, cost, avg_cost, inventory_count, active")
+        .select("id, name, sku, price, sale_price, inventory_count, active")
         .order("name");
-      setProducts((data as any[]) || []);
+      setProducts(await withProductCosts((data as any[]) || []));
       setLoading(false);
     })();
   }, []);

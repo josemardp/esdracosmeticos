@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { withProductCosts } from "@/lib/product-costs";
 import { Package, Search, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,13 +22,13 @@ export default function ProdutosResultadoPage() {
     (async () => {
       setLoading(true);
       const [prodsRes, saleItemsRes, orderItemsRes] = await Promise.all([
-        supabase.from("products").select("id, name, sku, price, sale_price, cost, avg_cost"),
+        supabase.from("products").select("id, name, sku, price, sale_price"),
         supabase.from("sale_items").select("product_id, quantity, subtotal"),
         supabase.from("order_items").select("product_id, quantity, subtotal"),
       ]);
 
       const prodMap = new Map<string, ProductResult>();
-      for (const p of (prodsRes.data || []) as any[]) {
+      for (const p of await withProductCosts((prodsRes.data || []) as any[])) {
         prodMap.set(p.id, { ...p, totalSold: 0, totalRevenue: 0 });
       }
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { withProductCosts } from "@/lib/product-costs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -72,8 +73,8 @@ export default function ComprasPage() {
 
   const openNew = () => {
     loadSuppliers();
-    supabase.from("products").select("id, name, cost").eq("active", true).order("name").then(({ data }) => {
-      if (data) setProducts(data.map(p => ({ id: p.id, name: p.name, cost: p.cost })));
+    supabase.from("products").select("id, name").eq("active", true).order("name").then(async ({ data }) => {
+      if (data) setProducts((await withProductCosts(data)).map(p => ({ id: p.id, name: p.name, cost: p.cost })));
     });
     setSupplierId("");
     setItems([{ name: "", qty: "1", unit_cost: "", product_id: "" }]);
