@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Link } from "react-router-dom";
 import { RotateCcw, MessageCircle } from "lucide-react";
 import { whatsappUrl } from "@/lib/whatsapp";
@@ -9,7 +9,7 @@ export default function TrocasDevolucoesPage() {
   useSEO("Trocas e Devoluções", "Política de trocas e devoluções da Esdra Cosméticos. Troque em até 30 dias de forma simples e sem burocracia.");
   return (
     <div className="container mx-auto px-4 py-10 lg:py-16 max-w-3xl">
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <div className="flex items-center gap-3 mb-6">
           <RotateCcw className="w-6 h-6 text-primary" />
           <h1 className="font-display text-3xl lg:text-4xl text-foreground">Trocas e Devoluções</h1>
@@ -66,7 +66,7 @@ export default function TrocasDevolucoesPage() {
             <Button variant="outline" size="sm"><MessageCircle className="w-4 h-4 mr-1.5" /> Solicitar pelo WhatsApp</Button>
           </a>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { supabase } from "@/integrations/supabase/client";
-import { getProductImage } from "@/lib/product-images";
+import { getProductImage, getProductImageSrcSet, showPlaceholderOnError } from "@/lib/product-images";
 
 interface SearchProduct {
   id: string;
@@ -61,17 +61,7 @@ export function SearchDialog({
     }
   }, [open]);
 
-  // Keyboard shortcut
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        onOpenChange(true);
-      }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [onOpenChange]);
+  // O atalho Ctrl/Cmd+K fica no Header, porque este componente só carrega na primeira busca.
 
   const handleSelect = (slug: string) => {
     onOpenChange(false);
@@ -117,8 +107,11 @@ export function SearchDialog({
                       <img
                         src={img}
                         alt={p.name}
+                        srcSet={getProductImageSrcSet(img)}
+                        sizes="40px"
                         className="w-full h-full object-cover"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }}
+                        loading="lazy"
+                        onError={showPlaceholderOnError}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">

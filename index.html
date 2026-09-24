@@ -9,10 +9,50 @@
     <meta name="theme-color" content="#111111">
     <link rel="icon" href="/favicon.ico" />
     <link rel="manifest" id="pwa-manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://pehqvmaeehzfrsxkhlmt.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fontes sem bloquear a primeira pintura (display=swap: aparece a fonte do sistema e troca quando chegar) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap" /></noscript>
     <script>
       (function(){
-        if(location.pathname.indexOf('/admin')===0){
+        var p=location.pathname;
+        if(p.indexOf('/admin')===0){
           document.getElementById('pwa-manifest').setAttribute('href','/admin.webmanifest');
+        }
+        // Página de produto: pede o produto ao Supabase já, em paralelo com o JavaScript, e começa a
+        // baixar a foto. A ProductPage usa essa resposta (src/lib/product-prefetch.ts); se falhar, busca normal.
+        // As colunas precisam ser as mesmas de PRODUCT_COLUMNS em product-prefetch.ts.
+        if(p.indexOf('/produto/')===0 && window.fetch){
+          try{
+            var slug=decodeURIComponent(p.slice(9).split('/')[0]);
+            var key='%VITE_SUPABASE_PUBLISHABLE_KEY%';
+            var cols='id,name,slug,sku,short_description,full_description,price,sale_price,inventory_count,cover_image,gallery,benefits,how_to_use,ingredients,category_id,new_arrival,bestseller,brand,weight_volume,tags';
+            var pr=fetch('%VITE_SUPABASE_URL%/rest/v1/products?select='+cols+'&slug=eq.'+encodeURIComponent(slug)+'&active=eq.true&limit=1',
+              {headers:{apikey:key,Authorization:'Bearer '+key}})
+              .then(function(r){return r.ok?r.json():null;})
+              .then(function(rows){return rows&&rows.length===1?rows[0]:null;})
+              .catch(function(){return null;});
+            window.__esdraProductPrefetch={slug:slug,promise:pr};
+            pr.then(function(d){
+              var c=d&&d.cover_image; if(!c)return;
+              var l=document.createElement('link');l.rel='preload';l.as='image';l.setAttribute('fetchpriority','high');
+              var m=c.match(/^(.*\/opt\/.+)-800\.webp$/);
+              if(m){l.setAttribute('imagesrcset',m[1]+'-400.webp 400w, '+c+' 800w');l.setAttribute('imagesizes','(min-width: 1024px) 50vw, 100vw');}else{l.href=c;}
+              document.head.appendChild(l);
+            });
+          }catch(e){}
+        }
+        // Na home, a foto do topo é o maior elemento da tela: começa a baixar antes do JavaScript.
+        if(p==='/'){
+          // Mesmas regras do <picture> da HomePage (recorte em retrato no celular, srcset no resto).
+          [['/img/hero-cosmetics-mobile.webp','(max-width: 767px)'],['/img/hero-cosmetics-800.webp 800w, /img/hero-cosmetics-1600.webp 1600w','(min-width: 768px)']].forEach(function(h){
+            var l=document.createElement('link');l.rel='preload';l.as='image';l.media=h[1];l.setAttribute('fetchpriority','high');
+            if(h[0].indexOf(' ')>0){l.setAttribute('imagesrcset',h[0]);l.setAttribute('imagesizes','100vw');}else{l.href=h[0];}
+            document.head.appendChild(l);
+          });
         }
       })();
     </script>
@@ -171,13 +211,25 @@
         <p>Enquanto isso, entre em contato pelo WhatsApp: <a href="https://wa.me/5518991459429">(18) 99145-9429</a></p>
       </div>
     </noscript>
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NV2Q60QZR1"></script>
+    <!-- Google Analytics 4: a fila (dataLayer) começa já e guarda os eventos; o script do Google
+         (~170 kB) só baixa na primeira interação (rolar, tocar, clicar, tecla) ou após 15 s. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-NV2Q60QZR1');
+      (function(){
+        var done=false, evs=['scroll','pointerdown','touchstart','keydown'];
+        function loadGA(){
+          if(done)return; done=true;
+          evs.forEach(function(e){window.removeEventListener(e,loadGA);});
+          var s=document.createElement('script');s.async=true;
+          s.src='https://www.googletagmanager.com/gtag/js?id=G-NV2Q60QZR1';
+          document.head.appendChild(s);
+        }
+        evs.forEach(function(e){window.addEventListener(e,loadGA,{once:true,passive:true});});
+        setTimeout(loadGA,15000);
+      })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

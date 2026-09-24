@@ -1,3 +1,18 @@
+// Capas otimizadas ficam em product-images/opt/<nome>-800.webp, com a irmã <nome>-400.webp.
+// Para essas, devolve o srcset; para qualquer outra URL (ex.: upload novo do admin), undefined.
+export function getProductImageSrcSet(src: string | null | undefined): string | undefined {
+  const m = src?.match(/^(.*\/opt\/.+)-800\.webp$/);
+  return m ? `${m[1]}-400.webp 400w, ${src} 800w` : undefined;
+}
+
+// onError das fotos de produto: tira o srcset (senão ele vence o src) e mostra o placeholder.
+export function showPlaceholderOnError(e: { currentTarget: HTMLImageElement }) {
+  const img = e.currentTarget;
+  if (img.src.endsWith("/placeholder.svg")) return;
+  img.removeAttribute("srcset");
+  img.src = "/placeholder.svg";
+}
+
 export function getProductImage(slug: string, coverImage: string | null): string {
   if (coverImage) return coverImage;
 
@@ -23,4 +38,9 @@ export function getProductImage(slug: string, coverImage: string | null): string
     default:
       return "/placeholder.svg";
   }
+}
+
+// O React 18 não conhece a prop fetchPriority; em minúsculas o atributo passa direto para o HTML.
+export function imagePriority(high: boolean) {
+  return { fetchpriority: high ? "high" : "auto" } as Record<string, string>;
 }

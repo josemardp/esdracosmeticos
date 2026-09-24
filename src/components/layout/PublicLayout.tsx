@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -12,7 +13,9 @@ export function PublicLayout() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-1">
-        <Outlet />
+        <Suspense fallback={<div className="min-h-[60vh]" />}>
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
       <WhatsAppButton />

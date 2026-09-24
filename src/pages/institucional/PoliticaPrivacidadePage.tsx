@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
@@ -7,7 +7,7 @@ export default function PoliticaPrivacidadePage() {
   useSEO("Política de Privacidade", "Saiba como a Esdra Cosméticos protege seus dados pessoais e garante sua privacidade.");
   return (
     <div className="container mx-auto px-4 py-10 lg:py-16 max-w-3xl">
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <div className="flex items-center gap-3 mb-6">
           <ShieldCheck className="w-6 h-6 text-primary" />
           <h1 className="font-display text-3xl lg:text-4xl text-foreground">Política de Privacidade</h1>
@@ -64,7 +64,7 @@ export default function PoliticaPrivacidadePage() {
         <div className="mt-10 pt-6 border-t">
           <Link to="/suporte" className="font-body text-sm text-primary hover:underline">← Voltar ao Suporte</Link>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

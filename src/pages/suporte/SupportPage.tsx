@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Mail, Phone, MessageCircle, Send, HelpCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useSEO } from "@/hooks/use-seo";
 import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
 
@@ -54,7 +54,7 @@ export default function SupportPage() {
     <div className="py-12 lg:py-20">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <motion.div
+        <m.div
           className="text-center mb-12"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -65,7 +65,7 @@ export default function SupportPage() {
           <p className="font-body text-sm text-muted-foreground max-w-lg mx-auto">
             Estamos aqui para garantir a melhor experiência. Entre em contato por qualquer um dos nossos canais.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Contact Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-16">
@@ -105,7 +105,7 @@ export default function SupportPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
           {/* Contact Form */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
@@ -161,10 +161,10 @@ export default function SupportPage() {
                 </Button>
               </form>
             )}
-          </motion.div>
+          </m.div>
 
           {/* FAQ */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
@@ -181,7 +181,7 @@ export default function SupportPage() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </div>

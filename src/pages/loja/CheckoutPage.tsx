@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShieldCheck, MessageCircle, CheckCircle2, Loader2, Lock, Truck, CreditCard, Clock } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { fetchCep } from "@/lib/viacep";
-import { getProductImage } from "@/lib/product-images";
+import { getProductImage, getProductImageSrcSet, showPlaceholderOnError } from "@/lib/product-images";
 import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
 import { getShippingLabel, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
@@ -150,7 +150,7 @@ export default function CheckoutPage() {
   if (orderResult) {
     return (
       <div className="container mx-auto px-4 py-16 lg:py-24 text-center">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+        <m.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
           <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <Clock className="w-10 h-10 text-accent-foreground" />
           </div>
@@ -263,7 +263,7 @@ export default function CheckoutPage() {
               <Button size="lg" variant="outline">Continuar Comprando</Button>
             </Link>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     );
   }
@@ -271,7 +271,7 @@ export default function CheckoutPage() {
   // ── Formulário ───────────────────────────────────────────────
   return (
     <div className="container mx-auto px-4 py-6 lg:py-10">
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+      <m.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center gap-2 mb-6 lg:mb-8">
           <Lock className="w-4 h-4 text-primary" />
           <h1 className="font-display text-2xl lg:text-3xl text-foreground">Checkout Seguro</h1>
@@ -320,12 +320,12 @@ export default function CheckoutPage() {
                   { value: "PIX", label: "PIX", desc: "Aprovação instantânea" },
                   { value: "Cartão de Crédito", label: "Cartão de Crédito", desc: "Até 3x sem juros" },
                   { value: "Boleto Bancário", label: "Boleto Bancário", desc: "Vencimento em 3 dias úteis" },
-                ].map(m => (
-                  <label key={m.value} className={`flex items-center gap-3 border rounded-xl p-4 cursor-pointer transition-all ${payment === m.value ? "border-primary bg-primary/5 shadow-sm" : "hover:bg-secondary"}`}>
-                    <input type="radio" name="payment" checked={payment === m.value} onChange={() => setPayment(m.value)} className="accent-[hsl(var(--primary))]" />
+                ].map(opt => (
+                  <label key={opt.value} className={`flex items-center gap-3 border rounded-xl p-4 cursor-pointer transition-all ${payment === opt.value ? "border-primary bg-primary/5 shadow-sm" : "hover:bg-secondary"}`}>
+                    <input type="radio" name="payment" checked={payment === opt.value} onChange={() => setPayment(opt.value)} className="accent-[hsl(var(--primary))]" />
                     <div>
-                      <span className="font-body text-sm font-medium text-foreground">{m.label}</span>
-                      <p className="font-body text-[11px] text-muted-foreground">{m.desc}</p>
+                      <span className="font-body text-sm font-medium text-foreground">{opt.label}</span>
+                      <p className="font-body text-[11px] text-muted-foreground">{opt.desc}</p>
                     </div>
                   </label>
                 ))}
@@ -352,7 +352,7 @@ export default function CheckoutPage() {
                     {items.map(item => (
                       <div key={item.id} className="flex gap-3">
                         <div className="w-12 h-12 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                          {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt="" className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : null; })()}
+                          {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt="" className="w-full h-full object-cover" srcSet={getProductImageSrcSet(img)} sizes="64px" loading="lazy" decoding="async" onError={showPlaceholderOnError} /> : null; })()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-body text-xs text-foreground line-clamp-1 font-medium">{item.name}</p>
@@ -404,7 +404,7 @@ export default function CheckoutPage() {
             </a>
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

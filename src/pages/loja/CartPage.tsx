@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, X, ShoppingBag, ArrowRight, MessageCircle, Tag, ShieldCheck, Truck, CreditCard } from "lucide-react";
 import { whatsappUrl } from "@/lib/whatsapp";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
-import { getProductImage } from "@/lib/product-images";
+import { getProductImage, getProductImageSrcSet, showPlaceholderOnError } from "@/lib/product-images";
 import { getShippingLabel, getFreeShippingMessage, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 export default function CartPage() {
@@ -24,7 +24,7 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 lg:py-24 text-center">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+        <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-5">
             <ShoppingBag className="w-8 h-8 text-muted-foreground" />
           </div>
@@ -38,7 +38,7 @@ export default function CartPage() {
               <Button size="lg" variant="outline"><MessageCircle className="w-4 h-4 mr-2" /> Pedir Recomendação</Button>
             </a>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     );
   }
@@ -51,9 +51,9 @@ export default function CartPage() {
           {items.map((item) => {
             const unitPrice = item.sale_price ?? item.price;
             return (
-              <motion.div key={item.id} layout className="bg-card border rounded-xl p-4 flex gap-4">
+              <m.div key={item.id} layout className="bg-card border rounded-xl p-4 flex gap-4">
                 <Link to={`/produto/${item.slug}`} className="w-20 h-20 sm:w-24 sm:h-24 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                  {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt={item.name} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : null; })()}
+                  {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt={item.name} className="w-full h-full object-cover" srcSet={getProductImageSrcSet(img)} sizes="96px" loading="lazy" decoding="async" onError={showPlaceholderOnError} /> : null; })()}
                 </Link>
                 <div className="flex-1 min-w-0">
                   <Link to={`/produto/${item.slug}`} className="font-body text-sm font-medium text-foreground line-clamp-2 hover:text-primary transition-colors">{item.name}</Link>
@@ -71,7 +71,7 @@ export default function CartPage() {
                     <button onClick={() => removeItem(item.id)} className="ml-auto text-muted-foreground hover:text-destructive transition-colors p-1"><X className="w-4 h-4" /></button>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>

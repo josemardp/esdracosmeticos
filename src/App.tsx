@@ -1,6 +1,7 @@
 import { useEffect, lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { LazyMotion } from "framer-motion";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -8,26 +9,27 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import { AdminLayout } from "@/components/layout/AdminLayout";
-import { AccountLayout } from "@/components/layout/AccountLayout";
+const AdminLayout = lazy(() => import("@/components/layout/AdminLayout").then((mod) => ({ default: mod.AdminLayout })));
+const AccountLayout = lazy(() => import("@/components/layout/AccountLayout").then((mod) => ({ default: mod.AccountLayout })));
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminRoute } from "@/components/auth/AdminRoute";
 
-// Public pages
+// Public pages: as portas de entrada (home, catálogo, produto) vão no pacote inicial;
+// as demais carregam sob demanda (PublicLayout tem o Suspense).
 import HomePage from "@/pages/HomePage";
 import CatalogPage from "@/pages/loja/CatalogPage";
 import ProductPage from "@/pages/loja/ProductPage";
-import CartPage from "@/pages/loja/CartPage";
-import CheckoutPage from "@/pages/loja/CheckoutPage";
-import SupportPage from "@/pages/suporte/SupportPage";
-import SobrePage from "@/pages/SobrePage";
-import NotFound from "@/pages/NotFound";
+const CartPage = lazy(() => import("@/pages/loja/CartPage"));
+const CheckoutPage = lazy(() => import("@/pages/loja/CheckoutPage"));
+const SupportPage = lazy(() => import("@/pages/suporte/SupportPage"));
+const SobrePage = lazy(() => import("@/pages/SobrePage"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
-// Auth pages
-import LoginPage from "@/pages/auth/LoginPage";
-import SignupPage from "@/pages/auth/SignupPage";
-import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
-import ResetPasswordPage from "@/pages/auth/ResetPasswordPage";
+// Auth pages (lazy)
+const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
+const SignupPage = lazy(() => import("@/pages/auth/SignupPage"));
+const ForgotPasswordPage = lazy(() => import("@/pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("@/pages/auth/ResetPasswordPage"));
 const AdminLoginPage = lazy(() => import("@/pages/auth/AdminLoginPage"));
 
 // Admin pages (lazy)
@@ -94,10 +96,13 @@ const FavoritesPage = lazy(() => import("@/pages/conta/FavoritesPage"));
 const AccountPlaceholder = lazy(() => import("@/pages/conta/AccountPlaceholder"));
 const AddressesPage = lazy(() => import("@/pages/conta/AddressesPage"));
 
-// Institutional pages
-import PoliticaPrivacidadePage from "@/pages/institucional/PoliticaPrivacidadePage";
-import TrocasDevolucoesPage from "@/pages/institucional/TrocasDevolucoesPage";
-import TermosDeUsoPage from "@/pages/institucional/TermosDeUsoPage";
+// Institutional pages (lazy)
+const PoliticaPrivacidadePage = lazy(() => import("@/pages/institucional/PoliticaPrivacidadePage"));
+const TrocasDevolucoesPage = lazy(() => import("@/pages/institucional/TrocasDevolucoesPage"));
+const TermosDeUsoPage = lazy(() => import("@/pages/institucional/TermosDeUsoPage"));
+
+// Motor das animações carregado depois da página; as páginas usam <m.div> (ver motion-features.ts).
+const loadMotionFeatures = () => import("@/lib/motion-features").then((mod) => mod.default);
 
 const queryClient = new QueryClient();
 
@@ -123,6 +128,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <LazyMotion features={loadMotionFeatures} strict>
       <BrowserRouter>
         <AuthProvider>
           <CartProvider>
@@ -147,10 +153,10 @@ const App = () => (
             </Route>
 
             {/* Auth routes (no layout) */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/cadastro" element={<SignupPage />} />
-            <Route path="/recuperar-senha" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/login" element={<Suspense fallback={<RouteLoading />}><LoginPage /></Suspense>} />
+            <Route path="/cadastro" element={<Suspense fallback={<RouteLoading />}><SignupPage /></Suspense>} />
+            <Route path="/recuperar-senha" element={<Suspense fallback={<RouteLoading />}><ForgotPasswordPage /></Suspense>} />
+            <Route path="/reset-password" element={<Suspense fallback={<RouteLoading />}><ResetPasswordPage /></Suspense>} />
             <Route path="/admin/login" element={<Suspense fallback={<RouteLoading />}><AdminLoginPage /></Suspense>} />
 
             {/* Protected client routes */}
@@ -220,11 +226,12 @@ const App = () => (
             </Route>
 
             {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Suspense fallback={<RouteLoading />}><NotFound /></Suspense>} />
           </Routes>
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>
+      </LazyMotion>
     </TooltipProvider>
   </QueryClientProvider>
 );

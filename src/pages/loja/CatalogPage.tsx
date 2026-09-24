@@ -3,7 +3,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-import { getProductImage } from "@/lib/product-images";
+import { getProductImage, getProductImageSrcSet, imagePriority, showPlaceholderOnError } from "@/lib/product-images";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -12,7 +12,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import {
   Search, SlidersHorizontal, X, ShoppingBag, CreditCard, PackageX, AlertCircle, RefreshCw,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
 
@@ -721,17 +720,16 @@ export default function CatalogPage() {
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                <AnimatePresence mode="popLayout">
-                  {filtered.map((p) => (
-                    <ProductCard
-                      key={p.id}
-                      product={p}
-                      onQuickAdd={handleQuickAdd}
-                      justAdded={addedIds.has(p.id)}
-                      catalogUrl={location.pathname + location.search}
-                    />
-                  ))}
-                </AnimatePresence>
+                {filtered.map((p, i) => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    priority={i < 4}
+                    onQuickAdd={handleQuickAdd}
+                    justAdded={addedIds.has(p.id)}
+                    catalogUrl={location.pathname + location.search}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -744,11 +742,13 @@ export default function CatalogPage() {
 /* ─── Product Card (memoized) ─── */
 const ProductCard = memo(function ProductCard({
   product: p,
+  priority,
   onQuickAdd,
   justAdded,
   catalogUrl,
 }: {
   product: Product;
+  priority: boolean;
   onQuickAdd: (p: Product) => void;
   justAdded: boolean;
   catalogUrl: string;
@@ -759,24 +759,23 @@ const ProductCard = memo(function ProductCard({
   const discount = p.sale_price ? Math.round((1 - p.sale_price / p.price) * 100) : 0;
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.2 }}
-    >
+    // Fade de entrada em CSS (antes era framer-motion por cartão: pesado com 128 cartões no celular).
+    <div className="animate-in fade-in zoom-in-95 duration-200">
       <div className={`group bg-card border rounded-xl overflow-hidden card-lift ${outOfStock ? "opacity-70" : ""}`}>
         <Link to={`/produto/${p.slug}`} state={{ from: catalogUrl }} className="block">
           <div className="aspect-square bg-secondary relative overflow-hidden">
             {img ? (
               <img
                 src={img}
+                srcSet={getProductImageSrcSet(img)}
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                 alt={p.name}
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }}
+                onError={showPlaceholderOnError}
                 width={400}
                 height={400}
-                loading="lazy"
+                loading={priority ? "eager" : "lazy"}
+                {...imagePriority(priority)}
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             ) : (
@@ -869,6 +868,6 @@ const ProductCard = memo(function ProductCard({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 });

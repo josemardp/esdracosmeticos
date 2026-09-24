@@ -1,22 +1,21 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { motion, type Variants } from "framer-motion";
+import { m, type Variants } from "framer-motion";
 import { ArrowRight, ShieldCheck, Truck, RotateCcw, Star, Gift, ShoppingBag, CreditCard, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { getProductImage } from "@/lib/product-images";
+import { getProductImage, getProductImageSrcSet, imagePriority, showPlaceholderOnError } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
 import { trackAddToCart } from "@/lib/analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { whatsappUrl } from "@/lib/whatsapp";
-import heroImg from "@/assets/hero-cosmetics.jpg";
-import catMaquiagem from "@/assets/cat-maquiagem.jpg";
-import catSkincare from "@/assets/cat-skincare.jpg";
-import catCabelos from "@/assets/cat-cabelos.jpg";
-import catPerfumaria from "@/assets/cat-perfumaria.jpg";
-import catCorpoBanho from "@/assets/cat-corpo-banho.jpg";
-import catInfantil from "@/assets/cat-infantil.jpg";
-import catAcessorios from "@/assets/cat-acessorios.jpg";
+import catMaquiagem from "@/assets/cat-maquiagem.webp";
+import catSkincare from "@/assets/cat-skincare.webp";
+import catCabelos from "@/assets/cat-cabelos.webp";
+import catPerfumaria from "@/assets/cat-perfumaria.webp";
+import catCorpoBanho from "@/assets/cat-corpo-banho.webp";
+import catInfantil from "@/assets/cat-infantil.webp";
+import catAcessorios from "@/assets/cat-acessorios.webp";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -117,11 +116,11 @@ export default function HomePage() {
   const ProductCard = useCallback(({ p, i }: { p: Product; i: number }) => {
     const finalPrice = p.sale_price ?? p.price;
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+      <m.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
         <div className="group bg-card border rounded-xl overflow-hidden card-lift">
           <Link to={`/produto/${p.slug}`}>
             <div className="aspect-square bg-secondary relative overflow-hidden">
-              {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
+              {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} srcSet={getProductImageSrcSet(img)} sizes="(min-width: 1024px) 25vw, 50vw" width={400} height={400} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={showPlaceholderOnError} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
               <div className="absolute top-2 left-2 flex flex-col gap-1">
                  {p.new_arrival && <span className="bg-primary text-primary-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Novo</span>}
                 {p.bestseller && <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Mais Vendido</span>}
@@ -168,7 +167,7 @@ export default function HomePage() {
             )}
           </div>
         </div>
-      </motion.div>
+      </m.div>
     );
   }, [handleQuickAdd, formatInstallment]);
 
@@ -177,7 +176,7 @@ export default function HomePage() {
     return (
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
-          <motion.div className="flex items-end justify-between mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <m.div className="flex items-end justify-between mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <div>
               <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-1">{title}</h3>
               <p className="font-body text-sm text-muted-foreground">{subtitle}</p>
@@ -185,7 +184,7 @@ export default function HomePage() {
             <Link to={linkTo} className="hidden sm:inline-flex items-center gap-1.5 font-body text-sm text-primary hover:underline font-medium">
               {linkLabel} <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          </motion.div>
+          </m.div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {products.map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
           </div>
@@ -202,23 +201,27 @@ export default function HomePage() {
       {/* Hero */}
       <section className="relative min-h-[80vh] lg:min-h-[85vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt="Coleção Esdra Cosméticos" className="w-full h-full object-cover" />
+          {/* Em public/img para o index.html poder pré-carregar na home. No celular vai o recorte em retrato. */}
+          <picture>
+            <source media="(max-width: 767px)" srcSet="/img/hero-cosmetics-mobile.webp" />
+            <img src="/img/hero-cosmetics-1600.webp" srcSet="/img/hero-cosmetics-800.webp 800w, /img/hero-cosmetics-1600.webp 1600w" sizes="100vw" width={1600} height={900} {...imagePriority(true)} alt="Coleção Esdra Cosméticos" className="w-full h-full object-cover" />
+          </picture>
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/85 via-foreground/55 to-transparent" />
         </div>
         <div className="relative container mx-auto px-4 py-20">
-          <motion.div className="max-w-xl" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
-            <motion.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Beleza & Perfumaria Selecionada</motion.span>
-            <motion.h1 variants={fadeUp} custom={1} className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl italic leading-[1.08] tracking-tight text-primary-foreground mb-6">
+          <m.div className="max-w-xl" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
+            <m.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Beleza & Perfumaria Selecionada</m.span>
+            <m.h1 variants={fadeUp} custom={1} className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl italic leading-[1.08] tracking-tight text-primary-foreground mb-6">
               Beleza que traduz <span className="text-gold">personalidade</span>
-            </motion.h1>
-            <motion.p variants={fadeUp} custom={2} className="font-body text-sm sm:text-base text-primary-foreground/75 max-w-md leading-relaxed mb-8">
+            </m.h1>
+            <m.p variants={fadeUp} custom={2} className="font-body text-sm sm:text-base text-primary-foreground/75 max-w-md leading-relaxed mb-8">
               Perfumes, maquiagem, cuidados corporais e muito mais das melhores marcas. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
-            </motion.p>
-            <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3 sm:gap-4">
+            </m.p>
+            <m.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3 sm:gap-4">
               <Link to="/loja"><Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-body text-sm tracking-wide px-8">Explorar Coleção <ArrowRight className="w-4 h-4 ml-2" /></Button></Link>
               <Link to="/lancamentos"><Button size="lg" className="bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/40 hover:bg-primary-foreground/30 font-body text-sm tracking-wide px-8">Novidades</Button></Link>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </div>
       </section>
 
@@ -272,23 +275,23 @@ export default function HomePage() {
 
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
-          <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <m.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
              <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Explore por Categoria</h2>
             <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre o produto perfeito para cada momento</p>
-          </motion.div>
+          </m.div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {categories.filter(c => categoryImages[c.slug]).map((cat, i) => (
-              <motion.div key={cat.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }}>
+              <m.div key={cat.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }}>
                 <Link to={`/loja?categoria=${cat.slug}`} className="group relative block aspect-[3/4] rounded-xl overflow-hidden card-lift">
-                  <img src={cat.image_url || categoryImages[cat.slug]} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                  <img src={cat.image_url || categoryImages[cat.slug]} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={480} height={640} loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6">
                     <h4 className="font-display text-lg sm:text-xl lg:text-2xl text-primary-foreground font-semibold">{cat.name}</h4>
                     <span className="font-body text-xs text-primary-foreground/80 group-hover:text-primary-foreground transition-colors inline-flex items-center gap-1 mt-1">Ver produtos <ArrowRight className="w-3 h-3" /></span>
                   </div>
                 </Link>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -308,14 +311,14 @@ export default function HomePage() {
       {/* Brands */}
       <section className="py-14 lg:py-20 bg-secondary/50">
         <div className="container mx-auto px-4">
-          <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <m.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Nossas Marcas</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Marcas que Confiamos</h2>
             <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Trabalhamos exclusivamente com marcas renomadas e distribuidores autorizados</p>
-          </motion.div>
+          </m.div>
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 lg:gap-12">
             {["Eudora", "O Boticário", "Egeo", "Siàge", "Instance", "Niina Secrets", "Dr. Botica", "Her Code", "Cuide-se Bem", "Jequiti"].map((brand, i) => (
-              <motion.div
+              <m.div
                 key={brand}
                 className="px-4 py-3 bg-card border rounded-lg font-body text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors cursor-default"
                 initial={{ opacity: 0, y: 12 }}
@@ -324,7 +327,7 @@ export default function HomePage() {
                 transition={{ delay: i * 0.04 }}
               >
                 {brand}
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -334,7 +337,7 @@ export default function HomePage() {
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-5xl mx-auto mb-12">
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+            <m.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Sobre Nós</span>
               <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-4">Esdra Cosméticos</h2>
               <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">
@@ -346,8 +349,8 @@ export default function HomePage() {
               <Link to="/sobre" className="font-body text-sm text-primary hover:underline font-medium inline-flex items-center gap-1">
                 Conheça nossa história <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </motion.div>
-            <motion.div className="grid grid-cols-2 gap-3" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+            </m.div>
+            <m.div className="grid grid-cols-2 gap-3" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               {[
                 { icon: ShieldCheck, title: "100% Original", desc: "Distribuidores autorizados" },
                 { icon: CreditCard, title: "3x sem Juros", desc: "Cartão, PIX ou boleto" },
@@ -360,7 +363,7 @@ export default function HomePage() {
                   <p className="font-body text-[10px] text-muted-foreground">{item.desc}</p>
                 </div>
               ))}
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -368,18 +371,18 @@ export default function HomePage() {
       {reviews.length > 0 && (
         <section className="py-14 lg:py-20 bg-secondary/50">
           <div className="container mx-auto px-4">
-            <motion.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <m.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Depoimentos</span>
               <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">O que dizem nossas clientes</h2>
               <p className="font-body text-sm text-muted-foreground">Avaliações reais de quem confia na Esdra</p>
-            </motion.div>
+            </m.div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-5xl mx-auto">
               {reviews.map((t, i) => (
-                <motion.div key={i} className="bg-card border rounded-xl p-6 lg:p-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+                <m.div key={i} className="bg-card border rounded-xl p-6 lg:p-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
                   <div className="flex gap-0.5 mb-4">{Array.from({ length: t.rating }).map((_, j) => <Star key={j} className="w-4 h-4 fill-gold text-gold" />)}</div>
                   {t.comment && <p className="font-body text-sm text-foreground leading-relaxed mb-4 italic">"{t.comment}"</p>}
                   <p className="font-body text-xs text-muted-foreground">{new Date(t.created_at).toLocaleDateString("pt-BR")}</p>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
@@ -389,13 +392,13 @@ export default function HomePage() {
       {/* FAQ */}
       <section className="py-14 lg:py-20">
         <div className="container mx-auto px-4 max-w-3xl">
-          <motion.div className="text-center mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <m.div className="text-center mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Dúvidas Frequentes</span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground">Perguntas Frequentes</h2>
-          </motion.div>
+          </m.div>
           <div className="space-y-3">
             {faqs.map((faq, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 className="bg-card border rounded-xl overflow-hidden"
                 initial={{ opacity: 0, y: 12 }}
@@ -415,7 +418,7 @@ export default function HomePage() {
                     <p className="font-body text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
                   </div>
                 )}
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -424,7 +427,7 @@ export default function HomePage() {
       {/* CTA WhatsApp */}
       <section className="py-14 lg:py-20 bg-primary">
         <div className="container mx-auto px-4 text-center">
-          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <m.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-primary-foreground mb-3">Precisa de ajuda para escolher?</h2>
             <p className="font-body text-sm text-primary-foreground/75 mb-8 max-w-md mx-auto leading-relaxed">
               Nossa equipe está pronta para ajudar você a encontrar o perfume ideal. Atendimento rápido e personalizado pelo WhatsApp.
@@ -432,7 +435,7 @@ export default function HomePage() {
             <a href={whatsappUrl("Olá, quero ajuda para escolher um perfume na Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body text-sm tracking-wide px-8 hover:-translate-y-0.5 transition-all duration-300">Falar no WhatsApp</Button>
             </a>
-          </motion.div>
+          </m.div>
         </div>
       </section>
     </>

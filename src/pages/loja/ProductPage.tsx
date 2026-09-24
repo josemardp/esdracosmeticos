@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { getProductImage } from "@/lib/product-images";
+import { getProductImage, getProductImageSrcSet, imagePriority, showPlaceholderOnError } from "@/lib/product-images";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Heart, MessageCircle, ChevronLeft, Star, Minus, Plus, ShieldCheck, Truck, RotateCcw, CreditCard, CheckCircle, Package } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { trackViewItem, trackAddToCart, trackWhatsAppClick } from "@/lib/analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { PRODUCT_COLUMNS, takeProductPrefetch } from "@/lib/product-prefetch";
 import { useProductJsonLd } from "@/hooks/use-product-jsonld";
 import { WHATSAPP_PHONE } from "@/lib/whatsapp";
 
@@ -52,8 +53,17 @@ export default function ProductPage() {
     setJustAdded(false);
     const fetchData = async () => {
       setLoading(true);
-      const { data } = await supabase.from("products").select("id, name, slug, sku, short_description, full_description, price, sale_price, inventory_count, cover_image, gallery, benefits, how_to_use, ingredients, category_id, new_arrival, bestseller, brand, weight_volume, tags").eq("slug", slug).eq("active", true).maybeSingle();
+      // Na primeira abertura, aproveita a busca que o index.html já começou.
+      let data = await takeProductPrefetch<Product>(slug);
+      if (!data) {
+        const res = await supabase.from("products").select(PRODUCT_COLUMNS).eq("slug", slug).eq("active", true).maybeSingle();
+        data = res.data as Product | null;
+      }
       setProduct(data as Product | null);
+      // Mostra o produto já; avaliações e relacionados chegam depois, mais abaixo na página.
+      setReviews([]);
+      setRelated([]);
+      setLoading(false);
       if (data) {
         trackViewItem({ id: data.id, name: data.name, price: data.sale_price ?? data.price });
         const [revs, rel] = await Promise.all([
@@ -65,7 +75,6 @@ export default function ProductPage() {
         setReviews((revs.data as Review[]) ?? []);
         setRelated((rel.data as RelatedProduct[]) ?? []);
       }
-      setLoading(false);
     };
     fetchData();
   }, [slug]);
@@ -125,11 +134,15 @@ export default function ProductPage() {
     }
   };
 
+  // Mesmo esqueleto da página pronta (espaçamentos e link "Voltar"), para nada pular quando o produto chega.
   if (loading) return (
-    <div className="container mx-auto px-4 py-8 lg:py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        <div className="aspect-square bg-secondary rounded-xl animate-pulse" />
+    <div className="py-4 lg:py-10">
+      <div className="container mx-auto px-4">
+      <div className="h-5 w-28 mb-5 bg-secondary rounded animate-pulse" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+        <div className="aspect-square bg-secondary rounded-xl animate-pulse mb-3" />
         <div className="space-y-4"><div className="h-8 bg-secondary rounded animate-pulse w-3/4" /><div className="h-6 bg-secondary rounded animate-pulse w-1/4" /><div className="h-20 bg-secondary rounded animate-pulse" /></div>
+      </div>
       </div>
     </div>
   );
@@ -159,9 +172,10 @@ export default function ProductPage() {
         </Link>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
           {/* Images */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          {/* Sem animação de entrada: a foto é o maior elemento da tela e precisa aparecer já. */}
+          <div>
             <div className="aspect-square bg-secondary rounded-xl overflow-hidden mb-3 relative">
-              {images.length > 0 ? <img src={images[selectedImage]} alt={product.name} className="w-full h-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body">Sem imagem</div>}
+              {images.length > 0 ? <img key={images[selectedImage]} src={images[selectedImage]} srcSet={getProductImageSrcSet(images[selectedImage])} sizes="(min-width: 1024px) 50vw, 100vw" width={800} height={800} {...imagePriority(selectedImage === 0)} alt={product.name} className="w-full h-full object-cover" onError={showPlaceholderOnError} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body">Sem imagem</div>}
               {product.sale_price && (
                 <span className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-xs font-body font-bold px-3 py-1 rounded-full">-{discountPct}%</span>
               )}
@@ -175,15 +189,15 @@ export default function ProductPage() {
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {images.map((img, i) => (
                   <button key={i} onClick={() => setSelectedImage(i)} className={`w-16 h-16 rounded-lg overflow-hidden border-2 shrink-0 transition-all ${i === selectedImage ? 'border-primary ring-1 ring-primary' : 'border-transparent opacity-70 hover:opacity-100'}`}>
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} srcSet={getProductImageSrcSet(img)} sizes="64px" alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" onError={showPlaceholderOnError} />
                   </button>
                 ))}
               </div>
             )}
-          </motion.div>
+          </div>
 
           {/* Info */}
-          <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
+          <m.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
                {product.brand && <span className="bg-secondary text-foreground font-body text-xs font-semibold px-3 py-1 rounded-full">{product.brand}</span>}
                {product.new_arrival && <span className="bg-primary/10 text-primary font-body text-xs font-semibold px-3 py-1 rounded-full">Lançamento</span>}
@@ -295,7 +309,7 @@ export default function ProductPage() {
                 {activeTab === "ingredients" && (product.ingredients || "Informação não disponível.")}
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Reviews */}
@@ -326,7 +340,7 @@ export default function ProductPage() {
                 return (
                   <Link key={p.id} to={`/produto/${p.slug}`} className="group bg-card border rounded-xl overflow-hidden card-lift">
                     <div className="aspect-square bg-secondary relative overflow-hidden">
-                      <img src={img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} />
+                      <img src={img} srcSet={getProductImageSrcSet(img)} sizes="(min-width: 1024px) 25vw, 50vw" width={400} height={400} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={showPlaceholderOnError} />
                       {p.sale_price && (
                         <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-full">
                           -{Math.round((1 - p.sale_price / p.price) * 100)}%
