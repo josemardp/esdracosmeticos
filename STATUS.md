@@ -73,6 +73,8 @@ Lighthouse mobile, as duas versões compiladas e medidas no mesmo computador, me
 
 `npm test` 14/14, `npm run test:db` checkout ok, build ok. Prints de home, /loja, produto, sacola e checkout em 390 e 1366 px: 0 imagens quebradas, sem rolagem lateral.
 
+**Em produção depois do deploy `527480a`** (mediana de 3 rodadas; antes = sessão act-011): home 58 → **59** (56/62/59), /loja 51 → **65** (64/65/82), produto 68 → **69** (70/66/69). CLS 0 a 0,04. Admin conferido no ar: login idêntico ao de antes.
+
 Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
 
 ---
@@ -90,7 +92,8 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 | Pendência | Impacto | Dono |
 |---|---|---|
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
-| Conferir no ar se home e /loja passaram de 60 no Lighthouse mobile de produção (no computador passaram). Maior peso restante: JS do Supabase (~580 kB sem compressão) | SEO e conversão no celular | Código |
+| Sobre, Suporte, institucionais, login e conta só herdaram as cores e fontes novas; não foram redesenhadas | Visual menos caprichado fora do fluxo de compra | Código |
+| Home em 59 no Lighthouse mobile de produção (TBT ~800 ms). Maior peso restante: JS do Supabase (~580 kB sem compressão) | SEO e conversão no celular | Código |
 | Capa nova pelo admin não gera versões 400/800 | Foto nova fica mais pesada que as demais | Código |
 
 ---

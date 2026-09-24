@@ -17,14 +17,14 @@ status:
   health: healthy
   phase: Em producao / Seguranca e otimizacao
   priority: 1
-  updated_at: 2026-09-24T08:31:21-03:00
-  last_session_at: 2026-09-23T23:38:44-03:00
+  updated_at: 2026-09-24T11:34:26-03:00
+  last_session_at: 2026-09-24T11:34:26-03:00
   confidence: inferred
 focus:
   objective: Plataforma de e-commerce e catalogo online da Esdra Cosmeticos
-  current: Esdra validar no celular a home, a loja e uma página de produto; depois act-012 (catálogo em partes e versões automáticas para capa nova).
-  last_completed: Fontes sem bloquear a pintura; Google Analytics na primeira interação ou após 15 s
-  recommended_next_action: act-013
+  current: Esdra validar no celular a home, a loja, um produto e a sacola; depois act-012 (capa nova do admin com versões 400/800).
+  last_completed: Deploy 527480a no ar, conferido com prints de produção e Lighthouse em produção
+  recommended_next_action: act-015
 next_actions:
   - id: act-001
     title: Corrigir imagens com 404 externo e subir mascara Niina Secrets otimizada
@@ -194,10 +194,20 @@ next_actions:
     created_at: 2026-09-24T00:05:44-03:00
     done_at: 2026-09-24T08:31:21-03:00
     note: null
+  - id: act-015
+    title: Esdra validar no celular a home, a loja, um produto e a sacola; depois act-012 (capa nova do admin com versões 400/800).
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-24T11:34:26-03:00
+    done_at: null
+    note: null
 blockers: []
 decisions_recent:
-  - date: 2026-09-16
-    text: Estado preenchido com base em STATUS.md de 15/09/2026
   - date: 2026-09-16
     text: "Alinhar focus.current e próxima ação com evidência real: STATUS.md (auditoria 15/09) e commit 15/09/2026"
   - date: 2026-09-23
@@ -210,6 +220,14 @@ decisions_recent:
     text: Google Analytics passa a carregar na primeira interação ou após 15 s (visitas de menos de 15 s sem toque deixam de contar). Reversível no index.html.
   - date: 2026-09-23
     text: Supabase deste plano não redimensiona imagem (FeatureNotEnabled); versões menores geradas e enviadas manualmente.
+  - date: 2026-09-24
+    text: Aparência antiga preservada no admin por classe .admin-ui, sem editar arquivos do admin.
+  - date: 2026-09-24
+    text: Catálogo passa a mostrar 24 produtos por vez (parte da act-012).
+  - date: 2026-09-24
+    text: Frete no topo escrito só como "acima de R$ 199", sem "para todo o Brasil".
+  - date: 2026-09-24
+    text: Marcas da home trocadas pelas marcas reais do cadastro.
 milestones: []
 review:
   stale_after_days: null
