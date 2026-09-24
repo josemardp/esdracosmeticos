@@ -1,6 +1,6 @@
 # STATUS.md — Loja Esdra Cosméticos
 
-> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026 (act-014)
+> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026 (act-012 e act-016)
 
 ---
 
@@ -75,13 +75,22 @@ Lighthouse mobile, as duas versões compiladas e medidas no mesmo computador, me
 
 **Em produção depois do deploy `527480a`** (mediana de 3 rodadas; antes = sessão act-011): home 58 → **59** (56/62/59), /loja 51 → **65** (64/65/82), produto 68 → **69** (70/66/69). CLS 0 a 0,04. Admin conferido no ar: login idêntico ao de antes.
 
+## Feito em 24/09/2026: capa do admin e páginas restantes (act-012, act-016)
+
+1. **Capa nova pelo admin ganha versões 400/800 sozinha:** o navegador do admin redimensiona a foto (canvas, WebP qualidade 0,82, cache de 30 dias) e envia para `product-images/opt/product-<timestamp>-800.webp` e `-400.webp`; `cover_image` recebe a de 800 e a loja monta o `srcset` pelo nome. Se o navegador não gerar WebP (ex.: HEIC fora do Safari), envia o original para `product-images/`. Código em `src/lib/product-cover-upload.ts` (só carrega com o admin). **O upload antigo estava quebrado:** mandava para o bucket `products`, que não existe. Sem política nova: o admin já tinha INSERT em `product-images`. Testado com envio real (830 KB virou 11,7 KB e 5,3 KB); arquivos de teste apagados, nenhum produto criado.
+2. **Páginas redesenhadas no sistema da loja** (aprovadas pelo Josemar por prints): institucionais com moldura comum (`src/components/store/InfoPage.tsx`, classe `.info-prose` no `index.css`, texto jurídico intacto); Sobre sem cartões e sem animação lateral (a página rolava para o lado no celular); Suporte com WhatsApp em destaque e perguntas que abrem e fecham; login, cadastro e senha com moldura própria (`src/components/store/AuthShell.tsx`), erros do Supabase em português e aviso "Link vencido" no redefinir senha depois de 6 s sem link válido; área da cliente com abas no celular, item ativo marcado, preços com `formatBRL` e favoritos no `ProductCard` (mostra preço promocional); 404 dentro do layout da loja.
+3. **Textos conferidos pelo Josemar:** troca em **7 dias** depois do recebimento (antes 30) na política, home, produto, suporte e `index.html`; entrega escrita como "envio rápido para todo o Brasil" (saiu "3 a 10 dias úteis"); frete grátis só "acima de R$ 199" (saiu "para todo o Brasil" do suporte e dos termos); pagamento só PIX, cartão e boleto (saiu "transferência bancária"). Linha do tempo da Sobre (2016 a 2026) confirmada.
+4. **Conferido:** `npm test` 14/14, `npm run test:db` checkout ok, build e `tsc` ok; login do admin idêntico ao de produção pixel a pixel (390 e 1366 px), antes e depois do deploy `8aac8c1`; prints de produção das 11 rotas sem rolagem lateral e sem travessão; 0 imagens quebradas na `/loja`.
+
+Lighthouse mobile. Local, versão no ar contra nova na mesma leva: home 64 → 70, /loja 68 → 67 (mediana de 5), produto 72 → 70 (mediana de 8, LCP igual em 4,6 s; o FCP alterna entre 2,0 e 3,6 s nas duas versões conforme a fonte chega). **Em produção depois do deploy** (mediana de 3): home 59 → **83** (71/89/83), /loja 65 → **66** (66/61/90), produto 69 → **69** (69/66/71).
+
 Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
 
 ---
 
 ## Próximo passo
 
-1. **Esdra conferir o redesenho no celular** (home, loja, um produto, sacola) e dizer o que ajustar.
+1. **Esdra conferir o redesenho no celular** (home, loja, um produto, sacola, login e Minha conta) e dizer o que ajustar.
 2. **Primeiro pedido real pelo site:** acompanhar o primeiro pedido de cliente (painel `/admin` e WhatsApp) para confirmar o fluxo com dados reais.
 3. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
 
@@ -92,9 +101,8 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 | Pendência | Impacto | Dono |
 |---|---|---|
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
-| Sobre, Suporte, institucionais, login e conta só herdaram as cores e fontes novas; não foram redesenhadas | Visual menos caprichado fora do fluxo de compra | Código |
-| Home em 59 no Lighthouse mobile de produção (TBT ~800 ms). Maior peso restante: JS do Supabase (~580 kB sem compressão) | SEO e conversão no celular | Código |
-| Capa nova pelo admin não gera versões 400/800 | Foto nova fica mais pesada que as demais | Código |
+| Lighthouse mobile oscila muito entre rodadas (home 71 a 89 no mesmo dia). Maior peso restante: JS do Supabase (~580 kB sem compressão) | SEO e conversão no celular | Código |
+| Em Minha conta, "Novo endereço" não salva nada para quem ainda não tem registro em `customers` (só é criado na primeira compra); a tela não avisa | Cliente nova acha que salvou e não salvou | Código |
 
 ---
 
