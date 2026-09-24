@@ -36,9 +36,8 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 ## Próximo passo
 
-1. **Cupom ESDRA10 está ativo no banco** (10%, sem data de fim, uso 0), ao contrário da decisão registrada em 15/09 ("não ativar"). Qualquer cliente que digitar o código ganha 10%. Josemar decidir: desativar ou manter.
-2. **Primeiro pedido real pelo site:** acompanhar o primeiro pedido de cliente (painel `/admin` e WhatsApp) para confirmar o fluxo com dados reais.
-3. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
+1. **Primeiro pedido real pelo site:** acompanhar o primeiro pedido de cliente (painel `/admin` e WhatsApp) para confirmar o fluxo com dados reais.
+2. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
 
 ---
 
@@ -46,7 +45,6 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 | Pendência | Impacto | Dono |
 |---|---|---|
-| Decidir se o cupom ESDRA10 continua ativo | Cliente pode aplicar 10% de desconto hoje | Josemar |
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
 | Teste automatizado do fluxo de checkout ponta a ponta (a `create_order` já existe; falta automatizar) | Hoje os testes cobrem regra de frete, carrinho e cupom, não a criação do pedido | Código (futuro) |
 
@@ -58,7 +56,7 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 - **EC-002 (09/09/2026):** Uma fonte documental por assunto. `central-ec` é a entrada do negócio; `STATUS.md` na raiz de cada projeto orienta a retomada imediata.
 - **EC-003 (09/09/2026 / 15/09/2026):** ERP da loja congelado desde julho/2026. As migrações de gestão/estoque (`stock_movements`, `cash_movements`) **não serão aplicadas em produção**. O módulo `/admin/gestao` permanece estritamente como legado e não recebe expansão nem correções de schema.
 - **Repositório Público (13/09/2026):** O repositório `josemardp/esdracosmeticos` é público para exibição como portfólio. Proibido commitar segredos (`service_role`, senhas), dados pessoais de clientes ou relatórios internos na raiz.
-- **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco (em 24/09 ele foi encontrado **ativo**; ver Próximo passo) e manter a vitrine focada em frete grátis regional acima de R$ 199.
+- **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco (em 24/09 foi encontrado ativo e desativado a pedido do Josemar; `validate_coupon` público responde "Cupom inválido") e manter a vitrine focada em frete grátis regional acima de R$ 199.
 - **Grants em `products` (23/09/2026):** `anon` e `authenticated` têm SELECT só nas colunas listadas nas migrações `20260915120000` e `20260924000000`; custo só via `admin_product_costs()`. Coluna nova exige `GRANT SELECT (coluna) ON public.products TO anon, authenticated`. Consultas públicas com `select=*` em `products` falham.
 - **Qualidade e Lint (15/09/2026):** `@typescript-eslint/no-explicit-any` é mantido como warning para não travar o build de produção. Não despender esforço de tipagem nos 116 alertas no momento.
 
