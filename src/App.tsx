@@ -159,6 +159,8 @@ const App = () => (
               <Route path="/politica-de-privacidade" element={<PoliticaPrivacidadePage />} />
               <Route path="/trocas-e-devolucoes" element={<TrocasDevolucoesPage />} />
               <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
+              {/* Página não encontrada, com o cabeçalho e o rodapé da loja */}
+              <Route path="*" element={<NotFound />} />
             </Route>
 
             {/* Auth routes (no layout) */}
@@ -234,8 +236,6 @@ const App = () => (
               <Route path="/admin/gestao/integracoes-avancadas" element={<IntegracoesAvancadasPage />} />
             </Route>
 
-            {/* Catch-all */}
-            <Route path="*" element={<Suspense fallback={<RouteLoading />}><NotFound /></Suspense>} />
           </Routes>
           </CartProvider>
         </AuthProvider>

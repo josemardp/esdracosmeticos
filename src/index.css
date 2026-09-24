@@ -232,6 +232,33 @@
   @media (min-width: 1024px) {
     .shell { padding-inline: 2rem; }
   }
+  /* Texto longo das páginas institucionais: 16 px na cor da tinta, respiro entre blocos. */
+  .info-prose {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: hsl(var(--foreground));
+    text-wrap: pretty;
+  }
+  .info-prose h2 {
+    @apply font-display text-foreground;
+    font-variation-settings: "opsz" 48;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    text-wrap: balance;
+  }
+  .info-prose > section:first-child h2 { margin-top: 0; }
+  .info-prose p + p,
+  .info-prose p + ul,
+  .info-prose p + ol { margin-top: 0.75rem; }
+  .info-prose ul { list-style: disc; padding-left: 1.25rem; }
+  .info-prose ol { list-style: decimal; padding-left: 1.25rem; }
+  .info-prose li + li { margin-top: 0.5rem; }
+  .info-prose li::marker { color: hsl(var(--primary)); }
+  .info-prose strong { font-weight: 600; }
+  .info-prose li, .info-prose p { overflow-wrap: break-word; }
+  .info-prose a { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 3px; }
   .no-scrollbar {
     scrollbar-width: none;
   }

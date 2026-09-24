@@ -12,12 +12,12 @@ const guarantees = [
   { icon: ShieldCheck, title: "100% original", desc: "Distribuidores autorizados" },
   { icon: CreditCard, title: "3x sem juros", desc: "Cartão, PIX ou boleto" },
   { icon: Truck, title: "Frete grátis", desc: "Acima de R$ 199" },
-  { icon: RotateCcw, title: "Troca fácil", desc: "Em até 30 dias" },
+  { icon: RotateCcw, title: "Troca fácil", desc: "Em até 7 dias" },
 ];
 
 const faqs = [
-  { q: "Quanto tempo leva para meu pedido chegar?", a: "O prazo de entrega varia de 3 a 10 dias úteis, dependendo da sua região. Pedidos acima de R$ 199 têm frete grátis." },
-  { q: "Posso trocar ou devolver um produto?", a: "Sim. Você tem até 30 dias para pedir troca ou devolução de produtos lacrados e na embalagem original." },
+  { q: "Quanto tempo leva para meu pedido chegar?", a: "Enviamos rápido para todo o Brasil. Pedidos acima de R$ 199 têm frete grátis." },
+  { q: "Posso trocar ou devolver um produto?", a: "Sim. Você tem até 7 dias depois de receber o pedido para pedir troca ou devolução de produtos lacrados e na embalagem original." },
   { q: "Quais formas de pagamento vocês aceitam?", a: "PIX, cartão de crédito e boleto bancário. No cartão, parcele em até 3x sem juros." },
   { q: "Os produtos são originais?", a: "Sim. Todos os produtos da Esdra Cosméticos são originais, comprados de distribuidores autorizados." },
   { q: "Quais marcas vocês trabalham?", a: "Eudora, O Boticário, Jequiti, De Sírius e Naturall Mix, entre outras. Veja todas na loja." },

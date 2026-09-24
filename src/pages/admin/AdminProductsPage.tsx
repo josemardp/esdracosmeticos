@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { uploadProductCover } from "@/lib/product-cover-upload";
 import { Plus, Pencil, Trash2, Package, X, Upload, Search, AlertTriangle, PackageX } from "lucide-react";
 
 interface Product {
@@ -280,14 +281,15 @@ export default function AdminProductsPage() {
                     <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      const ext = file.name.split(".").pop();
-                      const path = `product-${Date.now()}.${ext}`;
+                      e.target.value = "";
                       toast({ title: "Enviando imagem..." });
-                      const { error } = await supabase.storage.from("products").upload(path, file);
-                      if (error) { toast({ title: "Erro no upload", description: error.message, variant: "destructive" }); return; }
-                      const { data: { publicUrl } } = supabase.storage.from("products").getPublicUrl(path);
-                      setForm({ ...form, cover_image: publicUrl });
-                      toast({ title: "Imagem enviada ✓" });
+                      try {
+                        const publicUrl = await uploadProductCover(file);
+                        setForm((f) => ({ ...f, cover_image: publicUrl }));
+                        toast({ title: "Imagem enviada ✓" });
+                      } catch (err) {
+                        toast({ title: "Erro no upload", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+                      }
                     }} />
                   </label>
                 </div>

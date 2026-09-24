@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { getProductImage } from "@/lib/product-images";
-import { Heart, Trash2 } from "lucide-react";
+import { ProductCard, type CardProduct } from "@/components/store/ProductCard";
+import { Heart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-interface Fav { id: string; product_id: string; products: { name: string; slug: string; price: number; cover_image: string | null } | null; }
+interface Fav { id: string; product_id: string; products: CardProduct | null; }
 
 export default function FavoritesPage() {
   const { user } = useAuth();
@@ -18,7 +18,7 @@ export default function FavoritesPage() {
     const fetch = async () => {
       const { data: customer } = await supabase.from("customers").select("id").eq("user_id", user.id).maybeSingle();
       if (customer) {
-        const { data } = await supabase.from("favorites").select("id, product_id, products(name, slug, price, cover_image)").eq("customer_id", customer.id);
+        const { data } = await supabase.from("favorites").select("id, product_id, products(id, name, slug, price, sale_price, cover_image, inventory_count, brand)").eq("customer_id", customer.id);
         setFavs((data as any) ?? []);
       }
       setLoading(false);
@@ -32,32 +32,29 @@ export default function FavoritesPage() {
     toast({ title: "Removido dos favoritos" });
   };
 
-  if (loading) return <div className="animate-pulse h-40 bg-secondary rounded-xl" />;
+  if (loading) return <div className="h-40 animate-pulse rounded-2xl bg-secondary" />;
 
   return (
     <div>
-      <h2 className="font-display text-xl text-foreground mb-6">Meus Favoritos</h2>
+      <h2 className="mb-4 font-display text-[26px] leading-tight text-foreground display-md">Favoritos</h2>
       {favs.length === 0 ? (
-        <div className="bg-card border rounded-xl p-12 text-center">
-          <Heart className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="font-body text-sm text-muted-foreground mb-2">Nenhum favorito adicionado.</p>
-          <Link to="/loja" className="font-body text-sm text-primary hover:underline">Explorar produtos</Link>
+        <div className="rounded-2xl bg-secondary px-6 py-12 text-center">
+          <Heart className="mx-auto mb-3 h-10 w-10 text-primary" aria-hidden />
+          <p className="mb-6 text-base text-foreground">Você ainda não guardou nenhum favorito.</p>
+          <Link to="/loja" className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-[15px] font-medium text-primary-foreground transition-colors hover:bg-primary-deep">Ver a loja</Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-3">
           {favs.map(f => f.products && (
-            <div key={f.id} className="bg-card border rounded-xl overflow-hidden relative group">
-              <Link to={`/produto/${f.products.slug}`}>
-                <div className="aspect-square bg-secondary overflow-hidden">
-                  {(() => { const img = getProductImage(f.products.slug, f.products.cover_image); return img ? <img src={img} alt={f.products.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/placeholder.svg"; }} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
-                </div>
-                <div className="p-3">
-                  <h3 className="font-body text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors">{f.products.name}</h3>
-                  <p className="font-body text-sm font-semibold text-foreground mt-1">R$ {f.products.price.toFixed(2)}</p>
-                </div>
-              </Link>
-              <button onClick={() => removeFav(f.id)} className="absolute top-2 right-2 bg-card/80 backdrop-blur-sm rounded-full p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors">
-                <Trash2 className="w-3.5 h-3.5" />
+            <div key={f.id} className="relative">
+              <ProductCard product={f.products} sizes="(min-width: 1024px) 30vw, 50vw" />
+              <button
+                onClick={() => removeFav(f.id)}
+                aria-label={`Remover ${f.products.name} dos favoritos`}
+                title="Remover dos favoritos"
+                className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full bg-background text-primary shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+              >
+                <Heart className="h-[18px] w-[18px] fill-current" aria-hidden />
               </button>
             </div>
           ))}

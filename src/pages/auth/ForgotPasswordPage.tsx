@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import logoEsdra from "@/assets/logo-esdra.png";
+import { AuthShell, authButton, authErrorMessage, authField, authLabel, authLink } from "@/components/store/AuthShell";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -20,50 +19,41 @@ export default function ForgotPasswordPage() {
     });
     setLoading(false);
     if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      toast({ title: "Não foi possível enviar o link", description: authErrorMessage(error.message), variant: "destructive" });
     } else {
       setSent(true);
     }
   };
 
+  if (sent) {
+    return (
+      <AuthShell
+        title="Confira seu e-mail"
+        subtitle={<>Enviamos um link para criar uma senha nova para <strong className="font-semibold text-foreground">{email}</strong>. Se não aparecer em alguns minutos, olhe também a caixa de spam.</>}
+        footer={<Link to="/login" className={authLink}>Voltar para o login</Link>}
+      >
+        <button type="button" onClick={() => setSent(false)} className="inline-flex h-12 w-full items-center justify-center rounded-full text-[15px] font-medium text-foreground shadow-[inset_0_0_0_1.5px_hsl(var(--foreground))]">
+          Usar outro e-mail
+        </button>
+      </AuthShell>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary px-4">
-      <div className="w-full max-w-md bg-card border rounded-xl p-8 shadow-elegant">
-        <div className="text-center mb-8">
-          <Link to="/">
-            <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4 logo-enhance" />
-          </Link>
-          <h1 className="font-display text-2xl text-foreground">Recuperar senha</h1>
+    <AuthShell
+      title="Recuperar senha"
+      subtitle="Informe o e-mail da sua conta. Vamos mandar um link para você criar uma senha nova."
+      footer={<>Lembrou a senha? <Link to="/login" className={authLink}>Entrar</Link></>}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="email" className={authLabel}>E-mail</Label>
+          <Input id="email" type="email" className={authField} value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="seu@email.com" />
         </div>
-        {sent ? (
-          <div className="text-center">
-            <p className="font-body text-sm text-foreground mb-4">
-              Enviamos um link de recuperação para <strong>{email}</strong>.
-            </p>
-            <p className="font-body text-xs text-muted-foreground">
-              Verifique sua caixa de entrada e spam.
-            </p>
-            <Link to="/login">
-              <Button variant="outline" className="mt-6">Voltar ao login</Button>
-            </Link>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="email" className="font-body text-sm">E-mail cadastrado</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="seu@email.com" />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Enviando..." : "Enviar link de recuperação"}
-            </Button>
-            <p className="text-center">
-              <Link to="/login" className="font-body text-xs text-primary hover:underline">
-                Voltar ao login
-              </Link>
-            </p>
-          </form>
-        )}
-      </div>
-    </div>
+        <button type="submit" className={authButton} disabled={loading}>
+          {loading ? "Enviando..." : "Enviar link"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

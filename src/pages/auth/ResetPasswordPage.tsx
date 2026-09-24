@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import logoEsdra from "@/assets/logo-esdra.png";
+import { AuthShell, authButton, authErrorMessage, authField, authLabel, authLink } from "@/components/store/AuthShell";
+
+// Sem link válido em alguns segundos, a página deixa de esperar e oferece pedir outro link.
+const LINK_TIMEOUT_MS = 6000;
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
+  const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +28,8 @@ export default function ResetPasswordPage() {
           setReady(true);
         }
       });
-      return () => subscription.unsubscribe();
+      const timer = window.setTimeout(() => setExpired(true), LINK_TIMEOUT_MS);
+      return () => { subscription.unsubscribe(); window.clearTimeout(timer); };
     }
   }, []);
 
@@ -39,40 +43,41 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      toast({ title: "Não foi possível salvar a senha", description: authErrorMessage(error.message), variant: "destructive" });
     } else {
-      toast({ title: "Senha alterada!", description: "Sua nova senha foi salva com sucesso." });
+      toast({ title: "Senha alterada", description: "Sua nova senha foi salva. Já pode entrar com ela." });
       navigate("/login");
     }
   };
 
   if (!ready) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary px-4">
-        <div className="text-center">
-          <p className="font-body text-sm text-muted-foreground">Verificando link de recuperação...</p>
-        </div>
-      </div>
+    return expired ? (
+      <AuthShell
+        title="Link vencido ou inválido"
+        subtitle="Este link para criar senha nova não funciona mais. Peça outro e use o mais recente que chegar no seu e-mail."
+        footer={<Link to="/login" className={authLink}>Voltar para o login</Link>}
+      >
+        <Link to="/recuperar-senha" className={authButton}>Pedir outro link</Link>
+      </AuthShell>
+    ) : (
+      <AuthShell title="Nova senha" subtitle="Conferindo o seu link...">
+        <div className="h-12" aria-hidden />
+      </AuthShell>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary px-4">
-      <div className="w-full max-w-md bg-card border rounded-xl p-8 shadow-elegant">
-        <div className="text-center mb-8">
-          <img src={logoEsdra} alt="Esdra Cosméticos" className="h-12 mx-auto mb-4 logo-enhance" />
-          <h1 className="font-display text-2xl text-foreground">Nova senha</h1>
+    <AuthShell title="Nova senha" subtitle="Escolha a senha que você vai usar para entrar.">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="password" className={authLabel}>Nova senha</Label>
+          <Input id="password" type="password" className={authField} value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="new-password" aria-describedby="senha-dica" />
+          <p id="senha-dica" className="mt-1.5 px-4 text-sm text-muted-foreground">Pelo menos 6 caracteres.</p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="password" className="font-body text-sm">Nova senha</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Mínimo 6 caracteres" />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Salvando..." : "Salvar nova senha"}
-          </Button>
-        </form>
-      </div>
-    </div>
+        <button type="submit" className={authButton} disabled={loading}>
+          {loading ? "Salvando..." : "Salvar nova senha"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

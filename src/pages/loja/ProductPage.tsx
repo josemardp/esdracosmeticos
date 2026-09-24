@@ -184,7 +184,7 @@ export default function ProductPage() {
     { key: "desc", title: "Sobre o produto", text: product.full_description || product.short_description },
     { key: "use", title: "Modo de uso", text: product.how_to_use },
     { key: "ingredients", title: "Ingredientes", text: product.ingredients },
-    { key: "shipping", title: "Entrega e trocas", text: "Frete grátis nas compras acima de R$ 199. Abaixo disso, o valor do frete é informado pelo WhatsApp antes do pagamento.\n\nVocê tem até 30 dias para trocar produtos lacrados, na embalagem original." },
+    { key: "shipping", title: "Entrega e trocas", text: "Frete grátis nas compras acima de R$ 199. Abaixo disso, o valor do frete é informado pelo WhatsApp antes do pagamento.\n\nVocê tem até 7 dias depois de receber o pedido para trocar produtos lacrados, na embalagem original." },
   ].filter((d) => d.text);
   const whatsappHref = `https://wa.me/${WHATSAPP_PHONE}?text=${whatsappMsg}`;
   const lowStock = !outOfStock && product.inventory_count <= 3;
@@ -314,7 +314,7 @@ export default function ProductPage() {
               {[
                 { icon: Truck, text: "Frete grátis acima de R$ 199" },
                 { icon: ShieldCheck, text: "Compra segura" },
-                { icon: RotateCcw, text: "Troca em até 30 dias" },
+                { icon: RotateCcw, text: "Troca em até 7 dias" },
                 { icon: Package, text: "Produto original" },
               ].map((t) => (
                 <li key={t.text} className="flex items-center gap-2.5 text-sm text-foreground">

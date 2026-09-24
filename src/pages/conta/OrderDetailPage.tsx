@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { formatBRL } from "@/lib/format";
 import { ChevronLeft, Package, MessageCircle } from "lucide-react";
 import { whatsappUrl } from "@/lib/whatsapp";
 
@@ -15,6 +15,8 @@ interface OrderDetail {
 interface OrderItem {
   id: string; name_snapshot: string; quantity: number; unit_price: number; subtotal: number;
 }
+
+const outlineBtn = "inline-flex h-12 items-center justify-center gap-2 rounded-full px-7 text-[15px] font-medium text-foreground shadow-[inset_0_0_0_1.5px_hsl(var(--foreground))]";
 
 const statusLabels: Record<string, string> = {
   pending: "Pendente", confirmed: "Confirmado", processing: "Em preparo",
@@ -47,12 +49,12 @@ export default function OrderDetailPage() {
     load();
   }, [user, id]);
 
-  if (loading) return <div className="animate-pulse h-60 bg-secondary rounded-xl" />;
+  if (loading) return <div className="h-60 animate-pulse rounded-2xl bg-secondary" />;
   if (!order) return (
-    <div className="text-center py-12">
-      <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-      <p className="font-body text-sm text-muted-foreground mb-4">Pedido não encontrado.</p>
-      <Link to="/conta/pedidos"><Button variant="outline" size="sm">Voltar aos pedidos</Button></Link>
+    <div className="rounded-2xl bg-secondary px-6 py-12 text-center">
+      <Package className="mx-auto mb-3 h-10 w-10 text-primary" aria-hidden />
+      <p className="mb-6 text-base text-foreground">Pedido não encontrado.</p>
+      <Link to="/conta/pedidos" className={outlineBtn}>Voltar aos pedidos</Link>
     </div>
   );
 
@@ -60,59 +62,56 @@ export default function OrderDetailPage() {
 
   return (
     <div>
-      <Link to="/conta/pedidos" className="inline-flex items-center gap-1 font-body text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
-        <ChevronLeft className="w-4 h-4" /> Voltar aos pedidos
+      <Link to="/conta/pedidos" className="mb-4 inline-flex min-h-11 items-center gap-1 text-[15px] text-muted-foreground hover:text-foreground">
+        <ChevronLeft className="h-4 w-4" aria-hidden /> Voltar aos pedidos
       </Link>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="font-display text-xl text-foreground">{order.order_code}</h2>
-          <p className="font-body text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}</p>
+          <h2 className="font-display text-[26px] leading-tight text-foreground display-md">Pedido {order.order_code}</h2>
+          <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}</p>
         </div>
-        <div className="text-right">
-          <span className="inline-block bg-primary/10 text-primary font-body text-xs font-medium px-3 py-1 rounded-full">{statusLabels[order.status] || order.status}</span>
-          <p className="font-body text-xs text-muted-foreground mt-1">Pgto: {paymentLabels[order.payment_status] || order.payment_status}</p>
+        <div className="text-left sm:text-right">
+          <span className="inline-block rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground">{statusLabels[order.status] || order.status}</span>
+          <p className="mt-1 text-sm text-muted-foreground">Pagamento: {paymentLabels[order.payment_status] || order.payment_status}</p>
         </div>
       </div>
 
-      {/* Items */}
-      <div className="bg-card border rounded-xl p-5 mb-4">
-        <h3 className="font-body text-sm font-semibold text-foreground mb-3">Itens do Pedido</h3>
-        <div className="space-y-3">
+      <section className="mb-6">
+        <h3 className="mb-2 text-base font-medium text-foreground">Itens</h3>
+        <ul className="border-t">
           {items.map(item => (
-            <div key={item.id} className="flex items-center justify-between">
+            <li key={item.id} className="flex items-start justify-between gap-4 border-b py-3">
               <div>
-                <p className="font-body text-sm text-foreground">{item.name_snapshot}</p>
-                <p className="font-body text-xs text-muted-foreground">{item.quantity}x R$ {Number(item.unit_price).toFixed(2)}</p>
+                <p className="text-[15px] text-foreground">{item.name_snapshot}</p>
+                <p className="text-sm tabular-nums text-muted-foreground">{item.quantity} × {formatBRL(Number(item.unit_price))}</p>
               </div>
-              <p className="font-body text-sm font-medium text-foreground">R$ {Number(item.subtotal).toFixed(2)}</p>
-            </div>
+              <p className="text-[15px] font-medium tabular-nums text-foreground">{formatBRL(Number(item.subtotal))}</p>
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </section>
 
-      {/* Summary */}
-      <div className="bg-card border rounded-xl p-5 mb-4">
-        <div className="space-y-2 font-body text-sm">
-          <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>R$ {Number(order.subtotal).toFixed(2)}</span></div>
-          {Number(order.discount) > 0 && <div className="flex justify-between text-primary"><span>Desconto</span><span>- R$ {Number(order.discount).toFixed(2)}</span></div>}
-          <div className="flex justify-between"><span className="text-muted-foreground">Frete</span><span>R$ {Number(order.shipping).toFixed(2)}</span></div>
-          <div className="flex justify-between font-semibold text-foreground border-t pt-2 mt-2"><span>Total</span><span>R$ {Number(order.total).toFixed(2)}</span></div>
-        </div>
-        {order.payment_method && <p className="font-body text-xs text-muted-foreground mt-3">Método: {order.payment_method}</p>}
-      </div>
+      <section className="mb-6 rounded-2xl bg-secondary p-5">
+        <dl className="space-y-2 text-[15px] tabular-nums">
+          <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd>{formatBRL(Number(order.subtotal))}</dd></div>
+          {Number(order.discount) > 0 && <div className="flex justify-between text-primary"><dt>Desconto</dt><dd>- {formatBRL(Number(order.discount))}</dd></div>}
+          <div className="flex justify-between"><dt className="text-muted-foreground">Frete</dt><dd>{formatBRL(Number(order.shipping))}</dd></div>
+          <div className="mt-2 flex justify-between border-t border-foreground/15 pt-3 text-base font-semibold text-foreground"><dt>Total</dt><dd>{formatBRL(Number(order.total))}</dd></div>
+        </dl>
+        {order.payment_method && <p className="mt-3 text-sm text-muted-foreground">Forma de pagamento: {order.payment_method}</p>}
+      </section>
 
-      {/* Address */}
       {addr && (
-        <div className="bg-card border rounded-xl p-5 mb-4">
-          <h3 className="font-body text-sm font-semibold text-foreground mb-2">Endereço de Entrega</h3>
-          <p className="font-body text-sm text-muted-foreground">{addr.street}, {addr.number}{addr.complement ? ` - ${addr.complement}` : ""}</p>
-          <p className="font-body text-xs text-muted-foreground">{addr.neighborhood} · {addr.city}/{addr.state} · CEP {addr.zip}</p>
-        </div>
+        <section className="mb-6">
+          <h3 className="mb-2 text-base font-medium text-foreground">Endereço de entrega</h3>
+          <p className="text-[15px] text-foreground">{addr.street}, {addr.number}{addr.complement ? `, ${addr.complement}` : ""}</p>
+          <p className="text-sm text-muted-foreground">{addr.neighborhood}, {addr.city}/{addr.state}, CEP {addr.zip}</p>
+        </section>
       )}
 
-      <a href={whatsappUrl(`Olá, quero informações sobre meu pedido ${order.order_code}`)} target="_blank" rel="noopener noreferrer">
-        <Button variant="outline" size="sm"><MessageCircle className="w-4 h-4 mr-2" /> Falar sobre este pedido</Button>
+      <a href={whatsappUrl(`Olá, quero informações sobre meu pedido ${order.order_code}`)} target="_blank" rel="noopener noreferrer" className={outlineBtn}>
+        <MessageCircle className="h-[18px] w-[18px]" aria-hidden /> Falar sobre este pedido
       </a>
     </div>
   );
