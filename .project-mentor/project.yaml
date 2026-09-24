@@ -17,14 +17,14 @@ status:
   health: healthy
   phase: Em producao / Seguranca e otimizacao
   priority: 1
-  updated_at: 2026-09-23T20:32:23-03:00
-  last_session_at: 2026-09-16T09:14:40-03:00
+  updated_at: 2026-09-23T21:13:10-03:00
+  last_session_at: 2026-09-23T21:13:10-03:00
   confidence: inferred
 focus:
   objective: Plataforma de e-commerce e catalogo online da Esdra Cosmeticos
-  current: Últimos commits (15/09/2026) validaram que consultas públicas estão seguras para aplicar REVOKE no banco; pendências de regras de estoque e custo para usuário logado mapeadas.
-  last_completed: Auditoria de segurança das consultas públicas e mapeamento de pendências em 15/09/2026.
-  recommended_next_action: act-003
+  current: Decidir a versão da create_order, aplicar em produção e fazer um pedido de teste ponta a ponta
+  last_completed: 5 telas de gestão leem custo via src/lib/product-costs.ts (deploy b87875d confirmado)
+  recommended_next_action: act-009
 next_actions:
   - id: act-001
     title: Corrigir imagens com 404 externo e subir mascara Niina Secrets otimizada
@@ -88,7 +88,7 @@ next_actions:
     note: null
   - id: act-006
     title: Copiar as 17 capas de sites de terceiros para o bucket product-images
-    status: pending
+    status: done_tested
     impact: null
     urgency: null
     effort: null
@@ -96,6 +96,42 @@ next_actions:
     unblocks: []
     blocked_by: []
     created_at: 2026-09-23T20:32:23-03:00
+    done_at: 2026-09-23T21:12:42-03:00
+    note: null
+  - id: act-007
+    title: Criar RPC create_order em producao (checkout do site quebrado, 0 pedidos) - decidir versao
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T21:12:44-03:00
+    done_at: null
+    note: null
+  - id: act-008
+    title: Conferir tela /admin/gestao/margem logado como admin (custo via RPC)
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T21:12:45-03:00
+    done_at: null
+    note: null
+  - id: act-009
+    title: Decidir a versão da create_order, aplicar em produção e fazer um pedido de teste ponta a ponta
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T21:13:10-03:00
     done_at: null
     note: null
 blockers: []
@@ -104,6 +140,12 @@ decisions_recent:
     text: Estado preenchido com base em STATUS.md de 15/09/2026
   - date: 2026-09-16
     text: "Alinhar focus.current e próxima ação com evidência real: STATUS.md (auditoria 15/09) e commit 15/09/2026"
+  - date: 2026-09-23
+    text: Grants de SELECT em products por coluna para anon e authenticated; custo só pela RPC de admin
+  - date: 2026-09-23
+    text: Capas de produto passam a viver só no bucket product-images da loja
+  - date: 2026-09-23
+    text: Aplicar SQL pela CLI Supabase (org dona do projeto); o conector MCP não enxerga este projeto
 milestones: []
 review:
   stale_after_days: null

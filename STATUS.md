@@ -23,6 +23,10 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 3. **Imagem pesada:** capa da máscara Niina Secrets trocada pela versão de 165 KB no bucket da loja (antes: 632 KB em outro projeto Supabase).
 4. **Brecha na função de NF-e fechada:** `upsert_products_from_nfe` (SECURITY DEFINER, sem checagem de admin) era executável por qualquer visitante e permitia criar/alterar produtos, custo e estoque. Migração `20260923210000_lock_upsert_products_from_nfe.sql` tirou o EXECUTE de `PUBLIC`, `anon` e `authenticated`. Verificado: RPC anônima passou de HTTP 204 para 401 `permission denied`. Nenhuma tela usa a função.
 5. **Capas fora do projeto antigo:** as 42 capas restantes no projeto Supabase antigo (`khnrwskgpedwerbpohfe`) foram copiadas para o bucket `product-images` e o banco atualizado (migração `20260923220000_move_cover_images_to_store_bucket.sql`). Nenhuma capa, galeria, categoria ou banner aponta mais para o projeto antigo. Verificado no site: `/loja` carrega as 128 imagens, 0 quebradas.
+6. **Capas de sites de terceiros:** as 17 capas restantes (Jequiti, Nuvemshop, Cloudinary, Tray, Loja Integrada) foram copiadas para o bucket; PNGs convertidos para WebP. Migração `20260923230000_move_third_party_cover_images.sql`. Hoje nenhuma capa depende de host externo: as 64 com URL completa estão no bucket da loja e respondem; as demais usam arquivos do próprio site.
+7. **Custo escondido também do cliente logado:** migração `20260924000000_restrict_product_cost_authenticated.sql` (mesmo esquema do `anon`) + função `admin_product_costs()`, que só responde a admin. As telas de gestão que mostram custo usam `src/lib/product-costs.ts`. Testado no banco simulando cada papel: cliente e visitante recebem `permission denied`; admin lê o custo pela função, grava custo e cria produto normalmente. Aplicado depois do deploy do front (`b87875d`), sem janela de quebra.
+8. **Testes automatizados:** `src/test/shipping.test.ts`, `cart.test.tsx` e `product-costs.test.ts` cobrem regra de frete, subtotal com promoção, limite de estoque, cupom (maiúsculas, inválido, desconto maior que o subtotal, remoção ao alterar carrinho) e o helper de custo. `npm test`: 14 testes passando.
+9. **Conferidos sem mudança:** `decrement_inventory` executável pelo `anon` não é brecha (a RLS só deixa admin alterar `products`; testado, o estoque não muda). Os 256 links do `/loja` são 2 por card (foto e nome) para 128 produtos ativos; a contagem do STATUS está certa.
 
 Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
 
@@ -30,8 +34,9 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 ## Próximo passo
 
-1. **Capas em sites de terceiros:** 17 capas ainda dependem de lojas externas (jequiti.vtexassets.com 6, res.cloudinary.com 3, mitiendanube 4, images.tcdn.com.br 2, cdn.awsli.com.br 2). Podem sumir como a da Baunilha. Copiar para o bucket `product-images` seguindo o mesmo processo das migrações de 23/09.
-2. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
+1. **Checkout quebrado em produção (urgente, decisão do Josemar):** o site chama a RPC `create_order`, mas ela **não existe** no banco de produção (`PGRST202`). A tabela `orders` tem 0 pedidos desde sempre, então finalizar compra pelo site dá erro. Há duas versões da função no repositório (`20260321000000_create_order_server_side.sql`, que baixa estoque e atualiza uso do cupom, e `20260321202944_...sql`, mais simples). As tabelas que ela usa já existem. Falta decidir qual versão aplicar e fazer um pedido de teste.
+2. **Conferência visual do painel:** entrar em `/admin/gestao/margem` logado como admin e ver se a coluna de custo/margem aparece preenchida (validado no banco; a tela não foi vista porque o login do painel exige senha).
+3. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
 
 ---
 
@@ -39,10 +44,10 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 | Pendência | Impacto | Dono |
 |---|---|---|
-| Copiar as 17 capas de sites de terceiros para o bucket da loja | Foto some quando o site de terceiro bloqueia | Josemar |
+| Criar a RPC `create_order` em produção | Nenhum pedido consegue ser finalizado pelo site | Josemar (decidir versão) |
+| Conferir tela de Margem logado como admin | Validação visual da mudança de custo | Josemar |
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
-| Custo (`cost`/`avg_cost`) continua legível para cliente logado (papel `authenticated`) | Brecha menor; solução futura é view pública ou RPC de admin | Código (futuro) |
-| Testes automatizados de checkout, frete e cupom | Hoje só existe 1 teste de exemplo; regressão passa despercebida | Código (futuro) |
+| Teste automatizado do fluxo de checkout ponta a ponta (depende da `create_order`) | Hoje os testes cobrem regra de frete, carrinho e cupom, não a criação do pedido | Código (futuro) |
 
 ---
 
@@ -53,7 +58,7 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 - **EC-003 (09/09/2026 / 15/09/2026):** ERP da loja congelado desde julho/2026. As migrações de gestão/estoque (`stock_movements`, `cash_movements`) **não serão aplicadas em produção**. O módulo `/admin/gestao` permanece estritamente como legado e não recebe expansão nem correções de schema.
 - **Repositório Público (13/09/2026):** O repositório `josemardp/esdracosmeticos` é público para exibição como portfólio. Proibido commitar segredos (`service_role`, senhas), dados pessoais de clientes ou relatórios internos na raiz.
 - **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco e manter a vitrine focada em frete grátis regional acima de R$ 199.
-- **Grants do `anon` em `products` (23/09/2026):** o `anon` tem SELECT só nas colunas listadas na migração `20260915120000`. Coluna nova que a vitrine precise ler exige `GRANT SELECT (coluna) ON public.products TO anon`. Consultas públicas com `select=*` em `products` falham.
+- **Grants em `products` (23/09/2026):** `anon` e `authenticated` têm SELECT só nas colunas listadas nas migrações `20260915120000` e `20260924000000`; custo só via `admin_product_costs()`. Coluna nova exige `GRANT SELECT (coluna) ON public.products TO anon, authenticated`. Consultas públicas com `select=*` em `products` falham.
 - **Qualidade e Lint (15/09/2026):** `@typescript-eslint/no-explicit-any` é mantido como warning para não travar o build de produção. Não despender esforço de tipagem nos 116 alertas no momento.
 
 ---
