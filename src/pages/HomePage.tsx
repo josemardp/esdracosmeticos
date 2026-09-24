@@ -1,443 +1,327 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { m, type Variants } from "framer-motion";
-import { ArrowRight, ShieldCheck, Truck, RotateCcw, Star, Gift, ShoppingBag, CreditCard, Clock, ChevronDown, ChevronUp } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ShieldCheck, Truck, RotateCcw, Star, CreditCard, ChevronDown, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getProductImage, getProductImageSrcSet, imagePriority, showPlaceholderOnError } from "@/lib/product-images";
-import { useCart } from "@/contexts/CartContext";
-import { trackAddToCart } from "@/lib/analytics";
+import { getProductImage, getProductImageSrcSet, showPlaceholderOnError } from "@/lib/product-images";
+import { formatBRL } from "@/lib/format";
 import { useSEO } from "@/hooks/use-seo";
 import { whatsappUrl } from "@/lib/whatsapp";
-import catMaquiagem from "@/assets/cat-maquiagem.webp";
-import catSkincare from "@/assets/cat-skincare.webp";
-import catCabelos from "@/assets/cat-cabelos.webp";
-import catPerfumaria from "@/assets/cat-perfumaria.webp";
-import catCorpoBanho from "@/assets/cat-corpo-banho.webp";
-import catInfantil from "@/assets/cat-infantil.webp";
-import catAcessorios from "@/assets/cat-acessorios.webp";
+import { ProductCard, type CardProduct } from "@/components/store/ProductCard";
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({
-    opacity: 1, y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-};
-
-const categoryImages: Record<string, string> = {
-  maquiagem: catMaquiagem, skincare: catSkincare, cabelos: catCabelos, perfumaria: catPerfumaria, perfumes: catPerfumaria,
-  "corpo-e-banho": catCorpoBanho, infantil: catInfantil, acessorios: catAcessorios,
-};
-
-const benefits = [
-  { icon: Truck, title: "Frete Grátis 🚚", desc: "Em compras acima de R$ 199 para todo o Brasil" },
-  { icon: ShieldCheck, title: "Compra 100% Segura", desc: "Seus dados criptografados e protegidos" },
-  { icon: RotateCcw, title: "Troca em até 30 dias", desc: "Devolução simples e sem burocracia" },
-  { icon: Gift, title: "Brindes Exclusivos", desc: "Surpresas especiais em pedidos selecionados" },
+const guarantees = [
+  { icon: ShieldCheck, title: "100% original", desc: "Distribuidores autorizados" },
+  { icon: CreditCard, title: "3x sem juros", desc: "Cartão, PIX ou boleto" },
+  { icon: Truck, title: "Frete grátis", desc: "Acima de R$ 199" },
+  { icon: RotateCcw, title: "Troca fácil", desc: "Em até 30 dias" },
 ];
 
 const faqs = [
   { q: "Quanto tempo leva para meu pedido chegar?", a: "O prazo de entrega varia de 3 a 10 dias úteis, dependendo da sua região. Pedidos acima de R$ 199 têm frete grátis." },
-  { q: "Posso trocar ou devolver um produto?", a: "Sim! Você tem até 30 dias para solicitar troca ou devolução de produtos lacrados e na embalagem original." },
-  { q: "Quais formas de pagamento vocês aceitam?", a: "Aceitamos PIX, cartão de crédito e boleto bancário. Parcele em até 3x sem juros no cartão." },
-  { q: "Os produtos são originais?", a: "Sim, todos os produtos da Esdra Cosméticos são 100% originais, adquiridos diretamente de distribuidores autorizados como Eudora e O Boticário." },
-  { q: "Quais marcas vocês trabalham?", a: "Trabalhamos com marcas do Grupo Boticário como Eudora, O Boticário, Egeo, Siàge, Instance, Niina Secrets, Dr. Botica, Her Code, Cuide-se Bem e muito mais." },
+  { q: "Posso trocar ou devolver um produto?", a: "Sim. Você tem até 30 dias para pedir troca ou devolução de produtos lacrados e na embalagem original." },
+  { q: "Quais formas de pagamento vocês aceitam?", a: "PIX, cartão de crédito e boleto bancário. No cartão, parcele em até 3x sem juros." },
+  { q: "Os produtos são originais?", a: "Sim. Todos os produtos da Esdra Cosméticos são originais, comprados de distribuidores autorizados." },
+  { q: "Quais marcas vocês trabalham?", a: "Eudora, O Boticário, Jequiti, De Sírius e Naturall Mix, entre outras. Veja todas na loja." },
 ];
 
-interface Product {
-  id: string; name: string; slug: string; price: number; sale_price: number | null;
-  cover_image: string | null; inventory_count: number; new_arrival: boolean; bestseller: boolean; featured: boolean;
-  short_description: string | null; tags: string[] | null;
-}
+// Marcas com produtos no cadastro; o link abre a loja já filtrada.
+const brands = ["Eudora", "O Boticário", "Jequiti", "De Sírius", "Naturall Mix"];
 
-interface Category { id: string; name: string; slug: string; image_url: string | null; }
-
+type Product = CardProduct & { featured?: boolean };
+interface Category { id: string; name: string; slug: string; }
 interface CampaignBanner {
   id: string; title: string; subtitle: string | null; image_url: string | null;
   link_url: string; badge_text: string | null; position: string;
 }
 
+const COLS = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, brand";
+
+// Tira da lista os produtos que já apareceram numa seção acima.
+function fresh(list: Product[], used: Set<string>, n: number) {
+  const out = list.filter((p) => !used.has(p.id)).slice(0, n);
+  out.forEach((p) => used.add(p.id));
+  return out;
+}
+
 export default function HomePage() {
-  useSEO("Esdra Cosméticos | Beleza e Sofisticação", "Perfumes, maquiagem, skincare e cuidados corporais das melhores marcas. Frete grátis acima de R$ 199. Parcele em até 3x sem juros.");
-  const { addItem } = useCart();
-  const [featured, setFeatured] = useState<Product[]>([]);
-  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  useSEO("Esdra Cosméticos | Perfumaria e beleza", "Perfumes, maquiagem, cuidados corporais e cabelos de Eudora, O Boticário, Jequiti e mais. Frete grátis acima de R$ 199. Parcele em até 3x sem juros.");
+  const [shelf, setShelf] = useState<Product[] | null>(null);
   const [bestsellers, setBestsellers] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [onSale, setOnSale] = useState<Product[]>([]);
+  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[] | null>(null);
   const [reviews, setReviews] = useState<{ rating: number; comment: string | null; created_at: string }[]>([]);
   const [campaigns, setCampaigns] = useState<CampaignBanner[]>([]);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
-    const cols = "id, name, slug, price, sale_price, cover_image, inventory_count, new_arrival, bestseller, featured, short_description, tags";
+    const inStock = () => supabase.from("products").select(COLS).eq("active", true).gt("inventory_count", 0);
     Promise.all([
-      supabase.from("products").select(cols).eq("active", true).eq("featured", true).gt("inventory_count", 0).limit(4),
-      supabase.from("products").select(cols).eq("active", true).eq("new_arrival", true).gt("inventory_count", 0).limit(4),
-      supabase.from("products").select(cols).eq("active", true).eq("bestseller", true).gt("inventory_count", 0).limit(4),
-      supabase.from("categories").select("id, name, slug, image_url").eq("active", true).order("sort_order").limit(6),
+      inStock().eq("bestseller", true).limit(10),
+      inStock().not("sale_price", "is", null).limit(10),
+      inStock().eq("new_arrival", true).limit(10),
+      inStock().eq("featured", true).limit(10),
+      supabase.from("categories").select("id, name, slug").eq("active", true).order("sort_order").limit(8),
       supabase.from("reviews").select("rating, comment, created_at").eq("approved", true).order("created_at", { ascending: false }).limit(6),
       supabase.from("campaign_banners").select("id, title, subtitle, image_url, link_url, badge_text, position").eq("active", true).order("sort_order"),
-    ]).then(async ([f, n, b, c, r, camp]) => {
-      // If not enough in-stock featured, fall back to any active
-      let featuredData = (f.data as Product[]) ?? [];
-      const newData = (n.data as Product[]) ?? [];
-      const bestData = (b.data as Product[]) ?? [];
-      
-      if (featuredData.length < 4) {
-        const { data: fallback } = await supabase.from("products").select(cols).eq("active", true).gt("inventory_count", 0).limit(4);
-        featuredData = featuredData.length > 0 ? featuredData : ((fallback as Product[]) ?? []);
-      }
-      
-      setFeatured(featuredData);
-      setNewArrivals(newData);
-      setBestsellers(bestData);
+    ]).then(([b, s, n, f, c, r, camp]) => {
+      const best = (b.data as Product[]) ?? [];
+      const sale = ((s.data as Product[]) ?? []).filter((p) => p.sale_price != null && p.sale_price < p.price);
+      const news = (n.data as Product[]) ?? [];
+      const feat = (f.data as Product[]) ?? [];
+
+      // Vitrine do topo: fotos de fundo branco ficam bonitas sobre o rosa; mais vendidos primeiro.
+      const topPool = [...best, ...feat, ...news].filter((p, i, a) => p.cover_image && a.findIndex((x) => x.id === p.id) === i);
+      setShelf(topPool.slice(0, 6));
+
+      const used = new Set<string>();
+      setBestsellers(fresh(best.length ? best : feat, used, 5));
+      setOnSale(fresh(sale, used, 5));
+      setNewArrivals(fresh(news, used, 5));
       setCategories((c.data as Category[]) ?? []);
-      setReviews((r.data as any) ?? []);
+      setReviews((r.data as { rating: number; comment: string | null; created_at: string }[]) ?? []);
       setCampaigns((camp.data as CampaignBanner[]) ?? []);
     });
   }, []);
 
-  const handleQuickAdd = useCallback((p: Product) => {
-    if (p.inventory_count <= 0) return;
-    const finalPrice = p.sale_price ?? p.price;
-    addItem({
-      id: p.id, name: p.name, slug: p.slug, price: p.price,
-      sale_price: p.sale_price, cover_image: p.cover_image, inventory_count: p.inventory_count,
-    });
-    trackAddToCart({ id: p.id, name: p.name, price: finalPrice, quantity: 1 });
-  }, [addItem]);
-
-  const formatInstallment = useCallback((price: number) => {
-    const installment = price / 3;
-    return `3x de R$ ${installment.toFixed(2)} sem juros`;
-  }, []);
-
-  const ProductCard = useCallback(({ p, i }: { p: Product; i: number }) => {
-    const finalPrice = p.sale_price ?? p.price;
-    return (
-      <m.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
-        <div className="group bg-card border rounded-xl overflow-hidden card-lift">
-          <Link to={`/produto/${p.slug}`}>
-            <div className="aspect-square bg-secondary relative overflow-hidden">
-              {(() => { const img = getProductImage(p.slug, p.cover_image); return img ? <img src={img} srcSet={getProductImageSrcSet(img)} sizes="(min-width: 1024px) 25vw, 50vw" width={400} height={400} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={showPlaceholderOnError} /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground font-body text-xs">Sem imagem</div>; })()}
-              <div className="absolute top-2 left-2 flex flex-col gap-1">
-                 {p.new_arrival && <span className="bg-primary text-primary-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Novo</span>}
-                {p.bestseller && <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Mais Vendido</span>}
-                {p.tags?.includes("kit") && <span className="bg-info text-info-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Kit</span>}
-                {p.tags?.includes("combo") && <span className="bg-gold text-gold-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">Combo</span>}
-              </div>
-               {p.sale_price && (
-                 <span className="absolute top-2 right-2 bg-destructive text-destructive-foreground text-[11px] font-body font-semibold px-2.5 py-1 rounded-full">
-                   -{Math.round((1 - p.sale_price / p.price) * 100)}%
-                 </span>
-              )}
-              {p.inventory_count <= 0 && <div className="absolute inset-0 bg-foreground/50 backdrop-blur-[2px] flex items-center justify-center"><span className="bg-foreground text-primary-foreground font-body text-xs font-semibold px-4 py-1.5 rounded-full">Esgotado</span></div>}
-            </div>
-          </Link>
-          <div className="p-3.5 lg:p-4">
-            <Link to={`/produto/${p.slug}`}>
-              <h3 className="font-body text-sm text-foreground font-medium line-clamp-2 mb-1.5 group-hover:text-primary transition-colors leading-snug">{p.name}</h3>
-            </Link>
-            <div className="flex items-baseline gap-2 mb-1">
-              {p.sale_price ? (
-                <>
-                  <span className="font-body text-xs text-muted-foreground line-through">R$ {p.price.toFixed(2)}</span>
-                  <span className="font-body text-base font-bold text-primary">R$ {p.sale_price.toFixed(2)}</span>
-                </>
-              ) : (
-                <span className="font-body text-base font-bold text-foreground">R$ {p.price.toFixed(2)}</span>
-              )}
-            </div>
-            <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-3 flex items-center gap-1">
-              <CreditCard className="w-3 h-3" />
-              {formatInstallment(finalPrice)}
-            </p>
-            {p.inventory_count > 0 && (
-              <Button
-                size="sm"
-                className="w-full text-xs font-medium"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleQuickAdd(p);
-                }}
-              >
-                <ShoppingBag className="w-3.5 h-3.5 mr-1.5" /> Adicionar
-              </Button>
-            )}
-          </div>
-        </div>
-      </m.div>
-    );
-  }, [handleQuickAdd, formatInstallment]);
-
-  const ProductSection = ({ title, subtitle, products, linkTo, linkLabel }: { title: string; subtitle: string; products: Product[]; linkTo: string; linkLabel: string }) => {
-    if (products.length === 0) return null;
-    return (
-      <section className="py-14 lg:py-20">
-        <div className="container mx-auto px-4">
-          <m.div className="flex items-end justify-between mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <div>
-              <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-1">{title}</h3>
-              <p className="font-body text-sm text-muted-foreground">{subtitle}</p>
-            </div>
-            <Link to={linkTo} className="hidden sm:inline-flex items-center gap-1.5 font-body text-sm text-primary hover:underline font-medium">
-              {linkLabel} <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </m.div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-            {products.map((p, i) => <ProductCard key={p.id} p={p} i={i} />)}
-          </div>
-          <Link to={linkTo} className="sm:hidden flex items-center justify-center gap-1 font-body text-sm text-primary hover:underline font-medium mt-8">
-            {linkLabel} <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-      </section>
-    );
-  };
+  const topCampaigns = campaigns.filter((c) => c.position === "home_top");
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative min-h-[80vh] lg:min-h-[85vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          {/* Em public/img para o index.html poder pré-carregar na home. No celular vai o recorte em retrato. */}
-          <picture>
-            <source media="(max-width: 767px)" srcSet="/img/hero-cosmetics-mobile.webp" />
-            <img src="/img/hero-cosmetics-1600.webp" srcSet="/img/hero-cosmetics-800.webp 800w, /img/hero-cosmetics-1600.webp 1600w" sizes="100vw" width={1600} height={900} {...imagePriority(true)} alt="Coleção Esdra Cosméticos" className="w-full h-full object-cover" />
-          </picture>
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/85 via-foreground/55 to-transparent" />
-        </div>
-        <div className="relative container mx-auto px-4 py-20">
-          <m.div className="max-w-xl" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.12 } } }}>
-            <m.span variants={fadeUp} custom={0} className="inline-block font-body text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-4">Beleza & Perfumaria Selecionada</m.span>
-            <m.h1 variants={fadeUp} custom={1} className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl italic leading-[1.08] tracking-tight text-primary-foreground mb-6">
-              Beleza que traduz <span className="text-gold">personalidade</span>
-            </m.h1>
-            <m.p variants={fadeUp} custom={2} className="font-body text-sm sm:text-base text-primary-foreground/75 max-w-md leading-relaxed mb-8">
-              Perfumes, maquiagem, cuidados corporais e muito mais das melhores marcas. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.
-            </m.p>
-            <m.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3 sm:gap-4">
-              <Link to="/loja"><Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] font-body text-sm tracking-wide px-8">Explorar Coleção <ArrowRight className="w-4 h-4 ml-2" /></Button></Link>
-              <Link to="/lancamentos"><Button size="lg" className="bg-primary-foreground/20 backdrop-blur-sm text-primary-foreground border border-primary-foreground/40 hover:bg-primary-foreground/30 font-body text-sm tracking-wide px-8">Novidades</Button></Link>
-            </m.div>
-          </m.div>
-        </div>
-      </section>
-
-      {/* Trust Bar */}
-      <section className="bg-card border-b">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
-            {benefits.map((b) => (
-              <div key={b.title} className="flex items-center gap-3 py-4 lg:py-5 px-3 lg:px-6">
-                <b.icon className="w-5 h-5 text-primary shrink-0" />
-                <div>
-                   <p className="font-body text-xs sm:text-sm font-semibold text-foreground leading-tight">{b.title}</p>
-                   <p className="font-body text-[11px] sm:text-xs text-muted-foreground hidden sm:block">{b.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Campaign Banners */}
-      {campaigns.filter(c => c.position === "home_top").length > 0 && (
-        <section className="py-6 lg:py-8">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {campaigns.filter(c => c.position === "home_top").map(camp => (
-                <Link key={camp.id} to={camp.link_url} className="group relative rounded-xl overflow-hidden block">
-                  {camp.image_url ? (
-                    <div className="aspect-[2/1] relative">
-                      <img src={camp.image_url} alt={camp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 to-transparent" />
-                      <div className="absolute inset-0 flex flex-col justify-center p-5 lg:p-8">
-                        {camp.badge_text && <span className="font-body text-[10px] tracking-[0.2em] uppercase text-primary-foreground/70 mb-1">{camp.badge_text}</span>}
-                        <h3 className="font-display text-lg sm:text-xl lg:text-2xl italic text-primary-foreground leading-tight mb-1">{camp.title}</h3>
-                        {camp.subtitle && <p className="font-body text-xs text-primary-foreground/75">{camp.subtitle}</p>}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-primary p-5 lg:p-8 aspect-[2/1] flex flex-col justify-center group-hover:bg-primary/90 transition-colors">
-                      {camp.badge_text && <span className="font-body text-[10px] tracking-[0.2em] uppercase text-primary-foreground/70 mb-1">{camp.badge_text}</span>}
-                      <h3 className="font-display text-lg sm:text-xl lg:text-2xl italic text-primary-foreground leading-tight mb-1">{camp.title}</h3>
-                      {camp.subtitle && <p className="font-body text-xs text-primary-foreground/75">{camp.subtitle}</p>}
-                    </div>
-                  )}
-                </Link>
-              ))}
+      {/* Topo: título grande e os produtos de verdade, já na primeira tela do celular. */}
+      <section className="overflow-hidden bg-rose">
+        <div className="shell grid gap-8 pt-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-end lg:gap-12 lg:pt-14">
+          <div className="lg:pb-16">
+            <h1 className="mb-4 font-display text-[44px] leading-[1.02] tracking-[-0.01em] text-foreground display-lg sm:text-5xl lg:text-[64px]">
+              {/* Quebras fixas: a altura do título não muda quando a fonte troca (sem pulo de layout). */}
+              <span className="rise-in block whitespace-nowrap">Seu perfume</span>
+              <span className="rise-in block whitespace-nowrap">de sempre</span>
+              <span className="rise-in block whitespace-nowrap [animation-delay:80ms]">e o próximo</span>
+              <span className="rise-in block whitespace-nowrap [animation-delay:80ms]">favorito.</span>
+            </h1>
+            <p className="mb-6 max-w-[36ch] font-body text-base text-primary-deep lg:text-lg">
+              Eudora, O Boticário, Jequiti, De Sírius e mais. Parcele em 3x sem juros e tire dúvidas pelo WhatsApp.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link to="/loja" className="inline-flex h-12 items-center rounded-full bg-primary px-7 font-body text-[15px] font-medium text-primary-foreground transition-[background-color,transform] duration-200 hover:bg-primary-deep active:scale-[0.98]">
+                Ver a loja
+              </Link>
+              <a
+                href={whatsappUrl("Olá! Quero ajuda para escolher um produto na Esdra Cosméticos.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-12 items-center gap-2 rounded-full px-6 font-body text-[15px] font-medium text-foreground shadow-[inset_0_0_0_1.5px_hsl(var(--foreground))] transition-colors hover:bg-foreground/5"
+              >
+                <MessageCircle className="h-[18px] w-[18px]" aria-hidden /> WhatsApp
+              </a>
             </div>
+          </div>
+
+          <HeroShelf products={shelf} />
+        </div>
+      </section>
+
+      {/* Categorias em botões de toque */}
+      <nav aria-label="Categorias" className="shell pt-5 lg:pt-7">
+        <ul className="no-scrollbar -mx-4 flex min-h-11 gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:px-0">
+          {(categories ?? []).map((cat) => (
+            <li key={cat.id} className="shrink-0">
+              <Link to={`/loja?categoria=${cat.slug}`} className="inline-flex h-11 items-center rounded-full border px-[18px] font-body text-[15px] text-foreground transition-colors hover:border-primary hover:text-primary">
+                {cat.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {topCampaigns.length > 0 && (
+        <section className="shell pt-8">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+            {topCampaigns.map((camp) => (
+              <Link key={camp.id} to={camp.link_url} className="group relative block overflow-hidden rounded-lg">
+                {camp.image_url ? (
+                  <div className="relative aspect-[2/1]">
+                    <img src={camp.image_url} alt={camp.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-foreground/75 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col justify-center p-5 lg:p-8">
+                      {camp.badge_text && <span className="mb-1 font-body text-[13px] text-background/85">{camp.badge_text}</span>}
+                      <h3 className="mb-1 font-display text-2xl leading-tight text-background display-md lg:text-3xl">{camp.title}</h3>
+                      {camp.subtitle && <p className="font-body text-sm text-background/85">{camp.subtitle}</p>}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex aspect-[2/1] flex-col justify-center bg-rose p-5 lg:p-8">
+                    {camp.badge_text && <span className="mb-1 font-body text-[13px] text-primary-deep">{camp.badge_text}</span>}
+                    <h3 className="mb-1 font-display text-2xl leading-tight text-foreground display-md lg:text-3xl">{camp.title}</h3>
+                    {camp.subtitle && <p className="font-body text-sm text-primary-deep">{camp.subtitle}</p>}
+                  </div>
+                )}
+              </Link>
+            ))}
           </div>
         </section>
       )}
 
-      <section className="py-14 lg:py-20">
-        <div className="container mx-auto px-4">
-          <m.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-             <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Categorias</span>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Explore por Categoria</h2>
-            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Encontre o produto perfeito para cada momento</p>
-          </m.div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-            {categories.filter(c => categoryImages[c.slug]).map((cat, i) => (
-              <m.div key={cat.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }}>
-                <Link to={`/loja?categoria=${cat.slug}`} className="group relative block aspect-[3/4] rounded-xl overflow-hidden card-lift">
-                  <img src={cat.image_url || categoryImages[cat.slug]} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" width={480} height={640} loading="lazy" decoding="async" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 lg:p-6">
-                    <h4 className="font-display text-lg sm:text-xl lg:text-2xl text-primary-foreground font-semibold">{cat.name}</h4>
-                    <span className="font-body text-xs text-primary-foreground/80 group-hover:text-primary-foreground transition-colors inline-flex items-center gap-1 mt-1">Ver produtos <ArrowRight className="w-3 h-3" /></span>
-                  </div>
+      <ProductSection title="Mais vendidos" omitBadge="Mais vendido" products={bestsellers} linkTo="/loja" linkLabel="Ver todos" />
+      <ProductSection title="Em promoção" products={onSale} linkTo="/promocoes" linkLabel="Ver promoções" />
+      <ProductSection title="Lançamentos" omitBadge="Novo" products={newArrivals} linkTo="/lancamentos" linkLabel="Ver lançamentos" />
+
+      {/* Marcas: nomes grandes, cada um abre a loja filtrada */}
+      <section className="mt-12 border-y py-10 lg:mt-16 lg:py-14">
+        <div className="shell grid gap-4 lg:grid-cols-[260px_1fr] lg:items-baseline lg:gap-8">
+          <h2 className="font-body text-[15px] font-normal text-muted-foreground">Marcas originais, de distribuidores autorizados</h2>
+          <ul className="flex flex-wrap gap-x-6 gap-y-1">
+            {brands.map((brand) => (
+              <li key={brand}>
+                <Link to={`/loja?marca=${encodeURIComponent(brand)}`} className="inline-flex min-h-11 items-center border-b border-transparent font-display text-[26px] text-foreground transition-colors display-md hover:border-primary lg:text-[32px]">
+                  {brand}
                 </Link>
-              </m.div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* Featured Products */}
-      <ProductSection title="Destaques" subtitle="Seleção especial da curadoria Esdra" products={featured} linkTo="/loja" linkLabel="Ver todos" />
-
-      {/* New Arrivals */}
-      <div className="bg-secondary/50">
-        <ProductSection title="Lançamentos" subtitle="Novidades que acabaram de chegar" products={newArrivals} linkTo="/lancamentos" linkLabel="Ver lançamentos" />
-      </div>
-
-      {/* Bestsellers */}
-      <ProductSection title="Mais Vendidos" subtitle="Os favoritos das nossas clientes" products={bestsellers} linkTo="/loja" linkLabel="Ver todos" />
-
-      {/* Brands */}
-      <section className="py-14 lg:py-20 bg-secondary/50">
-        <div className="container mx-auto px-4">
-          <m.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Nossas Marcas</span>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">Marcas que Confiamos</h2>
-            <p className="font-body text-sm text-muted-foreground max-w-md mx-auto">Trabalhamos exclusivamente com marcas renomadas e distribuidores autorizados</p>
-          </m.div>
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 lg:gap-12">
-            {["Eudora", "O Boticário", "Egeo", "Siàge", "Instance", "Niina Secrets", "Dr. Botica", "Her Code", "Cuide-se Bem", "Jequiti"].map((brand, i) => (
-              <m.div
-                key={brand}
-                className="px-4 py-3 bg-card border rounded-lg font-body text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors cursor-default"
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04 }}
-              >
-                {brand}
-              </m.div>
-            ))}
+      {/* Garantias */}
+      <section aria-label="Garantias" className="shell grid grid-cols-2 gap-x-4 gap-y-5 py-10 lg:grid-cols-4 lg:py-12">
+        {guarantees.map((g) => (
+          <div key={g.title} className="flex items-start gap-2.5 font-body">
+            <g.icon className="mt-0.5 h-[22px] w-[22px] shrink-0 text-primary" strokeWidth={1.6} aria-hidden />
+            <p className="leading-snug">
+              <span className="block text-[15px] font-medium text-foreground">{g.title}</span>
+              <span className="text-sm text-muted-foreground">{g.desc}</span>
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* Institutional Trust */}
-      <section className="py-14 lg:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-5xl mx-auto mb-12">
-            <m.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Sobre Nós</span>
-              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-4">Esdra Cosméticos</h2>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">
-                Desde 2016, a Esdra Cosméticos seleciona os melhores produtos de beleza e perfumaria para mulheres que valorizam qualidade e originalidade.
-              </p>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
-                Trabalhamos com marcas renomadas como Eudora, O Boticário e Jequiti, adquiridas diretamente de distribuidores autorizados. Cada produto é cuidadosamente selecionado para garantir a melhor experiência.
-              </p>
-              <Link to="/sobre" className="font-body text-sm text-primary hover:underline font-medium inline-flex items-center gap-1">
-                Conheça nossa história <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </m.div>
-            <m.div className="grid grid-cols-2 gap-3" initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              {[
-                { icon: ShieldCheck, title: "100% Original", desc: "Distribuidores autorizados" },
-                { icon: CreditCard, title: "3x sem Juros", desc: "Cartão, PIX ou boleto" },
-                { icon: Truck, title: "Frete Grátis", desc: "Acima de R$ 199" },
-                { icon: RotateCcw, title: "Troca Fácil", desc: "Até 30 dias" },
-              ].map((item) => (
-                <div key={item.title} className="bg-card border rounded-xl p-4 text-center">
-                  <item.icon className="w-6 h-6 text-primary mx-auto mb-2" />
-                  <h4 className="font-body text-xs font-semibold text-foreground mb-1">{item.title}</h4>
-                  <p className="font-body text-[10px] text-muted-foreground">{item.desc}</p>
-                </div>
-              ))}
-            </m.div>
-          </div>
-        </div>
+        ))}
       </section>
 
       {reviews.length > 0 && (
-        <section className="py-14 lg:py-20 bg-secondary/50">
-          <div className="container mx-auto px-4">
-            <m.div className="text-center mb-10 lg:mb-12" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Depoimentos</span>
-              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground mb-3">O que dizem nossas clientes</h2>
-              <p className="font-body text-sm text-muted-foreground">Avaliações reais de quem confia na Esdra</p>
-            </m.div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-5xl mx-auto">
+        <section className="bg-secondary py-12 lg:py-16">
+          <div className="shell">
+            <h2 className="mb-8 font-display text-[30px] leading-tight text-foreground display-md lg:text-[40px]">O que dizem as clientes</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {reviews.map((t, i) => (
-                <m.div key={i} className="bg-card border rounded-xl p-6 lg:p-8" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
-                  <div className="flex gap-0.5 mb-4">{Array.from({ length: t.rating }).map((_, j) => <Star key={j} className="w-4 h-4 fill-gold text-gold" />)}</div>
-                  {t.comment && <p className="font-body text-sm text-foreground leading-relaxed mb-4 italic">"{t.comment}"</p>}
-                  <p className="font-body text-xs text-muted-foreground">{new Date(t.created_at).toLocaleDateString("pt-BR")}</p>
-                </m.div>
+                <figure key={i} className="rounded-lg bg-background p-6">
+                  <div className="mb-3 flex gap-0.5" aria-label={`${t.rating} de 5 estrelas`}>
+                    {Array.from({ length: t.rating }).map((_, j) => <Star key={j} className="h-4 w-4 fill-gold text-gold" aria-hidden />)}
+                  </div>
+                  {t.comment && <blockquote className="mb-3 font-body text-[15px] leading-relaxed text-foreground">“{t.comment}”</blockquote>}
+                  <figcaption className="font-body text-[13px] text-muted-foreground">{new Date(t.created_at).toLocaleDateString("pt-BR")}</figcaption>
+                </figure>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* FAQ */}
-      <section className="py-14 lg:py-20">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <m.div className="text-center mb-10" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <span className="font-body text-xs tracking-[0.2em] uppercase text-primary mb-2 block">Dúvidas Frequentes</span>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-foreground">Perguntas Frequentes</h2>
-          </m.div>
-          <div className="space-y-3">
-            {faqs.map((faq, i) => (
-              <m.div
-                key={i}
-                className="bg-card border rounded-xl overflow-hidden"
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-              >
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-left"
-                >
-                  <span className="font-body text-sm font-medium text-foreground pr-4">{faq.q}</span>
-                  {openFaq === i ? <ChevronUp className="w-4 h-4 text-primary shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
-                </button>
-                {openFaq === i && (
-                  <div className="px-5 pb-5 -mt-1">
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
-                  </div>
-                )}
-              </m.div>
-            ))}
+      {/* Ajuda pelo WhatsApp */}
+      <section className="bg-rose py-10 lg:py-14">
+        <div className="shell flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="mb-2 font-display text-[30px] leading-[1.08] text-foreground text-balance display-md lg:text-[40px]">Em dúvida entre dois perfumes?</h2>
+            <p className="max-w-[42ch] font-body text-base text-primary-deep">Conta o que você gosta de usar e a Esdra indica pelo WhatsApp.</p>
           </div>
+          <a
+            href={whatsappUrl("Olá! Quero ajuda para escolher um perfume na Esdra Cosméticos.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-12 shrink-0 items-center gap-2 self-start rounded-full bg-primary px-7 font-body text-[15px] font-medium text-primary-foreground transition-colors hover:bg-primary-deep lg:self-auto"
+          >
+            <MessageCircle className="h-[18px] w-[18px]" aria-hidden /> Conversar no WhatsApp
+          </a>
         </div>
       </section>
 
-      {/* CTA WhatsApp */}
-      <section className="py-14 lg:py-20 bg-primary">
-        <div className="container mx-auto px-4 text-center">
-          <m.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl italic text-primary-foreground mb-3">Precisa de ajuda para escolher?</h2>
-            <p className="font-body text-sm text-primary-foreground/75 mb-8 max-w-md mx-auto leading-relaxed">
-              Nossa equipe está pronta para ajudar você a encontrar o perfume ideal. Atendimento rápido e personalizado pelo WhatsApp.
-            </p>
-            <a href={whatsappUrl("Olá, quero ajuda para escolher um perfume na Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-body text-sm tracking-wide px-8 hover:-translate-y-0.5 transition-all duration-300">Falar no WhatsApp</Button>
-            </a>
-          </m.div>
+      {/* Perguntas frequentes */}
+      <section className="shell py-12 lg:py-16">
+        <div className="max-w-[860px]">
+        <h2 className="mb-6 font-display text-[30px] leading-tight text-foreground display-md lg:text-[40px]">Perguntas frequentes</h2>
+        <div className="border-t">
+          {faqs.map((faq, i) => {
+            const open = openFaq === i;
+            return (
+              <div key={i} className="border-b">
+                <button
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  aria-expanded={open}
+                  aria-controls={`faq-${i}`}
+                  className="flex min-h-14 w-full items-center justify-between gap-4 py-3 text-left font-body text-base font-medium text-foreground"
+                >
+                  {faq.q}
+                  <ChevronDown className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`} aria-hidden />
+                </button>
+                {open && <p id={`faq-${i}`} className="pb-5 font-body text-[15px] leading-relaxed text-muted-foreground">{faq.a}</p>}
+              </div>
+            );
+          })}
+        </div>
         </div>
       </section>
     </>
+  );
+}
+
+function ProductSection({ title, products, linkTo, linkLabel, omitBadge }: { title: string; products: Product[]; linkTo: string; linkLabel: string; omitBadge?: string }) {
+  if (products.length === 0) return null;
+  return (
+    <section className="shell pt-10 lg:pt-14">
+      <div className="mb-5 flex items-baseline justify-between gap-3">
+        <h2 className="font-display text-[30px] leading-tight text-foreground display-md lg:text-[40px]">{title}</h2>
+        <Link to={linkTo} className="inline-flex min-h-11 items-center font-body text-[15px] font-medium text-primary underline decoration-1 underline-offset-4">
+          {linkLabel}
+        </Link>
+      </div>
+      {/* 4 no celular (2 linhas cheias), 5 no computador */}
+      <div className="grid grid-cols-2 gap-x-3 gap-y-6 lg:grid-cols-5 lg:gap-x-5 lg:gap-y-9">
+        {products.map((p, i) => (
+          <ProductCard key={p.id} product={p} omitBadge={omitBadge} className={i >= 4 ? "hidden lg:flex" : undefined} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// Produtos "em pé" sobre o rosa. Enquanto carrega, reserva o mesmo espaço (sem pulo de layout).
+function HeroShelf({ products }: { products: Product[] | null }) {
+  const slots = products ?? Array.from({ length: 3 }, () => null);
+  return (
+    <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3.5 overflow-x-auto px-4 lg:mx-0 lg:justify-end lg:gap-8 lg:overflow-visible lg:px-0" aria-label="Mais vendidos">
+      {slots.map((p, i) => (
+        <div key={p?.id ?? i} className={`w-[132px] shrink-0 snap-start lg:w-auto lg:max-w-[250px] lg:flex-1 ${i >= 3 ? "lg:hidden" : ""}`}>
+          {p ? (
+            <Link to={`/produto/${p.slug}`} className="group block text-foreground">
+              <div className="relative flex h-[150px] items-end justify-center lg:h-[340px]">
+                <span aria-hidden className="absolute inset-x-[12%] -bottom-1 h-2.5 rounded-[50%] bg-[radial-gradient(closest-side,hsl(var(--primary-deep)/0.28),transparent)]" />
+                {(() => {
+                  const img = getProductImage(p.slug, p.cover_image);
+                  return (
+                    <img
+                      src={img}
+                      srcSet={getProductImageSrcSet(img)}
+                      sizes="(min-width: 1024px) 250px, 132px"
+                      width={400}
+                      height={400}
+                      alt={p.name}
+                      decoding="async"
+                      onError={showPlaceholderOnError}
+                      className="rise-in blend-photo relative max-h-full w-auto max-w-full object-contain transition-transform duration-500 group-hover:-translate-y-1"
+                      style={{ animationDelay: `${120 + i * 60}ms` }}
+                    />
+                  );
+                })()}
+              </div>
+              <span className="mt-1.5 block border-t-[1.5px] border-foreground/55 px-0.5 pb-5 pt-2 font-body text-[13px] leading-snug lg:pb-8 lg:text-[15px]">
+                <span className="line-clamp-1">{p.name}</span>
+                <b className="mt-0.5 block text-sm font-semibold tabular-nums lg:text-[17px]">{formatBRL(p.sale_price ?? p.price)}</b>
+              </span>
+            </Link>
+          ) : (
+            <div aria-hidden>
+              <div className="h-[150px] lg:h-[340px]" />
+              <div className="mt-1.5 h-[62px] border-t-[1.5px] border-foreground/20 lg:h-[78px]" />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
   );
 }

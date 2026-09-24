@@ -17,7 +17,7 @@ status:
   health: healthy
   phase: Em producao / Seguranca e otimizacao
   priority: 1
-  updated_at: 2026-09-23T23:38:44-03:00
+  updated_at: 2026-09-24T08:31:21-03:00
   last_session_at: 2026-09-23T23:38:44-03:00
   confidence: inferred
 focus:
@@ -181,6 +181,18 @@ next_actions:
     blocked_by: []
     created_at: 2026-09-23T23:38:44-03:00
     done_at: null
+    note: null
+  - id: act-014
+    title: Redesenho visual premium da loja (home, /loja, produto, sacola e checkout)
+    status: done_tested
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-24T00:05:44-03:00
+    done_at: 2026-09-24T08:31:21-03:00
     note: null
 blockers: []
 decisions_recent:

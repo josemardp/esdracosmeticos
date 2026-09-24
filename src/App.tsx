@@ -106,13 +106,22 @@ const loadMotionFeatures = () => import("@/lib/motion-features").then((mod) => m
 
 const queryClient = new QueryClient();
 
+// Fontes do admin (as de antes do redesenho). A loja não baixa essas; só quem abre o /admin.
+const ADMIN_FONTS_HREF = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap";
+
 const ManifestSwitcher = () => {
   const location = useLocation();
   useEffect(() => {
-    const link = document.getElementById('pwa-manifest') as HTMLLinkElement | null;
-    if (!link) return;
     const isAdmin = location.pathname.startsWith('/admin');
-    link.href = isAdmin ? '/admin.webmanifest' : '/manifest.webmanifest';
+    const link = document.getElementById('pwa-manifest') as HTMLLinkElement | null;
+    if (link) link.href = isAdmin ? '/admin.webmanifest' : '/manifest.webmanifest';
+    // O admin mantém as cores e fontes antigas (bloco .admin-ui do index.css).
+    document.documentElement.classList.toggle('admin-ui', isAdmin);
+    if (isAdmin && !document.getElementById('admin-fonts')) {
+      const css = document.createElement('link');
+      css.id = 'admin-fonts'; css.rel = 'stylesheet'; css.href = ADMIN_FONTS_HREF;
+      document.head.appendChild(css);
+    }
   }, [location.pathname]);
   return null;
 };

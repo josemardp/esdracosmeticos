@@ -1,6 +1,6 @@
 # STATUS.md — Loja Esdra Cosméticos
 
-> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026 (act-011)
+> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026 (act-014)
 
 ---
 
@@ -50,14 +50,38 @@ Lighthouse mobile em produção, mediana de 3 rodadas (antes: 2 rodadas, LCP e T
 5. **Fontes e Analytics:** Google Fonts por `<link>` sem bloquear a pintura. **Google Analytics carrega na primeira interação (rolar, tocar, clicar, tecla) ou após 15 s**: quem sai em menos de 15 s sem tocar não conta como visita. Reverter é só voltar o `<script async>` no `index.html`.
 6. **Conferido:** prints antes/depois de home, /loja e produto em celular e desktop, claro e escuro (a loja não tem tema escuro; sai igual), 0 imagens quebradas; busca, Ctrl+K, 10 rotas sob demanda, filtro e carrinho ok. `npm test` 14/14, `npm run test:db` checkout ok, build ok.
 
+## Feito em 24/09/2026: redesenho visual da loja (act-014)
+
+Mockup aprovado pelo Josemar antes de aplicar (artefato "Esdra Nova Vitrine"). Aplicado em 4 etapas: base e home, catálogo, produto, sacola e checkout. Nenhuma regra de negócio mudou (preço, cupom, frete, estoque, `create_order`).
+
+1. **Direção de arte tirada da logo:** Bodoni Moda (títulos, mesmo traço da logo) + Jost (texto e preço), no lugar de Cormorant + Inter. Paleta: rosa da logo `#E6B3BA` nas áreas de destaque, vinho rosado `#8A3552` nos botões (7,7 de contraste com branco), tinta `#2A1820` no texto, rosa pó `#F7EDEF` atrás das fotos. Todas as combinações de texto passam no AA. Fontes reserva com as medidas da Bodoni/Jost no `index.css` (sem pulo de layout quando a fonte chega).
+2. **Admin intocado:** a loja usa as variáveis novas no `:root`; o admin recebe as antigas pela classe `.admin-ui` (posta no `<html>` pelo `index.html` e pelo `ManifestSwitcher` do `App.tsx`, que também carrega as fontes antigas só no admin). Login do admin comparado com produção: idêntico pixel a pixel.
+3. **Peças novas:** `src/components/store/ProductCard.tsx` (cartão único da home, catálogo e relacionados; foto com `srcset` e `showPlaceholderOnError`; o branco da foto some no fundo rosa com `.blend-photo`, que não pode ter pai com transform/opacity animado), `src/lib/format.ts` (preço com vírgula em todo o site), `src/assets/logo-esdra-wordmark.webp` (logo recortada, 8 kB).
+4. **Home:** topo com título e 3 produtos reais sobre o rosa (a foto de banco de imagens com marcas falsas saiu, e a pré-carga dela saiu do `index.html`); categorias em botões; Mais vendidos, Em promoção e Lançamentos sem repetir produto; marcas reais do cadastro (Eudora, O Boticário, Jequiti, De Sírius, Naturall Mix) com link para `/loja?marca=`.
+5. **Catálogo:** mostra 24 produtos e botão "Mostrar mais" (era 128 de uma vez); categorias em botões no celular; filtros ativos como etiquetas.
+6. **Produto:** foto inteira (antes cortava o frasco), preço grande, "Restam N unidades" quando estoque ≤ 3, informações em abas, barra fixa de compra no celular (aparece quando o botão principal sai da tela).
+7. **Sacola e checkout:** barra de quanto falta para o frete grátis, passos numerados, campos com teclado certo, total e botão fixos no celular, aviso "Você não paga nada agora". Avisos do carrinho passam a dizer "sacola".
+8. **Capa trocada corrigida:** "717 VIP Men 100ml" mostrava o La Vie e "La Vie 100ml" mostrava o 717 VIP Men (os arquivos vieram trocados de `public/perfumes`). Migração `20260924030000_swap_717_vip_men_la_vie_covers.sql` aplicada em produção; originais renomeados com `git mv`.
+
+Lighthouse mobile, as duas versões compiladas e medidas no mesmo computador, mediana de 3 rodadas (a máquina oscila entre levas; comparar sempre dentro da mesma leva):
+
+| Página | Leva etapa 1 | Leva etapa 3 | Leva final |
+|---|---|---|---|
+| Home | 62 → 75 | 67 → 68 | 56 → 65 |
+| /loja | 50 → 60 | 46 → 71 | 42 → 59 |
+| Produto | 73 → 74 | 67 → 76 | 64 → 71 |
+
+`npm test` 14/14, `npm run test:db` checkout ok, build ok. Prints de home, /loja, produto, sacola e checkout em 390 e 1366 px: 0 imagens quebradas, sem rolagem lateral.
+
 Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
 
 ---
 
 ## Próximo passo
 
-1. **Primeiro pedido real pelo site:** acompanhar o primeiro pedido de cliente (painel `/admin` e WhatsApp) para confirmar o fluxo com dados reais.
-2. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
+1. **Esdra conferir o redesenho no celular** (home, loja, um produto, sacola) e dizer o que ajustar.
+2. **Primeiro pedido real pelo site:** acompanhar o primeiro pedido de cliente (painel `/admin` e WhatsApp) para confirmar o fluxo com dados reais.
+3. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
 
 ---
 
@@ -66,7 +90,7 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 | Pendência | Impacto | Dono |
 |---|---|---|
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
-| Home (58) e /loja (51) ainda abaixo de 60. Maior peso restante: JS do Supabase (~580 kB sem compressão) e os 128 cartões de uma vez no /loja | SEO e conversão no celular | Código |
+| Conferir no ar se home e /loja passaram de 60 no Lighthouse mobile de produção (no computador passaram). Maior peso restante: JS do Supabase (~580 kB sem compressão) | SEO e conversão no celular | Código |
 | Capa nova pelo admin não gera versões 400/800 | Foto nova fica mais pesada que as demais | Código |
 
 ---

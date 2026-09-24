@@ -1,9 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import logoEsdra from "@/assets/logo-esdra.png";
+// Logo recortada só na marca (sem a margem quadrada do arquivo original), com fundo transparente.
+import logoEsdra from "@/assets/logo-esdra-wordmark.webp";
 
 // A busca (cmdk) fica fora do pacote inicial: é pré-baixada quando o navegador fica ocioso
 // e montada na primeira vez que a lupa é tocada.
@@ -40,78 +40,99 @@ export function Header() {
   const location = useLocation();
   const { itemCount } = useCart();
 
+  // O número da sacola dá um pulinho quando entra item (não quando sai).
+  const [bump, setBump] = useState(0);
+  const prevCount = useRef(itemCount);
+  useEffect(() => {
+    if (itemCount > prevCount.current) setBump((b) => b + 1);
+    prevCount.current = itemCount;
+  }, [itemCount]);
+
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
+  const iconBtn = "inline-flex h-11 w-11 items-center justify-center rounded-full text-foreground transition-colors hover:bg-secondary";
+
   return (
     <>
-      <div className="bg-primary text-primary-foreground text-center text-[11px] sm:text-xs py-2 px-4 font-body tracking-wide">
-        ✦ Frete grátis acima de R$ 199 · Parcele em até 3x sem juros ✦
+      <div className="bg-foreground px-4 py-2 text-center font-body text-[13px] text-background/90">
+        Frete grátis acima de R$ 199 e 3x sem juros no cartão
       </div>
 
-      <header className="sticky top-0 z-50 bg-background/98 backdrop-blur-md border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden p-2 -ml-2 text-foreground" aria-label="Menu">
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-md">
+        <div className="shell grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:flex lg:h-[76px] lg:justify-between">
+          <div className="flex items-center lg:w-[180px]">
+            <button onClick={() => setMobileOpen(!mobileOpen)} className={`${iconBtn} -ml-2 lg:hidden`} aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={mobileOpen}>
+              {mobileOpen ? <X className="h-[22px] w-[22px]" /> : <Menu className="h-[22px] w-[22px]" strokeWidth={1.6} />}
             </button>
-
-            <Link to="/" className="flex items-center gap-2">
-              <img src={logoEsdra} alt="Esdra Cosméticos" className="h-9 sm:h-10 lg:h-12 w-auto logo-enhance" />
+            <Link to="/" className="hidden lg:block" aria-label="Esdra Cosméticos, página inicial">
+              <img src={logoEsdra} alt="Esdra Cosméticos" width={240} height={135} className="h-12 w-auto" />
             </Link>
+          </div>
 
-            <nav className="hidden lg:flex items-center gap-7">
-              {navLinks.map((link) => (
+          <Link to="/" className="lg:hidden" aria-label="Esdra Cosméticos, página inicial">
+            <img src={logoEsdra} alt="Esdra Cosméticos" width={240} height={135} className="h-10 w-auto" />
+          </Link>
+
+          <nav className="hidden items-center gap-8 lg:flex" aria-label="Principal">
+            {navLinks.map((link) => {
+              const active = location.pathname === link.href;
+              return (
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`font-body text-sm tracking-wide transition-colors relative py-1 ${
-                    location.pathname === link.href
-                      ? "text-primary font-medium after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:rounded-full"
-                      : "text-muted-foreground hover:text-foreground"
+                  aria-current={active ? "page" : undefined}
+                  className={`border-b-[1.5px] py-3 font-body text-[15px] transition-colors ${
+                    active ? "border-foreground text-foreground" : "border-transparent text-foreground/80 hover:border-foreground hover:text-foreground"
                   }`}
                 >
                   {link.label}
                 </Link>
-              ))}
-            </nav>
+              );
+            })}
+          </nav>
 
-            <div className="flex items-center gap-0.5 sm:gap-1">
-              <Button variant="ghost" size="icon" className="text-foreground w-9 h-9 sm:w-10 sm:h-10" aria-label="Buscar" onClick={() => { setSearchUsed(true); setSearchOpen(true); }}><Search className="w-[18px] h-[18px]" /></Button>
-              <Link to="/conta/favoritos">
-                <Button variant="ghost" size="icon" className="text-foreground w-9 h-9 sm:w-10 sm:h-10" aria-label="Favoritos"><Heart className="w-[18px] h-[18px]" /></Button>
-              </Link>
-              <Link to="/carrinho">
-                <Button variant="ghost" size="icon" className="relative text-foreground w-9 h-9 sm:w-10 sm:h-10" aria-label="Carrinho">
-                  <ShoppingBag className="w-[18px] h-[18px]" />
-                  {itemCount > 0 && (
-                    <span className="absolute top-0.5 right-0.5 sm:-top-0.5 sm:-right-0.5 bg-primary text-primary-foreground rounded-full w-4 h-4 text-[10px] flex items-center justify-center font-semibold">
-                      {itemCount > 9 ? "9+" : itemCount}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-              <Link to="/conta">
-                <Button variant="ghost" size="icon" className="text-foreground w-9 h-9 sm:w-10 sm:h-10" aria-label="Minha Conta"><User className="w-[18px] h-[18px]" /></Button>
-              </Link>
-            </div>
+          <div className="flex items-center justify-end lg:w-[180px]">
+            <button type="button" className={iconBtn} aria-label="Buscar produto" onClick={() => { setSearchUsed(true); setSearchOpen(true); }}>
+              <Search className="h-[21px] w-[21px]" strokeWidth={1.6} />
+            </button>
+            <Link to="/conta/favoritos" className={`${iconBtn} hidden sm:inline-flex`} aria-label="Favoritos">
+              <Heart className="h-[21px] w-[21px]" strokeWidth={1.6} />
+            </Link>
+            <Link to="/conta" className={`${iconBtn} hidden sm:inline-flex`} aria-label="Minha conta">
+              <User className="h-[21px] w-[21px]" strokeWidth={1.6} />
+            </Link>
+            <Link to="/carrinho" className={`${iconBtn} relative -mr-2`} aria-label={itemCount > 0 ? `Sacola, ${itemCount} ${itemCount === 1 ? "item" : "itens"}` : "Sacola"}>
+              <ShoppingBag className="h-[21px] w-[21px]" strokeWidth={1.6} />
+              {itemCount > 0 && (
+                <span key={bump} className={`absolute right-1 top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 font-body text-[11px] font-semibold text-primary-foreground ${bump ? "bag-bump" : ""}`}>
+                  {itemCount > 9 ? "9+" : itemCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
 
         {mobileOpen && (
-          <div className="lg:hidden border-t bg-background">
-            <nav className="container mx-auto px-4 py-5 flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`font-body text-sm py-2.5 px-3 rounded-lg transition-colors ${
-                    location.pathname === link.href
-                      ? "text-primary font-medium bg-primary/5"
-                      : "text-muted-foreground hover:bg-secondary"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+          <div className="border-t bg-background lg:hidden">
+            <nav className="shell flex flex-col py-3" aria-label="Principal">
+              {navLinks.map((link) => {
+                const active = location.pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex min-h-12 items-center border-b border-border/70 font-display text-[22px] display-md last:border-0 ${active ? "text-primary" : "text-foreground"}`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+              <div className="flex gap-6 pt-4 font-body text-[15px]">
+                <Link to="/conta" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center gap-2 text-foreground"><User className="h-5 w-5" strokeWidth={1.6} />Minha conta</Link>
+                <Link to="/conta/favoritos" onClick={() => setMobileOpen(false)} className="flex min-h-11 items-center gap-2 text-foreground"><Heart className="h-5 w-5" strokeWidth={1.6} />Favoritos</Link>
+              </div>
             </nav>
           </div>
         )}

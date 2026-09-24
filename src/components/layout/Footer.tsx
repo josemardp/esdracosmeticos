@@ -33,38 +33,41 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-foreground text-primary-foreground">
+    <footer className="bg-foreground text-background">
       {/* Newsletter */}
-      <div className="border-b border-primary-foreground/10">
-        <div className="container mx-auto px-4 py-10 lg:py-12 text-center">
-          <h3 className="font-display text-xl sm:text-2xl lg:text-3xl italic mb-2">
-            Receba novidades exclusivas
+      <div className="border-b border-background/10">
+        <div className="shell py-10 text-center lg:py-14">
+          <h3 className="mb-2 font-display text-[26px] display-md lg:text-[32px]">
+            Novidades e promoções no seu e-mail
           </h3>
-          <p className="font-body text-xs sm:text-sm text-primary-foreground/60 mb-6 max-w-md mx-auto">
-            Cadastre-se e seja a primeira a saber sobre lançamentos, promoções e dicas de beleza.
+          <p className="mx-auto mb-6 max-w-md font-body text-[15px] text-background/75">
+            Receba os lançamentos e as ofertas da Esdra.
           </p>
           {subscribed ? (
-            <div className="flex items-center justify-center gap-2 text-primary font-body text-sm font-medium animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center justify-center gap-2 font-body text-[15px] font-medium text-rose animate-in fade-in slide-in-from-bottom-2 duration-300" role="status">
               <Check className="w-5 h-5" />
-              <span>Inscrito com sucesso! Obrigado por se inscrever.</span>
+              <span>Pronto, seu e-mail está cadastrado.</span>
             </div>
           ) : (
-            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={handleNewsletter}>
+            <form className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
+              <label htmlFor="newsletter-email" className="sr-only">Seu e-mail</label>
               <input
+                id="newsletter-email"
                 type="email"
-                placeholder="Seu melhor e-mail"
+                autoComplete="email"
+                placeholder="Seu e-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
-                className="flex-1 bg-primary-foreground/10 border border-primary-foreground/20 rounded-lg px-4 py-3 text-sm font-body text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                className="h-12 w-full shrink-0 rounded-full sm:w-auto sm:flex-1 border border-background/35 bg-background/10 px-5 font-body text-base text-background placeholder:text-background/60 focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/60 disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-body text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="h-12 rounded-full bg-rose px-7 font-body text-[15px] font-medium text-foreground transition-colors hover:bg-background disabled:opacity-50"
               >
-                {loading ? "Enviando..." : "Inscrever-se"}
+                {loading ? "Enviando..." : "Cadastrar e-mail"}
               </button>
             </form>
           )}
@@ -72,44 +75,41 @@ export function Footer() {
       </div>
 
       {/* Trust badges */}
-      <div className="border-b border-primary-foreground/10">
-        <div className="container mx-auto px-4 py-5">
-          <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-10 text-primary-foreground/50">
+      <div className="border-b border-background/10">
+        <div className="shell py-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-background/75">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4" />
-              <span className="font-body text-xs">Compra Segura</span>
+              <span className="font-body text-[13px]">Compra Segura</span>
             </div>
             <div className="flex items-center gap-2">
               <CreditCard className="w-4 h-4" />
-              <span className="font-body text-xs">Até 3x sem juros</span>
+              <span className="font-body text-[13px]">Até 3x sem juros</span>
             </div>
             <div className="flex items-center gap-2">
               <Truck className="w-4 h-4" />
-              <span className="font-body text-xs">Frete grátis acima de R$ 199</span>
+              <span className="font-body text-[13px]">Frete grátis acima de R$ 199</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Links */}
-      <div className="container mx-auto px-4 py-10 lg:py-12">
+      <div className="shell py-10 lg:py-14">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1">
-            <h4 className="font-display text-xl font-semibold mb-1">Esdra</h4>
-            <span className="font-body text-[10px] text-primary-foreground/50 tracking-[0.2em] uppercase">
-              Cosméticos
-            </span>
-            <p className="font-body text-xs sm:text-sm text-primary-foreground/60 mt-4 leading-relaxed">
-              Desde 2016, selecionamos produtos premium para realçar sua beleza natural com sofisticação e cuidado.
+            <h4 className="font-display text-[26px] display-md leading-none">Esdra Cosméticos</h4>
+            <p className="mt-4 max-w-xs font-body text-[15px] leading-relaxed text-background/75">
+              Perfumaria e beleza em Valparaíso/SP desde 2016, com atendimento pelo WhatsApp.
             </p>
-            <Link to="/sobre" className="font-body text-xs text-primary hover:underline mt-3 inline-block">Conheça nossa história →</Link>
+            <Link to="/sobre" className="mt-2 inline-flex min-h-11 items-center font-body text-[15px] text-rose underline underline-offset-4">Conheça a história da Esdra</Link>
           </div>
 
           {/* Shop */}
           <div>
-            <h5 className="font-body text-xs font-semibold tracking-widest uppercase mb-4 text-primary-foreground/80">Loja</h5>
-            <ul className="space-y-2.5">
+            <h5 className="mb-3 font-body text-[15px] font-medium text-background">Loja</h5>
+            <ul>
               {[
                 { label: "Perfumaria", href: "/loja?categoria=perfumes" },
                 { label: "Maquiagem", href: "/loja?categoria=maquiagem" },
@@ -120,7 +120,7 @@ export function Footer() {
                 { label: "Promoções", href: "/promocoes" },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link to={item.href} className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                  <Link to={item.href} className="flex min-h-10 items-center font-body text-[15px] text-background/75 transition-colors hover:text-background">
                     {item.label}
                   </Link>
                 </li>
@@ -130,8 +130,8 @@ export function Footer() {
 
           {/* Help */}
           <div>
-            <h5 className="font-body text-xs font-semibold tracking-widest uppercase mb-4 text-primary-foreground/80">Ajuda</h5>
-            <ul className="space-y-2.5">
+            <h5 className="mb-3 font-body text-[15px] font-medium text-background">Ajuda</h5>
+            <ul>
               {[
                 { label: "Meus Pedidos", href: "/conta/pedidos" },
                 { label: "Trocas e Devoluções", href: "/trocas-e-devolucoes" },
@@ -141,7 +141,7 @@ export function Footer() {
                 { label: "Termos de Uso", href: "/termos-de-uso" },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link to={item.href} className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                  <Link to={item.href} className="flex min-h-10 items-center font-body text-[15px] text-background/75 transition-colors hover:text-background">
                     {item.label}
                   </Link>
                 </li>
@@ -151,32 +151,32 @@ export function Footer() {
 
           {/* Contact */}
           <div className="col-span-2 sm:col-span-1">
-            <h5 className="font-body text-xs font-semibold tracking-widest uppercase mb-4 text-primary-foreground/80">Contato</h5>
+            <h5 className="mb-3 font-body text-[15px] font-medium text-background">Contato</h5>
             <ul className="space-y-3">
               <li className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-primary shrink-0" />
-                <a href="mailto:lojadares@gmail.com" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                <Mail className="h-4 w-4 shrink-0 text-rose" />
+                <a href="mailto:lojadares@gmail.com" className="flex min-h-10 items-center font-body text-[15px] text-background/75 transition-colors hover:text-background">
                   lojadares@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-primary shrink-0" />
-                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="font-body text-xs sm:text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors">
+                <Phone className="h-4 w-4 shrink-0 text-rose" />
+                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="flex min-h-10 items-center font-body text-[15px] text-background/75 transition-colors hover:text-background">
                   (18) 99145-9429
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <a href="https://share.google/bTJn8G6Fxi4NYL04U" target="_blank" rel="noopener noreferrer" className="font-body text-xs text-primary-foreground/50 hover:text-primary-foreground transition-colors">
-                  R. Antônio Cyrillo, 47 – Valparaíso/SP
+                <MapPin className="mt-3 h-4 w-4 shrink-0 text-rose" />
+                <a href="https://share.google/bTJn8G6Fxi4NYL04U" target="_blank" rel="noopener noreferrer" className="flex min-h-10 items-center font-body text-[15px] text-background/75 transition-colors hover:text-background">
+                  R. Antônio Cyrillo, 47, Valparaíso/SP
                 </a>
               </li>
             </ul>
             <div className="flex gap-3 mt-5">
-              <a href="https://www.instagram.com/esdra_aline/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all" aria-label="Instagram">
+              <a href="https://www.instagram.com/esdra_aline/" target="_blank" rel="noopener noreferrer" className="flex h-11 w-11 items-center justify-center rounded-full border border-background/30 transition-colors hover:border-background/60 hover:bg-background/10" aria-label="Instagram">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="https://www.facebook.com/esdraaline" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full border border-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/10 hover:border-primary-foreground/40 transition-all" aria-label="Facebook">
+              <a href="https://www.facebook.com/esdraaline" target="_blank" rel="noopener noreferrer" className="flex h-11 w-11 items-center justify-center rounded-full border border-background/30 transition-colors hover:border-background/60 hover:bg-background/10" aria-label="Facebook">
                 <Facebook className="w-4 h-4" />
               </a>
             </div>
@@ -185,13 +185,13 @@ export function Footer() {
       </div>
 
       {/* Bottom */}
-      <div className="border-t border-primary-foreground/10">
-        <div className="container mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
-          <p className="font-body text-[10px] sm:text-xs text-primary-foreground/40">
+      <div className="border-t border-background/10">
+        <div className="shell flex flex-col items-center justify-between gap-2 py-5 text-center sm:flex-row sm:text-left">
+          <p className="font-body text-[13px] text-background/65">
             © {new Date().getFullYear()} Esdra Cosméticos. Todos os direitos reservados.
           </p>
-          <p className="font-body text-[10px] sm:text-xs text-primary-foreground/40">
-            CNPJ: 26.744.223/0001-57 · Desde 2016 · Valparaíso/SP
+          <p className="font-body text-[13px] text-background/65">
+            CNPJ 26.744.223/0001-57, Valparaíso/SP
           </p>
         </div>
       </div>

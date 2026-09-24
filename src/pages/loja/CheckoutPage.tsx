@@ -1,10 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ShieldCheck, MessageCircle, CheckCircle2, Loader2, Lock, Truck, CreditCard, Clock } from "lucide-react";
-import { m } from "framer-motion";
+import { MessageCircle, Loader2, Lock, CreditCard, Clock, ChevronDown, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +9,8 @@ import { fetchCep } from "@/lib/viacep";
 import { getProductImage, getProductImageSrcSet, showPlaceholderOnError } from "@/lib/product-images";
 import { trackBeginCheckout, trackPurchase } from "@/lib/analytics";
 import { WHATSAPP_PHONE, whatsappUrl } from "@/lib/whatsapp";
-import { getShippingLabel, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
+import { getShippingLabel, qualifiesForFreeShipping } from "@/lib/shipping";
+import { formatBRL } from "@/lib/format";
 
 export default function CheckoutPage() {
   const { items, subtotal, discount, total, coupon, clearCart } = useCart();
@@ -47,6 +44,13 @@ export default function CheckoutPage() {
   });
 
   const set = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
+
+  // Barra fixa com total e botão no celular (ver .has-buy-bar no index.css).
+  useEffect(() => {
+    if (orderResult || items.length === 0) return;
+    document.body.classList.add("has-buy-bar");
+    return () => document.body.classList.remove("has-buy-bar");
+  }, [orderResult, items.length]);
 
   // GA4: begin_checkout ao entrar na página (uma vez)
   const beginCheckoutFired = useRef(false);
@@ -146,265 +150,259 @@ export default function CheckoutPage() {
     }
   };
 
+  const clearOrderMemory = () => {
+    try {
+      sessionStorage.removeItem("esdra_order_result");
+      sessionStorage.removeItem("esdra_order_payment");
+    } catch {
+      // sessionStorage indisponível
+    }
+  };
+
   // ── Tela de confirmação ──────────────────────────────────────
   if (orderResult) {
+    const free = qualifiesForFreeShipping(orderResult.subtotal);
     return (
-      <div className="container mx-auto px-4 py-16 lg:py-24 text-center">
-        <m.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-          <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Clock className="w-10 h-10 text-accent-foreground" />
+      <div className="shell py-12 font-body lg:py-20">
+        <div className="mx-auto max-w-lg text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-rose">
+            <Clock className="h-8 w-8 text-primary-deep" strokeWidth={1.6} aria-hidden />
           </div>
-          <h1 className="font-display text-3xl text-foreground mb-2">Pedido Registrado!</h1>
-          <p className="font-body text-sm text-muted-foreground mb-1">Seu pedido foi criado. <strong>O pagamento ainda não foi realizado.</strong></p>
-          <p className="font-body text-lg font-bold text-primary mb-4">Código: {orderResult.order_code}</p>
+          <h1 className="mb-2 font-display text-[34px] leading-tight text-foreground display-md lg:text-[44px]">Pedido registrado</h1>
+          <p className="text-[15px] text-muted-foreground">O pagamento ainda não foi feito. Falta só combinar pelo WhatsApp.</p>
+          <p className="mt-4 text-lg font-semibold text-primary">Código {orderResult.order_code}</p>
+        </div>
 
-          {/* Resumo financeiro */}
-          <div className="inline-block bg-card border rounded-xl px-6 py-4 mb-6 text-left">
-            <div className="space-y-1.5 font-body text-sm">
-              <div className="flex justify-between gap-8">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span>R$ {orderResult.subtotal.toFixed(2)}</span>
-              </div>
-              {orderResult.discount > 0 && (
-                <div className="flex justify-between gap-8 text-primary">
-                  <span>Desconto aplicado</span>
-                  <span>− R$ {orderResult.discount.toFixed(2)}</span>
-                </div>
-              )}
-              <div className="flex justify-between gap-8">
-                <span className="text-muted-foreground">Frete</span>
-                <span className={`text-xs font-medium ${qualifiesForFreeShipping(orderResult.subtotal) ? "text-success" : "text-muted-foreground"}`}>
-                  {qualifiesForFreeShipping(orderResult.subtotal) ? "Grátis" : "A combinar"}
-                </span>
-              </div>
-              <div className="flex justify-between gap-8 font-semibold text-foreground border-t pt-1.5 mt-1">
-                <span>{qualifiesForFreeShipping(orderResult.subtotal) ? "Total" : "Total (sem frete)"}</span>
-                <span>R$ {orderResult.total.toFixed(2)}</span>
-              </div>
-            </div>
-            {!qualifiesForFreeShipping(orderResult.subtotal) && (
-              <p className="font-body text-[10px] text-muted-foreground mt-2">* Frete será informado pelo WhatsApp</p>
-            )}
-          </div>
+        <div className="mx-auto mt-8 max-w-lg space-y-4 text-left">
+          <dl className="grid grid-cols-[1fr_auto] gap-y-2 rounded-lg bg-secondary p-5 text-[15px] tabular-nums">
+            <dt className="text-muted-foreground">Subtotal</dt><dd className="pl-4 text-right">{formatBRL(orderResult.subtotal)}</dd>
+            {orderResult.discount > 0 && <><dt className="text-primary">Desconto</dt><dd className="pl-4 text-right text-primary">- {formatBRL(orderResult.discount)}</dd></>}
+            <dt className="text-muted-foreground">Frete</dt><dd className={`pl-4 text-right ${free ? "font-medium text-success" : ""}`}>{free ? "Grátis" : "A combinar"}</dd>
+            <dt className="mt-1 border-t pt-2 font-semibold text-foreground">{free ? "Total" : "Total sem frete"}</dt>
+            <dd className="mt-1 border-t pt-2 pl-4 text-right font-semibold text-foreground">{formatBRL(orderResult.total)}</dd>
+          </dl>
 
-          {/* Instruções por forma de pagamento */}
-          <div className="bg-card border rounded-xl px-6 py-5 mb-6 max-w-md mx-auto text-left">
+          <div className="rounded-lg border p-5">
             {payment === "PIX" && (
               <>
-                <p className="font-body text-sm font-semibold text-foreground mb-1">Como pagar via PIX</p>
-                <p className="font-body text-sm text-muted-foreground">
-                  Clique em "Finalizar pelo WhatsApp" e informe o código do pedido. Enviaremos a chave PIX e o QR Code imediatamente.
-                </p>
+                <p className="mb-1 text-base font-medium text-foreground">Como pagar com PIX</p>
+                <p className="text-[15px] text-muted-foreground">Toque em "Combinar pelo WhatsApp" e mande o código do pedido. A Esdra responde com a chave PIX e o QR Code.</p>
               </>
             )}
             {payment === "Cartão de Crédito" && (
               <>
-                <p className="font-body text-sm font-semibold text-foreground mb-1">Pagamento no cartão</p>
-                <p className="font-body text-sm text-muted-foreground">
-                  Enviaremos um link de pagamento seguro pelo WhatsApp (até 3x sem juros).
-                </p>
+                <p className="mb-1 text-base font-medium text-foreground">Pagamento no cartão</p>
+                <p className="text-[15px] text-muted-foreground">A Esdra manda um link de pagamento seguro pelo WhatsApp (até 3x sem juros).</p>
               </>
             )}
             {payment === "Boleto Bancário" && (
               <>
-                <p className="font-body text-sm font-semibold text-foreground mb-1">Boleto Bancário</p>
-                <p className="font-body text-sm text-muted-foreground">
-                  Enviaremos o boleto pelo WhatsApp em até 30 minutos. Vencimento em 3 dias úteis.
-                </p>
+                <p className="mb-1 text-base font-medium text-foreground">Boleto bancário</p>
+                <p className="text-[15px] text-muted-foreground">Enviaremos o boleto pelo WhatsApp em até 30 minutos. Vencimento em 3 dias úteis.</p>
               </>
             )}
           </div>
 
-          {/* Próximos passos */}
-          <div className="bg-accent/10 border border-accent/30 rounded-xl px-6 py-5 mb-8 max-w-md mx-auto text-left">
-            <p className="font-body text-sm font-semibold text-foreground mb-3">⚠ Próximo passo obrigatório</p>
-            <ol className="space-y-2 font-body text-sm text-muted-foreground">
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span><strong>Clique em "Finalizar pelo WhatsApp"</strong> para combinar o pagamento</li>
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>Após pagamento confirmado, preparamos seu pedido</li>
-              <li className="flex items-start gap-2"><span className="w-5 h-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>Enviamos com código de rastreamento</li>
+          <div className="rounded-lg border p-5">
+            <p className="mb-3 text-base font-medium text-foreground">Próximos passos</p>
+            <ol className="space-y-3 text-[15px] text-muted-foreground">
+              {[
+                <><strong className="font-medium text-foreground">Combine o pagamento pelo WhatsApp.</strong> Sem isso o pedido não segue.</>,
+                <>Com o pagamento confirmado, a Esdra separa seu pedido.</>,
+                <>Você recebe o código de rastreamento do envio.</>,
+              ].map((step, n) => (
+                <li key={n} className="flex items-start gap-3">
+                  <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${n === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"}`}>{n + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
             </ol>
           </div>
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href={whatsappUrl(`Olá, acabei de fazer o pedido *${orderResult.order_code}* na Esdra Cosméticos. Total: R$ ${orderResult.total.toFixed(2)}. Forma de pagamento: ${payment}`)}
-              target="_blank" rel="noopener noreferrer"
-            >
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
-                <MessageCircle className="w-4 h-4 mr-2" /> Finalizar pelo WhatsApp
-              </Button>
-            </a>
-            {user && (
-              <Link
-                to="/conta/pedidos"
-                onClick={() => {
-                  try {
-                    sessionStorage.removeItem("esdra_order_result");
-                    sessionStorage.removeItem("esdra_order_payment");
-                  } catch {
-                    // sessionStorage indisponível
-                  }
-                }}
-              >
-                <Button size="lg" variant="outline">Ver Meus Pedidos</Button>
-              </Link>
-            )}
-            <Link
-              to="/loja"
-              onClick={() => {
-                try {
-                  sessionStorage.removeItem("esdra_order_result");
-                  sessionStorage.removeItem("esdra_order_payment");
-                } catch {
-                  // sessionStorage indisponível
-                }
-              }}
-            >
-              <Button size="lg" variant="outline">Continuar Comprando</Button>
+        <div className="mx-auto mt-8 flex max-w-lg flex-col gap-3">
+          <a
+            href={whatsappUrl(`Olá, acabei de fazer o pedido *${orderResult.order_code}* na Esdra Cosméticos. Total: ${formatBRL(orderResult.total)}. Forma de pagamento: ${payment}`)}
+            target="_blank" rel="noopener noreferrer"
+            className="flex h-12 items-center justify-center gap-2 rounded-full bg-success text-[15px] font-medium text-success-foreground transition-[filter] hover:brightness-95"
+          >
+            <MessageCircle className="h-[18px] w-[18px]" aria-hidden /> Combinar pelo WhatsApp
+          </a>
+          {user && (
+            <Link to="/conta/pedidos" onClick={clearOrderMemory} className="flex h-12 items-center justify-center rounded-full text-[15px] font-medium text-foreground shadow-[inset_0_0_0_1.5px_hsl(var(--foreground))]">
+              Ver meus pedidos
             </Link>
-          </div>
-        </m.div>
+          )}
+          <Link to="/loja" onClick={clearOrderMemory} className="flex min-h-11 items-center justify-center text-[15px] font-medium text-primary underline underline-offset-4">
+            Continuar comprando
+          </Link>
+        </div>
       </div>
     );
   }
 
   // ── Formulário ───────────────────────────────────────────────
-  return (
-    <div className="container mx-auto px-4 py-6 lg:py-10">
-      <m.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="flex items-center gap-2 mb-6 lg:mb-8">
-          <Lock className="w-4 h-4 text-primary" />
-          <h1 className="font-display text-2xl lg:text-3xl text-foreground">Checkout Seguro</h1>
-        </div>
+  const free = qualifiesForFreeShipping(subtotal);
+  const field = "h-12 w-full rounded-md border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
+  const label = "mb-1.5 block text-[15px] font-medium text-foreground";
+  const sectionTitle = "mb-4 flex items-center gap-3 font-display text-2xl text-foreground display-md";
+  const stepNum = "flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground font-body text-sm font-semibold text-background";
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 lg:gap-8">
-          <div className="space-y-5">
-            {/* Contato */}
-            <div className="bg-card border rounded-xl p-5 lg:p-6">
-              <h2 className="font-body text-sm font-semibold text-foreground mb-4">1. Dados de Contato</h2>
+  const summaryItems = (
+    <ul className="space-y-3">
+      {items.map(item => {
+        const img = getProductImage(item.slug, item.cover_image);
+        const unit = item.sale_price ?? item.price;
+        return (
+          <li key={item.id} className="flex items-center gap-3">
+            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-background">
+              {img && <img src={img} alt="" className="blend-photo h-full w-full object-contain p-1" srcSet={getProductImageSrcSet(img)} sizes="64px" loading="lazy" decoding="async" onError={showPlaceholderOnError} />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-2 text-sm leading-snug text-foreground">{item.name}</p>
+              <p className="text-[13px] text-muted-foreground tabular-nums">{item.qty} x {formatBRL(unit)}</p>
+            </div>
+            <p className="shrink-0 text-sm font-medium text-foreground tabular-nums">{formatBRL(unit * item.qty)}</p>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+  const totals = (
+    <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-[15px] tabular-nums">
+      <dt className="text-muted-foreground">Subtotal</dt><dd className="pl-4 text-right">{formatBRL(subtotal)}</dd>
+      {discount > 0 && <><dt className="text-primary">Desconto{coupon?.code ? ` (${coupon.code})` : ""}</dt><dd className="pl-4 text-right text-primary">- {formatBRL(discount)}</dd></>}
+      <dt className="text-muted-foreground">Frete</dt><dd className={`pl-4 text-right ${free ? "font-medium text-success" : ""}`}>{getShippingLabel(subtotal)}</dd>
+      <dt className="mt-1 border-t pt-3 text-lg font-semibold text-foreground">{free ? "Total" : "Total sem frete"}</dt>
+      <dd className="mt-1 border-t pt-3 pl-4 text-right text-lg font-semibold text-foreground">{formatBRL(total)}</dd>
+    </dl>
+  );
+
+  const submitLabel = submitting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Registrando...</> : <><Lock className="h-4 w-4" aria-hidden /> Registrar pedido</>;
+
+  return (
+    <div className="shell pb-12 pt-6 font-body lg:pb-20 lg:pt-10">
+      <h1 className="mb-2 font-display text-[34px] leading-tight text-foreground display-md lg:text-[44px]">Finalizar pedido</h1>
+      <p className="mb-6 flex items-center gap-2 text-[15px] text-muted-foreground lg:mb-8"><Lock className="h-4 w-4 text-primary" aria-hidden />Seus dados ficam só com a Esdra.</p>
+
+      {items.length === 0 ? (
+        <div className="rounded-lg bg-secondary p-8 text-center">
+          <p className="mb-4 text-[15px] text-muted-foreground">Sua sacola está vazia.</p>
+          <Link to="/loja" className="inline-flex h-12 items-center rounded-full bg-primary px-6 text-[15px] font-medium text-primary-foreground">Ver a loja</Link>
+        </div>
+      ) : (
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_400px] lg:gap-12">
+        <div>
+          {/* Celular: resumo recolhido no topo */}
+          <details className="group mb-8 rounded-lg bg-secondary lg:hidden">
+            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 text-[15px] [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center gap-2 text-foreground">Resumo do pedido ({items.length} {items.length === 1 ? "item" : "itens"})<ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden /></span>
+              <strong className="font-semibold tabular-nums">{formatBRL(total)}</strong>
+            </summary>
+            <div className="space-y-4 px-4 pb-4">{summaryItems}{totals}</div>
+          </details>
+
+          <form className="space-y-10" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} noValidate>
+            <section aria-labelledby="passo-dados">
+              <h2 id="passo-dados" className={sectionTitle}><span className={stepNum} aria-hidden>1</span>Seus dados</h2>
               {!user && (
-                <p className="font-body text-xs text-muted-foreground mb-3">
-                  Já tem conta? <Link to="/login" className="text-primary hover:underline font-medium">Faça login</Link> para um checkout mais rápido.
+                <p className="mb-4 text-[15px] text-muted-foreground">
+                  Já comprou aqui? <Link to="/login" className="font-medium text-primary underline underline-offset-4">Entrar na conta</Link>
                 </p>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div><Label className="font-body text-xs mb-1.5 block">Nome completo *</Label><Input value={form.name} onChange={e => set("name", e.target.value)} /></div>
-                <div><Label className="font-body text-xs mb-1.5 block">E-mail *</Label><Input type="email" value={form.email} onChange={e => set("email", e.target.value)} /></div>
-                <div><Label className="font-body text-xs mb-1.5 block">Telefone *</Label><Input value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="(18) 99999-9999" /></div>
-              </div>
-            </div>
-
-            {/* Endereço */}
-            <div className="bg-card border rounded-xl p-5 lg:p-6">
-              <h2 className="font-body text-sm font-semibold text-foreground mb-4">2. Endereço de Entrega</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="sm:col-span-2"><label htmlFor="ck-name" className={label}>Nome completo</label><input id="ck-name" className={field} autoComplete="name" value={form.name} onChange={e => set("name", e.target.value)} required /></div>
                 <div>
-                  <Label className="font-body text-xs mb-1.5 block">CEP *</Label>
-                  <Input value={form.zip} onChange={e => set("zip", e.target.value)} onBlur={handleCepBlur} placeholder="00000-000" />
-                  {loadingCep && <span className="font-body text-xs text-primary mt-1 block">Buscando endereço...</span>}
+                  <label htmlFor="ck-phone" className={label}>WhatsApp</label>
+                  <input id="ck-phone" className={field} type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="(18) 99999-9999" required />
+                  <p className="mt-1.5 text-[13px] text-muted-foreground">É por aqui que a Esdra confirma o pedido e o pagamento.</p>
                 </div>
-                <div className="sm:col-span-2"><Label className="font-body text-xs mb-1.5 block">Rua *</Label><Input value={form.street} onChange={e => set("street", e.target.value)} /></div>
-                <div><Label className="font-body text-xs mb-1.5 block">Número *</Label><Input value={form.number} onChange={e => set("number", e.target.value)} /></div>
-                <div><Label className="font-body text-xs mb-1.5 block">Complemento</Label><Input value={form.complement} onChange={e => set("complement", e.target.value)} /></div>
-                <div><Label className="font-body text-xs mb-1.5 block">Bairro *</Label><Input value={form.neighborhood} onChange={e => set("neighborhood", e.target.value)} /></div>
-                <div><Label className="font-body text-xs mb-1.5 block">Cidade *</Label><Input value={form.city} onChange={e => set("city", e.target.value)} /></div>
-                <div><Label className="font-body text-xs mb-1.5 block">Estado *</Label><Input value={form.state} onChange={e => set("state", e.target.value)} placeholder="SP" maxLength={2} /></div>
+                <div><label htmlFor="ck-email" className={label}>E-mail</label><input id="ck-email" className={field} type="email" inputMode="email" autoComplete="email" value={form.email} onChange={e => set("email", e.target.value)} required /></div>
               </div>
-            </div>
+            </section>
 
-            {/* Pagamento */}
-            <div className="bg-card border rounded-xl p-5 lg:p-6">
-              <h2 className="font-body text-sm font-semibold text-foreground mb-4">3. Forma de Pagamento</h2>
-              <div className="space-y-2.5">
-                {[
-                  { value: "PIX", label: "PIX", desc: "Aprovação instantânea" },
-                  { value: "Cartão de Crédito", label: "Cartão de Crédito", desc: "Até 3x sem juros" },
-                  { value: "Boleto Bancário", label: "Boleto Bancário", desc: "Vencimento em 3 dias úteis" },
-                ].map(opt => (
-                  <label key={opt.value} className={`flex items-center gap-3 border rounded-xl p-4 cursor-pointer transition-all ${payment === opt.value ? "border-primary bg-primary/5 shadow-sm" : "hover:bg-secondary"}`}>
-                    <input type="radio" name="payment" checked={payment === opt.value} onChange={() => setPayment(opt.value)} className="accent-[hsl(var(--primary))]" />
-                    <div>
-                      <span className="font-body text-sm font-medium text-foreground">{opt.label}</span>
-                      <p className="font-body text-[11px] text-muted-foreground">{opt.desc}</p>
-                    </div>
-                  </label>
-                ))}
+            <section aria-labelledby="passo-entrega">
+              <h2 id="passo-entrega" className={sectionTitle}><span className={stepNum} aria-hidden>2</span>Entrega</h2>
+              <div className="grid grid-cols-6 gap-4">
+                <div className="col-span-6 sm:col-span-3">
+                  <label htmlFor="ck-zip" className={label}>CEP</label>
+                  <input id="ck-zip" className={field} inputMode="numeric" autoComplete="postal-code" value={form.zip} onChange={e => set("zip", e.target.value)} onBlur={handleCepBlur} placeholder="00000-000" required />
+                  <p className="mt-1.5 min-h-5 text-[13px] text-muted-foreground" aria-live="polite">{loadingCep ? "Buscando o endereço..." : "Preenchemos a rua e a cidade para você."}</p>
+                </div>
+                <div className="col-span-6"><label htmlFor="ck-street" className={label}>Rua</label><input id="ck-street" className={field} autoComplete="address-line1" value={form.street} onChange={e => set("street", e.target.value)} required /></div>
+                <div className="col-span-2"><label htmlFor="ck-number" className={label}>Número</label><input id="ck-number" className={field} inputMode="numeric" value={form.number} onChange={e => set("number", e.target.value)} required /></div>
+                <div className="col-span-4"><label htmlFor="ck-comp" className={label}>Complemento <span className="font-normal text-muted-foreground">(opcional)</span></label><input id="ck-comp" className={field} autoComplete="address-line2" value={form.complement} onChange={e => set("complement", e.target.value)} /></div>
+                <div className="col-span-6 sm:col-span-3"><label htmlFor="ck-bairro" className={label}>Bairro</label><input id="ck-bairro" className={field} value={form.neighborhood} onChange={e => set("neighborhood", e.target.value)} required /></div>
+                <div className="col-span-4 sm:col-span-2"><label htmlFor="ck-city" className={label}>Cidade</label><input id="ck-city" className={field} autoComplete="address-level2" value={form.city} onChange={e => set("city", e.target.value)} required /></div>
+                <div className="col-span-2 sm:col-span-1"><label htmlFor="ck-uf" className={label}>UF</label><input id="ck-uf" className={field} autoComplete="address-level1" value={form.state} onChange={e => set("state", e.target.value)} placeholder="SP" maxLength={2} required /></div>
               </div>
-              <div className="flex items-center gap-2 mt-4 text-muted-foreground">
-                <ShieldCheck className="w-4 h-4 text-primary" />
-                <span className="font-body text-xs">Pagamento 100% seguro e criptografado</span>
+            </section>
+
+            <section aria-labelledby="passo-pagamento">
+              <h2 id="passo-pagamento" className={sectionTitle}><span className={stepNum} aria-hidden>3</span>Pagamento</h2>
+              <fieldset>
+                <legend className="sr-only">Forma de pagamento</legend>
+                <div className="space-y-3">
+                  {[
+                    { value: "PIX", label: "PIX", desc: "Aprovação na hora" },
+                    { value: "Cartão de Crédito", label: "Cartão de crédito", desc: "Até 3x sem juros, por link seguro" },
+                    { value: "Boleto Bancário", label: "Boleto bancário", desc: "Vencimento em 3 dias úteis" },
+                  ].map(opt => (
+                    <label key={opt.value} className={`flex min-h-16 cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${payment === opt.value ? "border-primary bg-secondary ring-1 ring-primary" : "hover:bg-secondary"}`}>
+                      <input type="radio" name="payment" checked={payment === opt.value} onChange={() => setPayment(opt.value)} className="h-5 w-5 accent-[hsl(var(--primary))]" />
+                      <span>
+                        <span className="block text-[15px] font-medium text-foreground">{opt.label}</span>
+                        <span className="text-sm text-muted-foreground">{opt.desc}</span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div className="mt-4 flex gap-3 rounded-lg bg-secondary p-4 text-[15px] text-foreground">
+                <MessageCircle className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                <p>Você não paga nada agora. Depois de registrar, a Esdra chama no WhatsApp para confirmar o frete e o pagamento.</p>
               </div>
-            </div>
+            </section>
+          </form>
+        </div>
+
+        {/* Computador: resumo fixo ao lado */}
+        <aside aria-label="Resumo do pedido" className="hidden lg:sticky lg:top-24 lg:block lg:self-start">
+          <div className="rounded-lg bg-secondary p-6">
+            <h2 className="mb-4 font-display text-2xl text-foreground display-md">Resumo</h2>
+            <div className="mb-5 max-h-72 overflow-y-auto border-b pb-5">{summaryItems}</div>
+            {totals}
+            {!free && <p className="mt-2 text-sm text-muted-foreground">O frete é informado pelo WhatsApp antes do pagamento.</p>}
+            <button onClick={handleSubmit} disabled={submitting} className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-[15px] font-medium text-primary-foreground transition-colors hover:bg-primary-deep disabled:opacity-60">
+              {submitLabel}
+            </button>
+            <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" aria-hidden />Originais</li>
+              <li className="flex items-center gap-1.5"><CreditCard className="h-4 w-4 text-primary" aria-hidden />3x sem juros</li>
+            </ul>
           </div>
+          <a href={whatsappUrl("Olá, quero ajuda para finalizar minha compra na Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer" className="mt-3 flex min-h-11 items-center justify-center gap-2 text-[15px] text-muted-foreground hover:text-foreground">
+            <MessageCircle className="h-4 w-4" aria-hidden /> Precisa de ajuda? Fale com a Esdra
+          </a>
+        </aside>
+      </div>
+      )}
 
-          {/* Resumo */}
-          <div className="space-y-4">
-            <div className="bg-card border rounded-xl p-5 lg:p-6 sticky top-24">
-              <h3 className="font-body text-sm font-semibold text-foreground mb-4">Resumo do Pedido</h3>
-              {items.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="font-body text-sm text-muted-foreground">Seu carrinho está vazio</p>
-                  <Link to="/loja"><Button variant="outline" size="sm" className="mt-3">Ir à loja</Button></Link>
-                </div>
-              ) : (
-                <>
-                  <div className="space-y-3 border-b pb-4 mb-4 max-h-64 overflow-y-auto">
-                    {items.map(item => (
-                      <div key={item.id} className="flex gap-3">
-                        <div className="w-12 h-12 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                          {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt="" className="w-full h-full object-cover" srcSet={getProductImageSrcSet(img)} sizes="64px" loading="lazy" decoding="async" onError={showPlaceholderOnError} /> : null; })()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-body text-xs text-foreground line-clamp-1 font-medium">{item.name}</p>
-                          <p className="font-body text-[11px] text-muted-foreground">{item.qty}x R$ {(item.sale_price ?? item.price).toFixed(2)}</p>
-                        </div>
-                        <p className="font-body text-xs font-semibold text-foreground shrink-0">R$ {((item.sale_price ?? item.price) * item.qty).toFixed(2)}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="space-y-2 font-body text-sm border-b pb-4 mb-4">
-                    <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>R$ {subtotal.toFixed(2)}</span></div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Frete</span>
-                      <span className={`text-xs font-medium ${qualifiesForFreeShipping(subtotal) ? "text-success" : "text-muted-foreground"}`}>{getShippingLabel(subtotal)}</span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between text-primary">
-                        <span>Desconto {coupon?.code && `(${coupon.code})`}</span>
-                        <span>− R$ {discount.toFixed(2)}</span>
-                      </div>
-                    )}
-                  </div>
-                   <div className="flex justify-between font-body font-bold text-foreground text-lg mb-1">
-                     <span>{qualifiesForFreeShipping(subtotal) ? "Total" : "Total (sem frete)"}</span><span>R$ {total.toFixed(2)}</span>
-                   </div>
-                   {!qualifiesForFreeShipping(subtotal) && (
-                     <p className="font-body text-[10px] text-muted-foreground mb-3">* Frete será informado pelo WhatsApp antes do pagamento</p>
-                   )}
-                   {qualifiesForFreeShipping(subtotal) && <div className="mb-3" />}
-                   <Button className="w-full h-12 font-semibold border-b pb-4 mb-4" size="lg" disabled={submitting || items.length === 0} onClick={handleSubmit}>
-                     {submitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processando...</> : <>Registrar Pedido</>}
-                   </Button>
-                   <p className="font-body text-[10px] text-muted-foreground text-center mt-1">O pagamento será combinado pelo WhatsApp</p>
-                  <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t">
-                    {[{ icon: ShieldCheck, label: "Seguro" }, { icon: Truck, label: qualifiesForFreeShipping(subtotal) ? "Frete Grátis" : `Grátis +R$${FREE_SHIPPING_THRESHOLD}` }, { icon: CreditCard, label: "3x s/ juros" }].map(t => (
-                      <div key={t.label} className="text-center">
-                        <t.icon className="w-3.5 h-3.5 text-primary mx-auto mb-0.5" />
-                        <p className="font-body text-[10px] text-muted-foreground">{t.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
+      {/* Celular: total e botão sempre à mão */}
+      {items.length > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] pt-3 backdrop-blur-md lg:hidden">
+          <div className="flex items-center gap-3">
+            <div className="leading-tight">
+              <p className="text-lg font-semibold text-foreground tabular-nums">{formatBRL(total)}</p>
+              <p className="text-xs text-muted-foreground">{free ? "frete grátis" : "sem frete"}</p>
             </div>
-            <a href={whatsappUrl("Olá, quero ajuda para finalizar minha compra na Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer" className="block">
-              <Button variant="outline" className="w-full" size="sm">
-                <MessageCircle className="w-4 h-4 mr-2" /> Precisa de ajuda?
-              </Button>
-            </a>
+            <button onClick={handleSubmit} disabled={submitting} className="ml-auto inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 text-[15px] font-medium text-primary-foreground disabled:opacity-60">
+              {submitLabel}
+            </button>
           </div>
         </div>
-      </m.div>
+      )}
     </div>
   );
 }

@@ -80,7 +80,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (coupon && prevSignatureRef.current !== cartSignature && prevSignatureRef.current !== "") {
       setCoupon(null);
-      toast({ title: "Cupom removido", description: "O carrinho foi alterado. Reaplique o cupom se desejar." });
+      toast({ title: "Cupom removido", description: "A sacola mudou. Aplique o cupom de novo, se quiser." });
     }
     prevSignatureRef.current = cartSignature;
   }, [cartSignature, coupon]);
@@ -98,14 +98,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
           toast({ title: "Estoque insuficiente", description: "Quantidade máxima atingida.", variant: "destructive" });
           return prev;
         }
-        toast({ title: "Carrinho atualizado", description: `${product.name} (${newQty}x)` });
+        toast({ title: "Sacola atualizada", description: `${product.name} (${newQty} unidades)` });
         return prev.map(i => i.id === product.id ? { ...i, qty: newQty, inventory_count: product.inventory_count } : i);
       }
       if (product.inventory_count <= 0) {
         toast({ title: "Produto esgotado", variant: "destructive" });
         return prev;
       }
-      toast({ title: "Adicionado ao carrinho!", description: `${qty}x ${product.name}` });
+      toast({ title: "Adicionado à sacola", description: `${qty}x ${product.name}` });
       return [...prev, { ...product, qty: Math.min(qty, product.inventory_count) }];
     });
   }, []);

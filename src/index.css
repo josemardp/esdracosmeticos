@@ -1,38 +1,61 @@
-/* Fontes (Cormorant Garamond e Inter) carregadas pelo index.html, sem bloquear a primeira pintura. */
+/* Fontes carregadas pelo index.html, sem bloquear a primeira pintura.
+   Loja: Bodoni Moda (títulos, mesmo traço da logo) + Jost (texto e preço, como o "COSMÉTICOS" da logo).
+   Admin: continua com Cormorant Garamond + Inter (classe .admin-ui, ver src/components/ThemeScope.tsx). */
+
+/* Fontes reserva com as medidas da Bodoni Moda e da Jost (medidas no navegador em 24/09/2026).
+   Enquanto a fonte do Google não chega, o texto ocupa o mesmo espaço e a página não pula quando ela troca. */
+@font-face {
+  font-family: "Bodoni Moda Fallback";
+  src: local("Georgia"), local("Noto Serif"), local("Times New Roman");
+  size-adjust: 101.35%;
+  ascent-override: 111.49%;
+  descent-override: 39.47%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Jost Fallback";
+  src: local("Arial"), local("Roboto"), local("Helvetica");
+  size-adjust: 95.46%;
+  ascent-override: 112.09%;
+  descent-override: 39.81%;
+  line-gap-override: 0%;
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Loja (padrão). Paleta tirada da logo; todas as combinações de texto passam no AA. */
   :root {
-    --background: 30 20% 99%;
-    --foreground: 20 10% 10%;
+    --background: 0 0% 100%;
+    --foreground: 333 27% 13%;          /* tinta #2A1820 */
 
     --card: 0 0% 100%;
-    --card-foreground: 20 10% 10%;
+    --card-foreground: 333 27% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 10% 10%;
+    --popover-foreground: 333 27% 13%;
 
-    --primary: 350 35% 72%;
+    --primary: 340 45% 37%;             /* vinho rosado #8A3552, branco em cima: 7,7 */
     --primary-foreground: 0 0% 100%;
+    --primary-deep: 338 47% 25%;        /* #5E2238, hover e texto sobre o rosa */
 
-    --secondary: 30 20% 96%;
-    --secondary-foreground: 20 10% 10%;
+    --secondary: 348 38% 95%;           /* rosa pó #F7EDEF, fundo das fotos */
+    --secondary-foreground: 333 27% 13%;
 
-    --muted: 30 15% 94%;
-    --muted-foreground: 20 8% 46%;
+    --muted: 348 38% 95%;
+    --muted-foreground: 339 9% 39%;     /* malva #6B5A60, 6,5 no branco */
 
-    --accent: 30 15% 85%;
-    --accent-foreground: 20 10% 10%;
+    --accent: 349 33% 91%;
+    --accent-foreground: 333 27% 13%;
 
-    --destructive: 12 60% 50%;
-    --destructive-foreground: 30 20% 97%;
+    --destructive: 4 76% 40%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 90%;
-    --input: 30 15% 88%;
-    --ring: 350 35% 72%;
+    --border: 347 25% 89%;
+    --input: 340 10% 58%;               /* borda de campo, 3,3 no branco */
+    --ring: 340 45% 37%;
 
     --radius: 0.5rem;
 
@@ -45,30 +68,66 @@
     --sidebar-border: 30 15% 90%;
     --sidebar-ring: 350 35% 72%;
 
-    /* Custom tokens */
+    --brand-rose: 352 50% 80%;          /* rosa da logo #E6B3BA, áreas de destaque */
+    --surface-warm: 348 38% 97%;
+    --surface-cream: 348 38% 95%;
+    --gold: 36 55% 37%;                 /* #946A2B, 4,8 no branco */
+    --gold-foreground: 0 0% 100%;
+    --success: 142 44% 33%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 90% 55%;
+    --warning-foreground: 20 10% 10%;
+    --info: 210 60% 40%;
+    --info-foreground: 0 0% 100%;
+
+    --shadow-sm: 0 1px 2px 0 hsl(333 27% 13% / 0.08);
+    --shadow-md: 0 4px 12px -2px hsl(333 27% 13% / 0.08);
+    --shadow-lg: 0 10px 30px -8px hsl(333 27% 13% / 0.10);
+    --shadow-xl: 0 20px 50px -12px hsl(333 27% 13% / 0.12);
+    --shadow-card: 0 1px 2px hsl(333 27% 13% / 0.12);
+
+    --whatsapp: 142 70% 45%;
+    --whatsapp-foreground: 0 0% 100%;
+
+    --font-display: 'Bodoni Moda', 'Bodoni Moda Fallback', Georgia, serif;
+    --font-body: 'Jost', 'Jost Fallback', Arial, sans-serif;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Admin: valores de antes do redesenho, intocados. */
+  .admin-ui {
+    --background: 30 20% 99%;
+    --foreground: 20 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 10% 10%;
+    --primary: 350 35% 72%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 20% 96%;
+    --secondary-foreground: 20 10% 10%;
+    --muted: 30 15% 94%;
+    --muted-foreground: 20 8% 46%;
+    --accent: 30 15% 85%;
+    --accent-foreground: 20 10% 10%;
+    --destructive: 12 60% 50%;
+    --destructive-foreground: 30 20% 97%;
+    --border: 30 15% 90%;
+    --input: 30 15% 88%;
+    --ring: 350 35% 72%;
     --surface-warm: 30 25% 97%;
     --surface-cream: 35 30% 95%;
     --gold: 38 60% 55%;
     --gold-foreground: 0 0% 100%;
     --success: 145 40% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 90% 55%;
-    --warning-foreground: 20 10% 10%;
     --info: 210 60% 55%;
     --info-foreground: 0 0% 100%;
-
-    /* Shadows */
     --shadow-sm: 0 1px 3px 0 hsl(20 10% 10% / 0.04);
     --shadow-md: 0 4px 12px -2px hsl(20 10% 10% / 0.06);
     --shadow-lg: 0 10px 30px -8px hsl(20 10% 10% / 0.08);
     --shadow-xl: 0 20px 50px -12px hsl(20 10% 10% / 0.1);
     --shadow-card: 0 2px 8px -2px hsl(20 10% 10% / 0.05), 0 6px 20px -4px hsl(20 10% 10% / 0.06);
-
-    /* WhatsApp */
-    --whatsapp: 142 70% 45%;
-    --whatsapp-foreground: 0 0% 100%;
-
-    /* Font families */
     --font-display: 'Cormorant Garamond', Georgia, serif;
     --font-body: 'Inter', system-ui, sans-serif;
   }
@@ -116,6 +175,11 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-display;
   }
+
+  /* A Bodoni da loja é carregada só no desenho normal: itálico em título viraria um inclinado falso. */
+  :root:not(.admin-ui) :is(h1, h2, h3, h4, h5, h6, .font-display).italic {
+    font-style: normal;
+  }
 }
 
 @layer utilities {
@@ -127,6 +191,9 @@
   }
   .text-balance {
     text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
   }
   .shadow-elegant {
     box-shadow: var(--shadow-md);
@@ -143,30 +210,89 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+  /* Bodoni com o desenho certo para o tamanho (fino no grande, mais firme no pequeno). */
+  .display-lg {
+    font-variation-settings: "opsz" 96;
+  }
+  .display-md {
+    font-variation-settings: "opsz" 48;
+  }
+  /* Foto de produto com fundo branco: o branco some no fundo rosa. Não pode ter transform/opacity
+     animada no pai, senão o efeito fica isolado e o branco reaparece. */
+  .blend-photo {
+    mix-blend-mode: multiply;
+  }
+  /* Largura única da loja: todas as seções alinham na mesma borda (1240 px de conteúdo). */
+  .shell {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 1304px;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 1024px) {
+    .shell { padding-inline: 2rem; }
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Better focus outlines */
 *:focus-visible {
-  outline: 2px solid hsl(var(--primary));
+  outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
 
-/* Product card hover lift */
+/* Cartão que sobe no hover (usado no admin e no catálogo antigo). */
 .card-lift {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  transition: transform 0.3s var(--ease-out, ease), box-shadow 0.3s ease;
 }
 .card-lift:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-card);
 }
 
-/* Logo enhance — darken the pink without affecting white background */
+/* Logo antiga (admin e telas de login): escurece o rosa sem mexer no fundo branco. */
 .logo-enhance {
   filter: saturate(2.5) contrast(1.15);
   mix-blend-mode: multiply;
+}
+
+/* Entrada do topo da home: só translate, sem opacidade, para não atrasar o LCP. */
+@keyframes rise-in {
+  from { transform: translateY(16px); }
+  to { transform: none; }
+}
+.rise-in {
+  animation: rise-in 0.9s var(--ease-out) both;
+}
+
+/* Contador da sacola quando um item entra. */
+@keyframes bag-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.bag-bump {
+  animation: bag-bump 0.45s var(--ease-out);
+}
+
+/* Página de produto no celular: espaço para a barra de compra fixa não cobrir o fim do rodapé. */
+@media (max-width: 1023px) {
+  body.has-buy-bar { padding-bottom: 80px; }
+  /* O botão do WhatsApp sobe para não ficar em cima da barra. */
+  body.has-buy-bar .wa-fab { bottom: 92px; }
+  body.has-buy-bar .wa-menu { bottom: 164px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise-in, .bag-bump { animation: none; }
+  .card-lift, .card-lift:hover { transition: none; transform: none; }
 }

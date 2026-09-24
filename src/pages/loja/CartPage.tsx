@@ -1,18 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Minus, Plus, X, ShoppingBag, ArrowRight, MessageCircle, Tag, ShieldCheck, Truck, CreditCard } from "lucide-react";
+import { Minus, Plus, ShoppingBag, MessageCircle, Tag, ShieldCheck, CreditCard, Lock, X } from "lucide-react";
 import { whatsappUrl } from "@/lib/whatsapp";
-import { m } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { getProductImage, getProductImageSrcSet, showPlaceholderOnError } from "@/lib/product-images";
-import { getShippingLabel, getFreeShippingMessage, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
+import { getShippingLabel, qualifiesForFreeShipping, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
+import { formatBRL } from "@/lib/format";
 
 export default function CartPage() {
-  const { items, itemCount, subtotal, discount, total, coupon, addItem, removeItem, updateQty, applyCoupon, removeCoupon } = useCart();
+  const { items, itemCount, subtotal, discount, total, coupon, removeItem, updateQty, applyCoupon, removeCoupon } = useCart();
   const [couponCode, setCouponCode] = useState("");
   const [applyingCoupon, setApplyingCoupon] = useState(false);
+
+  // Barra fixa com total e botão no celular (ver .has-buy-bar no index.css).
+  useEffect(() => {
+    if (items.length === 0) return;
+    document.body.classList.add("has-buy-bar");
+    return () => document.body.classList.remove("has-buy-bar");
+  }, [items.length]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -23,113 +28,139 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-16 lg:py-24 text-center">
-        <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-5">
-            <ShoppingBag className="w-8 h-8 text-muted-foreground" />
-          </div>
-          <h1 className="font-display text-2xl lg:text-3xl text-foreground mb-2">Seu carrinho está vazio</h1>
-          <p className="font-body text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
-            Explore nossa coleção e descubra produtos perfeitos para sua rotina de beleza.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/loja"><Button size="lg">Explorar Produtos <ArrowRight className="w-4 h-4 ml-2" /></Button></Link>
-            <a href={whatsappUrl("Olá, quero ajuda para escolher produtos da Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" variant="outline"><MessageCircle className="w-4 h-4 mr-2" /> Pedir Recomendação</Button>
-            </a>
-          </div>
-        </m.div>
+      <div className="shell py-16 text-center font-body lg:py-24">
+        <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-secondary">
+          <ShoppingBag className="h-8 w-8 text-primary" strokeWidth={1.6} aria-hidden />
+        </div>
+        <h1 className="mb-2 font-display text-[32px] text-foreground display-md lg:text-[40px]">Sua sacola está vazia</h1>
+        <p className="mx-auto mb-8 max-w-sm text-[15px] text-muted-foreground">Veja os perfumes e cuidados da loja, ou peça uma indicação para a Esdra.</p>
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
+          <Link to="/loja" className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-[15px] font-medium text-primary-foreground transition-colors hover:bg-primary-deep">Ver a loja</Link>
+          <a href={whatsappUrl("Olá, quero ajuda para escolher produtos da Esdra Cosméticos.")} target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center gap-2 rounded-full px-7 text-[15px] font-medium text-foreground shadow-[inset_0_0_0_1.5px_hsl(var(--foreground))]">
+            <MessageCircle className="h-[18px] w-[18px]" aria-hidden /> Pedir indicação
+          </a>
+        </div>
       </div>
     );
   }
 
+  const freeShipping = qualifiesForFreeShipping(subtotal);
+  const missing = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const progress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+
   return (
-    <div className="container mx-auto px-4 py-6 lg:py-10">
-      <h1 className="font-display text-2xl lg:text-3xl text-foreground mb-6 lg:mb-8">Carrinho <span className="text-muted-foreground font-body text-base font-normal">({itemCount} {itemCount === 1 ? "item" : "itens"})</span></h1>
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8">
-        <div className="space-y-3">
-          {items.map((item) => {
-            const unitPrice = item.sale_price ?? item.price;
-            return (
-              <m.div key={item.id} layout className="bg-card border rounded-xl p-4 flex gap-4">
-                <Link to={`/produto/${item.slug}`} className="w-20 h-20 sm:w-24 sm:h-24 bg-secondary rounded-lg shrink-0 overflow-hidden">
-                  {(() => { const img = getProductImage(item.slug, item.cover_image); return img ? <img src={img} alt={item.name} className="w-full h-full object-cover" srcSet={getProductImageSrcSet(img)} sizes="96px" loading="lazy" decoding="async" onError={showPlaceholderOnError} /> : null; })()}
-                </Link>
-                <div className="flex-1 min-w-0">
-                  <Link to={`/produto/${item.slug}`} className="font-body text-sm font-medium text-foreground line-clamp-2 hover:text-primary transition-colors">{item.name}</Link>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    {item.sale_price && <span className="font-body text-xs text-muted-foreground line-through">R$ {item.price.toFixed(2)}</span>}
-                    <span className="font-body text-sm text-primary font-bold">R$ {unitPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center gap-3 mt-2.5">
-                    <div className="flex items-center border rounded-lg">
-                      <button onClick={() => updateQty(item.id, item.qty - 1)} className="px-2.5 py-1.5 text-muted-foreground hover:text-foreground transition-colors"><Minus className="w-3 h-3" /></button>
-                      <span className="px-3 font-body text-xs font-semibold min-w-[1.5rem] text-center">{item.qty}</span>
-                      <button onClick={() => updateQty(item.id, item.qty + 1)} className="px-2.5 py-1.5 text-muted-foreground hover:text-foreground transition-colors"><Plus className="w-3 h-3" /></button>
-                    </div>
-                    <span className="font-body text-xs text-muted-foreground">= R$ {(unitPrice * item.qty).toFixed(2)}</span>
-                    <button onClick={() => removeItem(item.id)} className="ml-auto text-muted-foreground hover:text-destructive transition-colors p-1"><X className="w-4 h-4" /></button>
-                  </div>
-                </div>
-              </m.div>
-            );
-          })}
-        </div>
+    <div className="shell pb-12 pt-6 font-body lg:pb-20 lg:pt-10">
+      <div className="mb-5 flex items-baseline gap-3 lg:mb-8">
+        <h1 className="font-display text-[34px] leading-tight text-foreground display-md lg:text-[44px]">Sua sacola</h1>
+        <span className="text-[15px] text-muted-foreground">{itemCount} {itemCount === 1 ? "item" : "itens"}</span>
+      </div>
 
-        <div className="space-y-4">
-          <div className="bg-card border rounded-xl p-5 lg:p-6 sticky top-24">
-            <h3 className="font-body text-sm font-semibold text-foreground mb-4">Resumo do Pedido</h3>
-            <div className="space-y-2.5 font-body text-sm border-b pb-4 mb-4">
-              <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span className="font-medium">R$ {subtotal.toFixed(2)}</span></div>
-              {discount > 0 && <div className="flex justify-between text-primary"><span>Desconto</span><span className="font-medium">- R$ {discount.toFixed(2)}</span></div>}
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Frete</span>
-                <span className={`text-xs font-medium ${getShippingLabel(subtotal) === "Grátis" ? "text-success" : "text-muted-foreground"}`}>{getShippingLabel(subtotal)}</span>
-              </div>
-              {getFreeShippingMessage(subtotal) && (
-                <p className="font-body text-xs text-primary">{getFreeShippingMessage(subtotal)}</p>
-              )}
-            </div>
-            <div className="flex justify-between font-body font-bold text-foreground text-lg mb-1">
-              <span>{qualifiesForFreeShipping(subtotal) ? "Total" : "Total (sem frete)"}</span><span>R$ {total.toFixed(2)}</span>
-            </div>
-            {!qualifiesForFreeShipping(subtotal) && (
-              <p className="font-body text-[11px] sm:text-xs text-muted-foreground mb-4">* Frete será informado pelo WhatsApp antes do pagamento</p>
-            )}
-            {qualifiesForFreeShipping(subtotal) && <div className="mb-5" />}
-
-            {/* Coupon */}
-            {coupon ? (
-              <div className="flex items-center justify-between bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-primary" />
-                  <span className="font-body text-sm text-primary font-semibold">{coupon.code}</span>
-                </div>
-                <button onClick={removeCoupon} className="text-muted-foreground hover:text-destructive transition-colors"><X className="w-4 h-4" /></button>
-              </div>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_380px] lg:gap-12">
+        <div>
+          {/* Quanto falta para o frete grátis */}
+          <div className="mb-2 rounded-lg bg-secondary px-4 py-3.5 text-[15px] text-foreground" role="status">
+            {freeShipping ? (
+              <p className="font-medium">Seu pedido tem frete grátis.</p>
             ) : (
-              <div className="flex gap-2 mb-4">
-                <Input value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder="Cupom de desconto" className="text-sm" onKeyDown={e => e.key === "Enter" && handleApplyCoupon()} />
-                <Button variant="outline" size="sm" onClick={handleApplyCoupon} disabled={applyingCoupon}>{applyingCoupon ? "..." : "Aplicar"}</Button>
-              </div>
+              <p>Faltam <strong className="font-semibold tabular-nums">{formatBRL(missing)}</strong> para o frete grátis</p>
             )}
-
-            <Link to="/checkout"><Button className="w-full h-12 font-semibold" size="lg">Finalizar Compra</Button></Link>
-
-            {/* Trust */}
-            <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t">
-              {[
-                { icon: ShieldCheck, label: "Compra Segura" },
-                { icon: Truck, label: `Frete Grátis +R$${FREE_SHIPPING_THRESHOLD}` },
-                { icon: CreditCard, label: "3x sem juros" },
-              ].map(t => (
-                <div key={t.label} className="text-center">
-                  <t.icon className="w-4 h-4 text-primary mx-auto mb-1" />
-                  <p className="font-body text-[11px] sm:text-xs text-muted-foreground leading-tight">{t.label}</p>
-                </div>
-              ))}
+            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-background" role="progressbar" aria-label="Caminho até o frete grátis" aria-valuemin={0} aria-valuemax={FREE_SHIPPING_THRESHOLD} aria-valuenow={Math.min(subtotal, FREE_SHIPPING_THRESHOLD)}>
+              <div className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out" style={{ width: `${progress}%` }} />
             </div>
           </div>
+
+          <ul>
+            {items.map((item) => {
+              const unitPrice = item.sale_price ?? item.price;
+              const img = getProductImage(item.slug, item.cover_image);
+              return (
+                <li key={item.id} className="grid grid-cols-[88px_1fr] gap-4 border-b py-5 sm:grid-cols-[112px_1fr]">
+                  <Link to={`/produto/${item.slug}`} className="aspect-square self-start overflow-hidden rounded-lg bg-secondary" tabIndex={-1} aria-hidden>
+                    {img && <img src={img} alt="" className="blend-photo h-full w-full object-contain p-[10%]" srcSet={getProductImageSrcSet(img)} sizes="112px" loading="lazy" decoding="async" onError={showPlaceholderOnError} />}
+                  </Link>
+                  <div className="min-w-0">
+                    <Link to={`/produto/${item.slug}`} className="line-clamp-2 text-[15px] leading-snug text-foreground hover:underline hover:underline-offset-4">{item.name}</Link>
+                    <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-sm tabular-nums">
+                      {item.sale_price && <s className="text-muted-foreground">{formatBRL(item.price)}</s>}
+                      <span className={item.sale_price ? "text-primary" : "text-muted-foreground"}>{formatBRL(unitPrice)} cada</span>
+                    </p>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <div className="inline-flex items-center rounded-full border border-input">
+                        <button onClick={() => updateQty(item.id, item.qty - 1)} className="flex h-10 w-10 items-center justify-center rounded-full text-foreground" aria-label={item.qty === 1 ? `Tirar ${item.name} da sacola` : `Diminuir quantidade de ${item.name}`}><Minus className="h-4 w-4" /></button>
+                        <span className="min-w-6 text-center text-[15px] font-medium tabular-nums" aria-live="polite">{item.qty}</span>
+                        <button onClick={() => updateQty(item.id, item.qty + 1)} disabled={item.qty >= item.inventory_count} className="flex h-10 w-10 items-center justify-center rounded-full text-foreground disabled:opacity-40" aria-label={`Aumentar quantidade de ${item.name}`}><Plus className="h-4 w-4" /></button>
+                      </div>
+                      <span className="text-base font-semibold text-foreground tabular-nums">{formatBRL(unitPrice * item.qty)}</span>
+                    </div>
+                    <button onClick={() => removeItem(item.id)} className="mt-1 inline-flex min-h-10 items-center text-sm text-muted-foreground underline underline-offset-4 hover:text-destructive">Remover</button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <Link to="/loja" className="mt-4 inline-flex min-h-11 items-center text-[15px] font-medium text-primary underline underline-offset-4">Continuar comprando</Link>
+        </div>
+
+        {/* Resumo */}
+        <aside aria-label="Resumo do pedido" className="lg:sticky lg:top-24 lg:self-start">
+          <div className="rounded-lg bg-secondary p-5 lg:p-6">
+            <h2 className="mb-4 font-display text-2xl text-foreground display-md">Resumo</h2>
+
+            {coupon ? (
+              <div className="mb-4 flex items-center justify-between rounded-md bg-background px-3 py-2">
+                <span className="flex items-center gap-2 text-[15px] font-medium text-primary"><Tag className="h-4 w-4" aria-hidden />{coupon.code}</span>
+                <button onClick={removeCoupon} className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:text-destructive" aria-label={`Tirar o cupom ${coupon.code}`}><X className="h-4 w-4" /></button>
+              </div>
+            ) : (
+              <div className="mb-5 flex gap-2">
+                <label htmlFor="coupon" className="sr-only">Cupom de desconto</label>
+                <input
+                  id="coupon"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                  placeholder="Cupom de desconto"
+                  autoCapitalize="characters"
+                  className="h-12 min-w-0 flex-1 rounded-full border border-input bg-background px-4 text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+                <button onClick={handleApplyCoupon} disabled={applyingCoupon || !couponCode.trim()} className="h-12 shrink-0 rounded-full border-[1.5px] border-foreground px-5 text-[15px] font-medium text-foreground disabled:opacity-50">
+                  {applyingCoupon ? "Aplicando..." : "Aplicar"}
+                </button>
+              </div>
+            )}
+
+            <dl className="grid grid-cols-[1fr_auto] gap-y-2 text-[15px] tabular-nums">
+              <dt className="text-muted-foreground">Subtotal</dt><dd className="pl-4 text-right text-foreground">{formatBRL(subtotal)}</dd>
+              {discount > 0 && <><dt className="text-primary">Desconto</dt><dd className="pl-4 text-right text-primary">- {formatBRL(discount)}</dd></>}
+              <dt className="text-muted-foreground">Frete</dt><dd className={`pl-4 text-right ${freeShipping ? "font-medium text-success" : "text-foreground"}`}>{getShippingLabel(subtotal)}</dd>
+              <dt className="mt-2 border-t pt-3 text-lg font-semibold text-foreground">{freeShipping ? "Total" : "Total sem frete"}</dt>
+              <dd className="mt-2 border-t pt-3 pl-4 text-right text-lg font-semibold text-foreground">{formatBRL(total)}</dd>
+            </dl>
+            {!freeShipping && <p className="mt-2 text-sm text-muted-foreground">O frete é informado pelo WhatsApp antes do pagamento.</p>}
+
+            <Link to="/checkout" className="mt-5 hidden h-12 w-full items-center justify-center rounded-full bg-primary text-[15px] font-medium text-primary-foreground transition-colors hover:bg-primary-deep lg:flex">
+              Finalizar pedido
+            </Link>
+
+            <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" aria-hidden />Compra segura</li>
+              <li className="flex items-center gap-1.5"><CreditCard className="h-4 w-4 text-primary" aria-hidden />3x sem juros</li>
+              <li className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" aria-hidden />Originais</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      {/* Celular: total e botão sempre à mão */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] pt-3 backdrop-blur-md lg:hidden">
+        <div className="flex items-center gap-3">
+          <div className="leading-tight">
+            <p className="text-lg font-semibold text-foreground tabular-nums">{formatBRL(total)}</p>
+            <p className="text-xs text-muted-foreground">{freeShipping ? "frete grátis" : "sem frete"}</p>
+          </div>
+          <Link to="/checkout" className="ml-auto inline-flex h-12 flex-1 items-center justify-center rounded-full bg-primary px-5 text-[15px] font-medium text-primary-foreground">
+            Finalizar pedido
+          </Link>
         </div>
       </div>
     </div>

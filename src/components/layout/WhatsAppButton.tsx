@@ -35,14 +35,14 @@ export function WhatsAppButton() {
     <>
       {/* Quick menu */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 animate-in slide-in-from-bottom-4 fade-in duration-200">
+        <div className={`wa-menu fixed bottom-24 right-4 z-50 sm:right-6 animate-in slide-in-from-bottom-4 fade-in duration-200`}>
           <div className="bg-card border rounded-xl shadow-elegant-xl p-3 w-56 space-y-1">
             <p className="font-body text-xs font-semibold text-foreground px-2 pb-1 border-b mb-1">Como podemos ajudar?</p>
             {quickMessages.map(q => (
               <button
                 key={q.context}
                 onClick={() => handleClick(q.msg, q.context)}
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-secondary transition-colors text-left"
+                className="w-full flex min-h-11 items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-secondary transition-colors text-left"
               >
                 <q.icon className="w-4 h-4 text-primary shrink-0" />
                 <span className="font-body text-sm text-foreground">{q.label}</span>
@@ -51,9 +51,9 @@ export function WhatsAppButton() {
             <div className="border-t pt-1 mt-1">
               <button
                 onClick={() => handleClick(getContextualDefault(), "floating_generic")}
-                className="w-full font-body text-xs text-muted-foreground hover:text-primary px-2.5 py-1.5 transition-colors text-left"
+                className="w-full min-h-11 font-body text-sm text-muted-foreground hover:text-primary px-2.5 py-1.5 transition-colors text-left"
               >
-                Mensagem livre →
+                Escrever minha mensagem
               </button>
             </div>
           </div>
@@ -63,7 +63,7 @@ export function WhatsAppButton() {
       {/* FAB */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 bg-success hover:brightness-90 text-success-foreground rounded-full w-14 h-14 flex items-center justify-center shadow-elegant-xl transition-all duration-300 hover:-translate-y-1 active:scale-95"
+        className={`wa-fab fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6 bg-success hover:brightness-90 text-success-foreground rounded-full w-14 h-14 flex items-center justify-center shadow-elegant-xl transition-all duration-300 hover:-translate-y-1 active:scale-95`}
         aria-label="Fale conosco no WhatsApp"
       >
         {open ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}

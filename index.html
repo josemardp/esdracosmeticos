@@ -4,23 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Esdra Cosméticos | Beleza e Sofisticação</title>
-    <meta name="description" content="Esdra Cosméticos — Produtos de beleza premium selecionados para realçar sua beleza natural. Maquiagem, skincare, cabelos e perfumaria.">
+    <meta name="description" content="Perfumes, maquiagem, cuidados corporais e cabelos das marcas Eudora, O Boticário, Egeo, Siàge, Jequiti e mais. Frete grátis acima de R$ 199 e 3x sem juros.">
     <meta name="author" content="Esdra Cosméticos" />
-    <meta name="theme-color" content="#111111">
+    <meta name="theme-color" content="#2A1820">
     <link rel="icon" href="/favicon.ico" />
     <link rel="manifest" id="pwa-manifest" href="/manifest.webmanifest" />
     <link rel="preconnect" href="https://pehqvmaeehzfrsxkhlmt.supabase.co" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fontes sem bloquear a primeira pintura (display=swap: aparece a fonte do sistema e troca quando chegar) -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap" /></noscript>
+    <!-- Fontes da loja (Bodoni Moda + Jost) sem bloquear a primeira pintura (display=swap). O admin carrega as dele (App.tsx). -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Jost:wght@400;500;600&display=swap" /></noscript>
     <script>
       (function(){
         var p=location.pathname;
         if(p.indexOf('/admin')===0){
           document.getElementById('pwa-manifest').setAttribute('href','/admin.webmanifest');
+          document.documentElement.classList.add('admin-ui');
+          var af=document.createElement('link');af.id='admin-fonts';af.rel='stylesheet';af.href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap';document.head.appendChild(af);
         }
         // Página de produto: pede o produto ao Supabase já, em paralelo com o JavaScript, e começa a
         // baixar a foto. A ProductPage usa essa resposta (src/lib/product-prefetch.ts); se falhar, busca normal.
@@ -44,15 +46,6 @@
               document.head.appendChild(l);
             });
           }catch(e){}
-        }
-        // Na home, a foto do topo é o maior elemento da tela: começa a baixar antes do JavaScript.
-        if(p==='/'){
-          // Mesmas regras do <picture> da HomePage (recorte em retrato no celular, srcset no resto).
-          [['/img/hero-cosmetics-mobile.webp','(max-width: 767px)'],['/img/hero-cosmetics-800.webp 800w, /img/hero-cosmetics-1600.webp 1600w','(min-width: 768px)']].forEach(function(h){
-            var l=document.createElement('link');l.rel='preload';l.as='image';l.media=h[1];l.setAttribute('fetchpriority','high');
-            if(h[0].indexOf(' ')>0){l.setAttribute('imagesrcset',h[0]);l.setAttribute('imagesizes','100vw');}else{l.href=h[0];}
-            document.head.appendChild(l);
-          });
         }
       })();
     </script>
@@ -94,7 +87,7 @@
       "@type": "Store",
       "name": "Esdra Cosméticos",
       "url": "https://www.esdracosmeticos.com.br",
-      "description": "Loja online de cosméticos premium — perfumes, maquiagem, cuidados corporais e cabelos das melhores marcas como Eudora, O Boticário, Egeo, Siàge e mais.",
+      "description": "Loja online de cosméticos: perfumes, maquiagem, cuidados corporais e cabelos das melhores marcas como Eudora, O Boticário, Egeo, Siàge e mais.",
       "priceRange": "$$",
       "currenciesAccepted": "BRL",
       "paymentAccepted": "PIX, Cartão de Crédito, Boleto",
@@ -119,11 +112,11 @@
     }
     </script>
     <style>
-      .ssr-fallback { font-family: 'Inter', system-ui, sans-serif; color: #3d3429; max-width: 1200px; margin: 0 auto; padding: 20px; }
-      .ssr-fallback h1 { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-style: italic; margin-bottom: 0.5rem; }
-      .ssr-fallback h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-style: italic; margin: 2rem 0 1rem; }
-      .ssr-fallback p { font-size: 0.95rem; line-height: 1.6; color: #7c6a56; margin-bottom: 1rem; }
-      .ssr-fallback a { color: #7c6a56; text-decoration: underline; }
+      .ssr-fallback { font-family: 'Jost', system-ui, sans-serif; color: #2A1820; max-width: 1200px; margin: 0 auto; padding: 20px; }
+      .ssr-fallback h1 { font-family: 'Bodoni Moda', Georgia, serif; font-size: 2.5rem; font-weight: 400; margin-bottom: 0.5rem; }
+      .ssr-fallback h2 { font-family: 'Bodoni Moda', Georgia, serif; font-size: 1.75rem; font-weight: 400; margin: 2rem 0 1rem; }
+      .ssr-fallback p { font-size: 0.95rem; line-height: 1.6; color: #6B5A60; margin-bottom: 1rem; }
+      .ssr-fallback a { color: #8A3552; text-decoration: underline; }
       .ssr-fallback nav a { display: inline-block; margin-right: 1.5rem; font-size: 0.9rem; }
       .ssr-fallback ul { list-style: none; padding: 0; }
       .ssr-fallback ul li { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
@@ -136,7 +129,7 @@
       <!-- Static HTML for crawlers/SEO — React replaces this on hydration -->
       <div class="ssr-fallback" role="main">
         <header>
-          <p style="font-size:1.5rem;font-weight:700;font-family:'Cormorant Garamond',serif;font-style:italic;">Esdra Cosméticos</p>
+          <p style="font-size:1.5rem;font-family:'Bodoni Moda',Georgia,serif;">Esdra Cosméticos</p>
           <nav aria-label="Navegação principal">
             <a href="/">Início</a>
             <a href="/loja">Loja</a>
@@ -148,29 +141,29 @@
         </header>
 
         <section>
-          <h1>Beleza que traduz personalidade</h1>
-          <p>Perfumes, maquiagem, cuidados corporais e muito mais das melhores marcas. Frete grátis acima de R$ 199 e parcele em até 3x sem juros.</p>
-          <p><a href="/loja">Explorar Coleção →</a></p>
+          <h1>Seu perfume de sempre e o próximo favorito.</h1>
+          <p>Eudora, O Boticário, Egeo, Siàge, Jequiti e mais. Parcele em 3x sem juros e tire dúvidas pelo WhatsApp.</p>
+          <p><a href="/loja">Ver a loja</a></p>
         </section>
 
         <section>
           <h2>Categorias</h2>
           <ul>
-            <li><a href="/loja?categoria=perfumes">Perfumaria</a> — Fragrâncias femininas, masculinas e unissex</li>
-            <li><a href="/loja?categoria=maquiagem">Maquiagem</a> — Batons, máscaras de cílios, bases e mais</li>
-            <li><a href="/loja?categoria=corpo-e-banho">Corpo e Banho</a> — Hidratantes, sabonetes e body splashes</li>
-            <li><a href="/loja?categoria=cabelos">Cabelos</a> — Shampoos, condicionadores e tratamentos</li>
-            <li><a href="/loja?categoria=infantil">Infantil</a> — Colônias e cuidados para crianças</li>
-            <li><a href="/loja?categoria=acessorios">Acessórios</a> — Espelhos, estojos e complementos</li>
+            <li><a href="/loja?categoria=perfumes">Perfumaria</a>: fragrâncias femininas, masculinas e unissex</li>
+            <li><a href="/loja?categoria=maquiagem">Maquiagem</a>: batons, máscaras de cílios, bases e mais</li>
+            <li><a href="/loja?categoria=corpo-e-banho">Corpo e Banho</a>: hidratantes, sabonetes e body splashes</li>
+            <li><a href="/loja?categoria=cabelos">Cabelos</a>: shampoos, condicionadores e tratamentos</li>
+            <li><a href="/loja?categoria=infantil">Infantil</a>: colônias e cuidados para crianças</li>
+            <li><a href="/loja?categoria=acessorios">Acessórios</a>: espelhos, estojos e complementos</li>
           </ul>
         </section>
 
         <section>
           <h2>Por que comprar na Esdra Cosméticos?</h2>
           <ul>
-            <li>✓ Frete Grátis em compras acima de R$ 199 para todo o Brasil</li>
-            <li>✓ Compra 100% Segura — dados criptografados e protegidos</li>
-            <li>✓ Troca em até 30 dias — devolução simples e sem burocracia</li>
+            <li>✓ Frete grátis em compras acima de R$ 199</li>
+            <li>✓ Compra 100% segura: dados criptografados e protegidos</li>
+            <li>✓ Troca em até 30 dias: devolução simples e sem burocracia</li>
             <li>✓ Produtos 100% originais de distribuidores autorizados</li>
             <li>✓ Parcele em até 3x sem juros no cartão</li>
           </ul>
@@ -192,7 +185,7 @@
         </section>
 
         <footer>
-          <p>Esdra Cosméticos — Beleza e Sofisticação</p>
+          <p>Esdra Cosméticos, Valparaíso/SP</p>
           <nav aria-label="Links institucionais">
             <a href="/politica-de-privacidade">Política de Privacidade</a>
             <a href="/trocas-e-devolucoes">Trocas e Devoluções</a>
@@ -205,8 +198,8 @@
       </div>
     </div>
     <noscript>
-      <div style="font-family:Inter,sans-serif;max-width:800px;margin:40px auto;padding:20px;text-align:center;">
-        <h1 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2rem;">Esdra Cosméticos</h1>
+      <div style="font-family:Jost,sans-serif;max-width:800px;margin:40px auto;padding:20px;text-align:center;">
+        <h1 style="font-family:'Bodoni Moda',Georgia,serif;font-weight:400;font-size:2rem;">Esdra Cosméticos</h1>
         <p>Para navegar na loja, ative o JavaScript no seu navegador.</p>
         <p>Enquanto isso, entre em contato pelo WhatsApp: <a href="https://wa.me/5518991459429">(18) 99145-9429</a></p>
       </div>

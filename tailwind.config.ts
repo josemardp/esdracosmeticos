@@ -15,8 +15,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        // Vêm das variáveis do index.css: Bodoni Moda + Jost na loja, Cormorant + Inter no admin (.admin-ui).
+        display: ['var(--font-display)'],
+        body: ['var(--font-body)'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -27,6 +28,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          deep: "hsl(var(--primary-deep))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -62,6 +64,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        rose: "hsl(var(--brand-rose))",
         warm: "hsl(var(--surface-warm))",
         cream: "hsl(var(--surface-cream))",
         gold: {
