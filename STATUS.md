@@ -1,6 +1,6 @@
 # STATUS.md — Loja Esdra Cosméticos
 
-> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 23/09/2026
+> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026
 
 ---
 
@@ -27,6 +27,8 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 7. **Custo escondido também do cliente logado:** migração `20260924000000_restrict_product_cost_authenticated.sql` (mesmo esquema do `anon`) + função `admin_product_costs()`, que só responde a admin. As telas de gestão que mostram custo usam `src/lib/product-costs.ts`. Testado no banco simulando cada papel: cliente e visitante recebem `permission denied`; admin lê o custo pela função, grava custo e cria produto normalmente. Aplicado depois do deploy do front (`b87875d`), sem janela de quebra.
 8. **Testes automatizados:** `src/test/shipping.test.ts`, `cart.test.tsx` e `product-costs.test.ts` cobrem regra de frete, subtotal com promoção, limite de estoque, cupom (maiúsculas, inválido, desconto maior que o subtotal, remoção ao alterar carrinho) e o helper de custo. `npm test`: 14 testes passando.
 9. **Conferidos sem mudança:** `decrement_inventory` executável pelo `anon` não é brecha (a RLS só deixa admin alterar `products`; testado, o estoque não muda). Os 256 links do `/loja` são 2 por card (foto e nome) para 128 produtos ativos; a contagem do STATUS está certa.
+10. **Checkout consertado (24/09/2026):** a RPC `create_order` nunca tinha sido criada em produção (0 pedidos até então). Aplicada a migração `20260924010000_create_order.sql` (base: versão de 20/03, com erro claro para produto inativo/inexistente, quantidade nula recusada, correção do cupom que quebrava todo pedido sem cupom e sem os REVOKEs de funções que não existem). Testada em transações desfeitas (pedido normal, quantidade negativa, produto inativo, estoque insuficiente, cupom inválido e cupom válido com 10%) e depois pelo site de verdade: pedido ESD-00001 de R$ 22,90 via PIX criado, estoque baixou de 18 para 17. O pedido, o cliente de teste e a baixa de estoque foram desfeitos em seguida (0 pedidos, estoque 18). `decrement_inventory` deixou de ser executável pelo `anon`.
+11. **Painel conferido logado como admin:** `/admin/gestao/margem` mostra os 136 produtos, 126 com custo (Attract 100ml: custo R$ 55, margem 57,4%); `/admin/gestao/reposicao` lista 88, 80 com custo, sem erro.
 
 Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
 
@@ -34,8 +36,8 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 ## Próximo passo
 
-1. **Checkout quebrado em produção (urgente, decisão do Josemar):** o site chama a RPC `create_order`, mas ela **não existe** no banco de produção (`PGRST202`). A tabela `orders` tem 0 pedidos desde sempre, então finalizar compra pelo site dá erro. Há duas versões da função no repositório (`20260321000000_create_order_server_side.sql`, que baixa estoque e atualiza uso do cupom, e `20260321202944_...sql`, mais simples). As tabelas que ela usa já existem. Falta decidir qual versão aplicar e fazer um pedido de teste.
-2. **Conferência visual do painel:** entrar em `/admin/gestao/margem` logado como admin e ver se a coluna de custo/margem aparece preenchida (validado no banco; a tela não foi vista porque o login do painel exige senha).
+1. **Cupom ESDRA10 está ativo no banco** (10%, sem data de fim, uso 0), ao contrário da decisão registrada em 15/09 ("não ativar"). Qualquer cliente que digitar o código ganha 10%. Josemar decidir: desativar ou manter.
+2. **Primeiro pedido real pelo site:** acompanhar o primeiro pedido de cliente (painel `/admin` e WhatsApp) para confirmar o fluxo com dados reais.
 3. **Estoque zero:** Esdra decidir o que fazer com os 50 produtos ativos sem estoque.
 
 ---
@@ -44,10 +46,9 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 | Pendência | Impacto | Dono |
 |---|---|---|
-| Criar a RPC `create_order` em produção | Nenhum pedido consegue ser finalizado pelo site | Josemar (decidir versão) |
-| Conferir tela de Margem logado como admin | Validação visual da mudança de custo | Josemar |
+| Decidir se o cupom ESDRA10 continua ativo | Cliente pode aplicar 10% de desconto hoje | Josemar |
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
-| Teste automatizado do fluxo de checkout ponta a ponta (depende da `create_order`) | Hoje os testes cobrem regra de frete, carrinho e cupom, não a criação do pedido | Código (futuro) |
+| Teste automatizado do fluxo de checkout ponta a ponta (a `create_order` já existe; falta automatizar) | Hoje os testes cobrem regra de frete, carrinho e cupom, não a criação do pedido | Código (futuro) |
 
 ---
 
@@ -57,7 +58,7 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 - **EC-002 (09/09/2026):** Uma fonte documental por assunto. `central-ec` é a entrada do negócio; `STATUS.md` na raiz de cada projeto orienta a retomada imediata.
 - **EC-003 (09/09/2026 / 15/09/2026):** ERP da loja congelado desde julho/2026. As migrações de gestão/estoque (`stock_movements`, `cash_movements`) **não serão aplicadas em produção**. O módulo `/admin/gestao` permanece estritamente como legado e não recebe expansão nem correções de schema.
 - **Repositório Público (13/09/2026):** O repositório `josemardp/esdracosmeticos` é público para exibição como portfólio. Proibido commitar segredos (`service_role`, senhas), dados pessoais de clientes ou relatórios internos na raiz.
-- **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco e manter a vitrine focada em frete grátis regional acima de R$ 199.
+- **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco (em 24/09 ele foi encontrado **ativo**; ver Próximo passo) e manter a vitrine focada em frete grátis regional acima de R$ 199.
 - **Grants em `products` (23/09/2026):** `anon` e `authenticated` têm SELECT só nas colunas listadas nas migrações `20260915120000` e `20260924000000`; custo só via `admin_product_costs()`. Coluna nova exige `GRANT SELECT (coluna) ON public.products TO anon, authenticated`. Consultas públicas com `select=*` em `products` falham.
 - **Qualidade e Lint (15/09/2026):** `@typescript-eslint/no-explicit-any` é mantido como warning para não travar o build de produção. Não despender esforço de tipagem nos 116 alertas no momento.
 
