@@ -17,14 +17,14 @@ status:
   health: healthy
   phase: Em producao / Seguranca e otimizacao
   priority: 1
-  updated_at: 2026-09-23T22:20:42-03:00
-  last_session_at: 2026-09-23T21:13:10-03:00
+  updated_at: 2026-09-23T23:38:44-03:00
+  last_session_at: 2026-09-23T23:38:44-03:00
   confidence: inferred
 focus:
   objective: Plataforma de e-commerce e catalogo online da Esdra Cosmeticos
-  current: Decidir a versão da create_order, aplicar em produção e fazer um pedido de teste ponta a ponta
-  last_completed: 5 telas de gestão leem custo via src/lib/product-costs.ts (deploy b87875d confirmado)
-  recommended_next_action: act-009
+  current: Esdra validar no celular a home, a loja e uma página de produto; depois act-012 (catálogo em partes e versões automáticas para capa nova).
+  last_completed: Fontes sem bloquear a pintura; Google Analytics na primeira interação ou após 15 s
+  recommended_next_action: act-013
 next_actions:
   - id: act-001
     title: Corrigir imagens com 404 externo e subir mascara Niina Secrets otimizada
@@ -148,7 +148,7 @@ next_actions:
     note: null
   - id: act-011
     title: Melhorar desempenho mobile da pagina de produto (Lighthouse 30)
-    status: pending
+    status: done_tested
     impact: null
     urgency: null
     effort: null
@@ -156,6 +156,30 @@ next_actions:
     unblocks: []
     blocked_by: []
     created_at: 2026-09-23T22:20:42-03:00
+    done_at: 2026-09-23T23:38:22-03:00
+    note: null
+  - id: act-012
+    title: Levar home (58) e /loja (51) a 60+ no Lighthouse mobile e gerar versoes 400/800 para capa nova do admin
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T23:38:23-03:00
+    done_at: null
+    note: null
+  - id: act-013
+    title: Esdra validar no celular a home, a loja e uma página de produto; depois act-012 (catálogo em partes e versões automáticas para capa nova).
+    status: pending
+    impact: null
+    urgency: null
+    effort: null
+    due_date: null
+    unblocks: []
+    blocked_by: []
+    created_at: 2026-09-23T23:38:44-03:00
     done_at: null
     note: null
 blockers: []
@@ -170,6 +194,10 @@ decisions_recent:
     text: Capas de produto passam a viver só no bucket product-images da loja
   - date: 2026-09-23
     text: Aplicar SQL pela CLI Supabase (org dona do projeto); o conector MCP não enxerga este projeto
+  - date: 2026-09-23
+    text: Google Analytics passa a carregar na primeira interação ou após 15 s (visitas de menos de 15 s sem toque deixam de contar). Reversível no index.html.
+  - date: 2026-09-23
+    text: Supabase deste plano não redimensiona imagem (FeatureNotEnabled); versões menores geradas e enviadas manualmente.
 milestones: []
 review:
   stale_after_days: null

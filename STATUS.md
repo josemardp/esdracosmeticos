@@ -1,6 +1,6 @@
 # STATUS.md — Loja Esdra Cosméticos
 
-> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026
+> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026 (act-011)
 
 ---
 
@@ -33,6 +33,23 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 13. **Migrações nunca aplicadas fora de `supabase/migrations`:** 18 arquivos cujos objetos não existem em produção (ERP congelado pela EC-003: vendas, caixa, compras, estoque; newsletter/carrinho abandonado; sequência de código de pedido; as duas versões antigas da `create_order`) foram movidos com `git mv` para `docs/historico/migrations-nao-aplicadas/`. Em `supabase/migrations` ficaram só as 24 que batem com produção.
 14. **Tipagem:** `tsc` sem erros (eram 3: import sem uso em `CrediarioPage` e payload de insert sem tipo nas importações de CSV/NF-e).
 
+## Feito em 24/09/2026: desempenho mobile (act-011)
+
+Lighthouse mobile em produção, mediana de 3 rodadas (antes: 2 rodadas, LCP e TBT pela média delas; produto medido na máscara Niina Secrets):
+
+| Página | Antes | Depois | LCP | TBT | CLS |
+|---|---|---|---|---|---|
+| Home | 41 / 44 | **58** (52/58/60) | 7,2 → 5,4 s | 1.120 → 373 ms | 0,01 → 0 |
+| /loja | 42 / 30 | **51** (61/47/51) | 7,2 → 5,5 s | 1.790 → 814 ms | 0 |
+| Produto | 22 / 43 | **68** (68/68/63) | 7,6 → 5,1 s | 675 → 214 ms | até 0,87 → 0 |
+
+1. **Capas otimizadas:** cada capa ganhou versões WebP de 400 e 800 px em `product-images/opt/` (132 capas: 4,6 MB → 1,4 MB na versão de 800). Migração `20260924020000_optimized_cover_images.sql` aplicada (132 de 132). O site monta o `srcset` pelo nome (`getProductImageSrcSet` em `src/lib/product-images.ts`). Originais seguem no bucket e em `public/perfumes`. **Capa nova enviada pelo admin não ganha versões menores sozinha** (aparece como enviada).
+2. **Home:** foto do topo em `public/img/` (recorte em retrato no celular) com pré-carga pelo `index.html`; categorias em WebP de 480 px; logo de 1920 para 256 px.
+3. **Página de produto:** aparece sem esperar avaliações e relacionados; esqueleto no mesmo formato da página (fim do pulo de layout); o `index.html` já pede o produto ao Supabase e a foto em paralelo com o JavaScript (`src/lib/product-prefetch.ts`, colunas iguais nos dois lugares).
+4. **JavaScript inicial:** 862 kB (253 gzip) → 678 kB (204 gzip). framer-motion via `LazyMotion` (páginas usam `<m.div>`), carrinho/checkout/login/suporte/sobre/institucionais/busca sob demanda, cartões do catálogo com fade em CSS.
+5. **Fontes e Analytics:** Google Fonts por `<link>` sem bloquear a pintura. **Google Analytics carrega na primeira interação (rolar, tocar, clicar, tecla) ou após 15 s**: quem sai em menos de 15 s sem tocar não conta como visita. Reverter é só voltar o `<script async>` no `index.html`.
+6. **Conferido:** prints antes/depois de home, /loja e produto em celular e desktop, claro e escuro (a loja não tem tema escuro; sai igual), 0 imagens quebradas; busca, Ctrl+K, 10 rotas sob demanda, filtro e carrinho ok. `npm test` 14/14, `npm run test:db` checkout ok, build ok.
+
 Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
 
 ---
@@ -49,7 +66,8 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 | Pendência | Impacto | Dono |
 |---|---|---|
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
-| Desempenho mobile: Lighthouse 30 na página de produto | SEO e conversão no celular | Código (sessão própria) |
+| Home (58) e /loja (51) ainda abaixo de 60. Maior peso restante: JS do Supabase (~580 kB sem compressão) e os 128 cartões de uma vez no /loja | SEO e conversão no celular | Código |
+| Capa nova pelo admin não gera versões 400/800 | Foto nova fica mais pesada que as demais | Código |
 
 ---
 

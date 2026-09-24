@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import logoEsdra from "@/assets/logo-esdra.png";
 
-// A busca (cmdk) só é baixada na primeira vez que a lupa é tocada.
-const SearchDialog = lazy(() => import("@/components/search/SearchDialog").then((mod) => ({ default: mod.SearchDialog })));
+// A busca (cmdk) fica fora do pacote inicial: é pré-baixada quando o navegador fica ocioso
+// e montada na primeira vez que a lupa é tocada.
+const loadSearchDialog = () => import("@/components/search/SearchDialog");
+const SearchDialog = lazy(() => loadSearchDialog().then((mod) => ({ default: mod.SearchDialog })));
 
 const navLinks = [
   { label: "Início", href: "/" },
@@ -31,6 +33,8 @@ export function Header() {
       }
     };
     document.addEventListener("keydown", down);
+    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 3000));
+    idle(() => { loadSearchDialog(); });
     return () => document.removeEventListener("keydown", down);
   }, []);
   const location = useLocation();
