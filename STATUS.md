@@ -29,6 +29,9 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 9. **Conferidos sem mudança:** `decrement_inventory` executável pelo `anon` não é brecha (a RLS só deixa admin alterar `products`; testado, o estoque não muda). Os 256 links do `/loja` são 2 por card (foto e nome) para 128 produtos ativos; a contagem do STATUS está certa.
 10. **Checkout consertado (24/09/2026):** a RPC `create_order` nunca tinha sido criada em produção (0 pedidos até então). Aplicada a migração `20260924010000_create_order.sql` (base: versão de 20/03, com erro claro para produto inativo/inexistente, quantidade nula recusada, correção do cupom que quebrava todo pedido sem cupom e sem os REVOKEs de funções que não existem). Testada em transações desfeitas (pedido normal, quantidade negativa, produto inativo, estoque insuficiente, cupom inválido e cupom válido com 10%) e depois pelo site de verdade: pedido ESD-00001 de R$ 22,90 via PIX criado, estoque baixou de 18 para 17. O pedido, o cliente de teste e a baixa de estoque foram desfeitos em seguida (0 pedidos, estoque 18). `decrement_inventory` deixou de ser executável pelo `anon`.
 11. **Painel conferido logado como admin:** `/admin/gestao/margem` mostra os 136 produtos, 126 com custo (Attract 100ml: custo R$ 55, margem 57,4%); `/admin/gestao/reposicao` lista 88, 80 com custo, sem erro.
+12. **Teste do checkout no banco:** `npm run test:db` roda `supabase/tests/checkout_test.sql` contra produção dentro de uma transação desfeita: pedido de convidado com cupom (preço do banco, 10% de desconto, estoque -2, uso do cupom, item gravado), recusa de quantidade negativa, produto inativo, estoque insuficiente e cupom inexistente, e bloqueio do `anon` em `decrement_inventory` e na leitura de custo. Passa com `checkout ok`; falha com `FALHOU: ...` e saída 1 (conferido estragando o teste de propósito). Banco sem rastro depois.
+13. **Migrações nunca aplicadas fora de `supabase/migrations`:** 18 arquivos cujos objetos não existem em produção (ERP congelado pela EC-003: vendas, caixa, compras, estoque; newsletter/carrinho abandonado; sequência de código de pedido; as duas versões antigas da `create_order`) foram movidos com `git mv` para `docs/historico/migrations-nao-aplicadas/`. Em `supabase/migrations` ficaram só as 24 que batem com produção.
+14. **Tipagem:** `tsc` sem erros (eram 3: import sem uso em `CrediarioPage` e payload de insert sem tipo nas importações de CSV/NF-e).
 
 Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na org dona do projeto. Usar `supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -f arquivo.sql`. O conector Supabase do Claude (conta josemardp) não enxerga este projeto.
 
@@ -46,7 +49,7 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 | Pendência | Impacto | Dono |
 |---|---|---|
 | Decidir o que fazer com os 50 produtos ativos com estoque zero (desativar ou repor) | Aparecem no catálogo sem poder ser comprados | Esdra |
-| Teste automatizado do fluxo de checkout ponta a ponta (a `create_order` já existe; falta automatizar) | Hoje os testes cobrem regra de frete, carrinho e cupom, não a criação do pedido | Código (futuro) |
+| Desempenho mobile: Lighthouse 30 na página de produto | SEO e conversão no celular | Código (sessão própria) |
 
 ---
 
@@ -74,6 +77,9 @@ npm run lint
 
 # Executar testes unitários
 npm run test
+
+# Testar o checkout no banco de produção (transação desfeita; CLI Supabase logada)
+npm run test:db
 
 # Executar build de produção
 npm run build

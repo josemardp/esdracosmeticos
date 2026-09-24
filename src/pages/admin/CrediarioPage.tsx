@@ -1,6 +1,5 @@
 import React from 'react';
 import CrediarioCalculator from '../../components/crediario/CrediarioCalculator';
-import AdminLayout from '../../components/layout/AdminLayout';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { LayoutDashboard, ScrollText } from 'lucide-react';

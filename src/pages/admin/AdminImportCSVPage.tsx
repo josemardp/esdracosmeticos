@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesInsert } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { FileText, Upload, X, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -287,7 +288,7 @@ export default function AdminImportCSVPage() {
         }
       } else {
         // Produto não existe: cria com todos os campos disponíveis
-        const insertPayload: Record<string, any> = {
+        const insertPayload: TablesInsert<"products"> = {
           name: data.name,
           slug: generateSlug(data.name),
           sku,

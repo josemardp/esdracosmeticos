@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:db": "supabase db query --linked --project-ref pehqvmaeehzfrsxkhlmt -o csv -f supabase/tests/checkout_test.sql"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
