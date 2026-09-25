@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { withProductCosts } from "@/lib/product-costs";
 import { AlertTriangle, PackageX, ShoppingCart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 interface Product {
   id: string; name: string; sku: string | null;
@@ -14,7 +12,6 @@ interface Product {
 export default function ReposicaoPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -79,9 +76,6 @@ export default function ReposicaoPage() {
               </div>
             ))}
           </div>
-          <Button variant="outline" className="mt-4" onClick={() => navigate("/admin/gestao/compras")}>
-            <ShoppingCart className="w-4 h-4 mr-1" /> Ir para Compras
-          </Button>
         </>
       )}
     </div>

@@ -4,71 +4,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, Package, FolderTree, ShoppingCart, Users,
   Boxes, Ticket, FileText, Headphones, Link2, Settings, LogOut, Menu, X, ChevronRight, Megaphone,
-  Briefcase, Zap, Clock, Wallet, UserCheck, BarChart3,
-  Building2, ShoppingBag, CreditCard, CalendarDays, TrendingUp,
-  Tag, Landmark, FileBarChart, PieChart,
-  PackageCheck, ArrowDownUp, Percent, AlertTriangle,
-  UserPlus, Filter, Mail, UserMinus,
-  Gauge, Radio, PackageSearch, Download, Shield, Link as LinkIcon, Calculator, FileUp, FileJson
+  Percent, AlertTriangle, FileUp, FileJson
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoEsdra from "@/assets/logo-esdra.png";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 const navSections = [
-  {
-    title: "Gestão",
-    items: [
-      { label: "Painel Gestão", href: "/admin/gestao/dashboard", icon: Briefcase },
-      { label: "Executivo", href: "/admin/gestao/executivo", icon: Gauge },
-      { label: "Venda Rápida", href: "/admin/gestao/venda-rapida", icon: Zap },
-      { label: "Vendas", href: "/admin/gestao/vendas", icon: ShoppingCart },
-      { label: "Consolidado", href: "/admin/gestao/consolidado", icon: BarChart3 },
-      { label: "Contas a Receber", href: "/admin/gestao/receber", icon: Clock },
-      { label: "Caixa", href: "/admin/gestao/caixa", icon: Wallet },
-      { label: "Clientes Gestão", href: "/admin/gestao/clientes", icon: UserCheck },
-      { label: "Fornecedores", href: "/admin/gestao/fornecedores", icon: Building2 },
-      { label: "Compras", href: "/admin/gestao/compras", icon: ShoppingBag },
-      { label: "Contas a Pagar", href: "/admin/gestao/pagar", icon: CreditCard },
-      { label: "Vencimentos", href: "/admin/gestao/vencimentos", icon: CalendarDays },
-      { label: "Projeção", href: "/admin/gestao/projecao", icon: TrendingUp },
-      { label: "Cat. Financeiras", href: "/admin/gestao/categorias-financeiras", icon: Tag },
-      { label: "Centros de Custo", href: "/admin/gestao/centros-custo", icon: Landmark },
-      { label: "Relatórios", href: "/admin/gestao/relatorios", icon: FileBarChart },
-      { label: "Resultado", href: "/admin/gestao/resultado", icon: PieChart },
-      { label: "Canais", href: "/admin/gestao/canais", icon: Radio },
-      { label: "Calculadora", href: "/admin/crediario-calculadora", icon: Calculator },
-    ],
-  },
-  {
-    title: "Estoque & Margem",
-    items: [
-      { label: "Importar NF-e", href: "/admin/importar-nfe", icon: FileUp },
-      { label: "Importar CSV", href: "/admin/importar-csv", icon: FileJson },
-      { label: "Receb. Compras", href: "/admin/gestao/recebimento-compras", icon: PackageCheck },
-      { label: "Mov. Estoque", href: "/admin/gestao/movimentos-estoque", icon: ArrowDownUp },
-      { label: "Margem", href: "/admin/gestao/margem", icon: Percent },
-      { label: "Reposição", href: "/admin/gestao/reposicao", icon: AlertTriangle },
-      { label: "Prod. Resultado", href: "/admin/gestao/produtos-resultado", icon: PackageSearch },
-    ],
-  },
-  {
-    title: "CRM",
-    items: [
-      { label: "CRM", href: "/admin/gestao/crm", icon: UserPlus },
-      { label: "Segmentos", href: "/admin/gestao/segmentos", icon: Filter },
-      { label: "Newsletter", href: "/admin/gestao/newsletter", icon: Mail },
-      { label: "Reativação", href: "/admin/gestao/reativacao", icon: UserMinus },
-    ],
-  },
-  {
-    title: "BI & Escala",
-    items: [
-      { label: "Exportações", href: "/admin/gestao/exportacoes", icon: Download },
-      { label: "Auditoria", href: "/admin/gestao/auditoria", icon: Shield },
-      { label: "Integ. Avançadas", href: "/admin/gestao/integracoes-avancadas", icon: LinkIcon },
-    ],
-  },
   {
     title: "E-commerce",
     items: [
@@ -84,6 +26,15 @@ const navSections = [
       { label: "Suporte", href: "/admin/suporte", icon: Headphones },
       { label: "Integrações", href: "/admin/integracoes", icon: Link2 },
       { label: "Configurações", href: "/admin/configuracoes", icon: Settings },
+    ],
+  },
+  {
+    title: "Catálogo & Custos",
+    items: [
+      { label: "Importar NF-e", href: "/admin/importar-nfe", icon: FileUp },
+      { label: "Importar CSV", href: "/admin/importar-csv", icon: FileJson },
+      { label: "Margem", href: "/admin/margem", icon: Percent },
+      { label: "Reposição", href: "/admin/reposicao", icon: AlertTriangle },
     ],
   },
 ];
@@ -115,7 +66,7 @@ export function AdminLayout() {
             <img src={logoEsdra} alt="Esdra" className="h-8 logo-enhance" />
             <div>
               <span className="font-display text-lg font-semibold text-foreground leading-none block">Esdra</span>
-              <span className="font-body text-[9px] text-muted-foreground tracking-[0.15em] uppercase">Painel Gestor</span>
+              <span className="font-body text-[9px] text-muted-foreground tracking-[0.15em] uppercase">Painel da Loja</span>
             </div>
           </Link>
         </div>
@@ -163,7 +114,7 @@ export function AdminLayout() {
         </button>
         <Link to="/admin" className="flex items-center gap-2">
           <img src={logoEsdra} alt="Esdra" className="h-6 logo-enhance" />
-          <span className="font-display text-sm font-semibold">Gestor</span>
+          <span className="font-display text-sm font-semibold">Loja</span>
         </Link>
         <div className="w-9" />
       </div>
@@ -182,7 +133,7 @@ export function AdminLayout() {
               </button>
             </div>
             <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
-              {navSections.map((section) => ( section.title !== "E-commerce" && (
+              {navSections.map((section) => (
                 <div key={section.title}>
                   <p className="font-body text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">{section.title}</p>
                   <div className="space-y-0.5">
@@ -204,7 +155,7 @@ export function AdminLayout() {
                     ))}
                   </div>
                 </div>
-              )))}
+              ))}
             </nav>
             <div className="p-3 border-t">
               <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-lg font-body text-sm text-destructive w-full">

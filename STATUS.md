@@ -1,10 +1,14 @@
 # STATUS.md — Loja Esdra Cosméticos
 
-> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 24/09/2026 (act-012 e act-016)
+> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 25/09/2026 (remoção do ERP)
 
 ---
 
 ## Onde estamos
+
+**25/09/2026: ERP removido.** Por decisão de Josemar, a gestão da Esdra (vendas de balcão, caixa, compras, contas, clientes, fiado, estoque físico) vive só no app AgendaEC. Saíram da loja as 27 telas de `/admin/gestao/*`, a Calculadora de Crediário, Exportações, o `admin.html` morto e as rewrites `/admin` do `vercel.json`. Margem e Reposição ficaram, agora em `/admin/margem` e `/admin/reposicao` (seção "Catálogo & Custos"); links antigos de `/admin/gestao/*` redirecionam. O menu do celular voltou a mostrar a seção E-commerce (Produtos, Pedidos etc.), que estava escondida. A newsletter do rodapé saiu: gravava numa tabela que não existe. Conferido: `tsc` 0 erros, 14/14 testes, lint 0 erros, build ok, rodapé no celular sem a faixa e sem erro no console.
+
+**Pendente (banco, ato final):** rodar a consulta só de leitura das tabelas e funções de produção (lista em `supabase/migrations` x `docs/historico/migrations-nao-aplicadas`) para confirmar que nenhuma tabela do ERP existe com dados (`cash_movements`, `financial_categories`, `cost_centers`, `abandoned_carts` têm indício contraditório). Só depois, com o sim de Josemar, uma migração nova de DROP. Também regenerar `src/integrations/supabase/types.ts` a partir de produção.
 
 A loja virtual da Esdra Cosméticos está em produção no domínio [www.esdracosmeticos.com.br](https://www.esdracosmeticos.com.br/), com catálogo ativo de 128 produtos, PWA com service worker e sitemap dinâmico operacional.
 
@@ -28,7 +32,7 @@ Em 15/09/2026, foram executadas as decisões da auditoria geral:
 8. **Testes automatizados:** `src/test/shipping.test.ts`, `cart.test.tsx` e `product-costs.test.ts` cobrem regra de frete, subtotal com promoção, limite de estoque, cupom (maiúsculas, inválido, desconto maior que o subtotal, remoção ao alterar carrinho) e o helper de custo. `npm test`: 14 testes passando.
 9. **Conferidos sem mudança:** `decrement_inventory` executável pelo `anon` não é brecha (a RLS só deixa admin alterar `products`; testado, o estoque não muda). Os 256 links do `/loja` são 2 por card (foto e nome) para 128 produtos ativos; a contagem do STATUS está certa.
 10. **Checkout consertado (24/09/2026):** a RPC `create_order` nunca tinha sido criada em produção (0 pedidos até então). Aplicada a migração `20260924010000_create_order.sql` (base: versão de 20/03, com erro claro para produto inativo/inexistente, quantidade nula recusada, correção do cupom que quebrava todo pedido sem cupom e sem os REVOKEs de funções que não existem). Testada em transações desfeitas (pedido normal, quantidade negativa, produto inativo, estoque insuficiente, cupom inválido e cupom válido com 10%) e depois pelo site de verdade: pedido ESD-00001 de R$ 22,90 via PIX criado, estoque baixou de 18 para 17. O pedido, o cliente de teste e a baixa de estoque foram desfeitos em seguida (0 pedidos, estoque 18). `decrement_inventory` deixou de ser executável pelo `anon`.
-11. **Painel conferido logado como admin:** `/admin/gestao/margem` mostra os 136 produtos, 126 com custo (Attract 100ml: custo R$ 55, margem 57,4%); `/admin/gestao/reposicao` lista 88, 80 com custo, sem erro.
+11. **Painel conferido logado como admin:** `/admin/gestao/margem` (hoje `/admin/margem`) mostra os 136 produtos, 126 com custo (Attract 100ml: custo R$ 55, margem 57,4%); `/admin/gestao/reposicao` (hoje `/admin/reposicao`) lista 88, 80 com custo, sem erro.
 12. **Teste do checkout no banco:** `npm run test:db` roda `supabase/tests/checkout_test.sql` contra produção dentro de uma transação desfeita: pedido de convidado com cupom (preço do banco, 10% de desconto, estoque -2, uso do cupom, item gravado), recusa de quantidade negativa, produto inativo, estoque insuficiente e cupom inexistente, e bloqueio do `anon` em `decrement_inventory` e na leitura de custo. Passa com `checkout ok`; falha com `FALHOU: ...` e saída 1 (conferido estragando o teste de propósito). Banco sem rastro depois.
 13. **Migrações nunca aplicadas fora de `supabase/migrations`:** 18 arquivos cujos objetos não existem em produção (ERP congelado pela EC-003: vendas, caixa, compras, estoque; newsletter/carrinho abandonado; sequência de código de pedido; as duas versões antigas da `create_order`) foram movidos com `git mv` para `docs/historico/migrations-nao-aplicadas/`. Em `supabase/migrations` ficaram só as 24 que batem com produção.
 14. **Tipagem:** `tsc` sem erros (eram 3: import sem uso em `CrediarioPage` e payload de insert sem tipo nas importações de CSV/NF-e).
@@ -110,7 +114,7 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 - **EC-001 (09/09/2026):** Cinco projetos independentes sob `C:\projetos\esdra` com repositórios e publicações próprios. Não criar monorepositório.
 - **EC-002 (09/09/2026):** Uma fonte documental por assunto. `central-ec` é a entrada do negócio; `STATUS.md` na raiz de cada projeto orienta a retomada imediata.
-- **EC-003 (09/09/2026 / 15/09/2026):** ERP da loja congelado desde julho/2026. As migrações de gestão/estoque (`stock_movements`, `cash_movements`) **não serão aplicadas em produção**. O módulo `/admin/gestao` permanece estritamente como legado e não recebe expansão nem correções de schema.
+- **EC-003 (09/09/2026 / 15/09/2026):** ERP da loja congelado desde julho/2026. As migrações de gestão/estoque (`stock_movements`, `cash_movements`) **não serão aplicadas em produção**. O módulo `/admin/gestao` permanece estritamente como legado e não recebe expansão nem correções de schema. **Superado em 25/09/2026:** o módulo foi removido; a gestão é só do AgendaEC.
 - **Repositório Público (13/09/2026):** O repositório `josemardp/esdracosmeticos` é público para exibição como portfólio. Proibido commitar segredos (`service_role`, senhas), dados pessoais de clientes ou relatórios internos na raiz.
 - **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco (em 24/09 foi encontrado ativo e desativado a pedido do Josemar; `validate_coupon` público responde "Cupom inválido") e manter a vitrine focada em frete grátis regional acima de R$ 199.
 - **Grants em `products` (23/09/2026):** `anon` e `authenticated` têm SELECT só nas colunas listadas nas migrações `20260915120000` e `20260924000000`; custo só via `admin_product_costs()`. Coluna nova exige `GRANT SELECT (coluna) ON public.products TO anon, authenticated`. Consultas públicas com `select=*` em `products` falham.

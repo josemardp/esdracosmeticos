@@ -1,6 +1,6 @@
 # Esdra Cosméticos — Transformação Digital de um Negócio Real
 
-Plataforma integrada de e-commerce e gestão operacional desenvolvida para a digitalização de uma operação real de cosméticos e perfumaria (MEI).
+Loja virtual (e-commerce) desenvolvida para a digitalização de uma operação real de cosméticos e perfumaria (MEI).
 
 ---
 
@@ -9,7 +9,7 @@ Plataforma integrada de e-commerce e gestão operacional desenvolvida para a dig
 ```mermaid
 flowchart LR
     A["Contexto: Operação física e vendas diretas de cosméticos (MEI)"] --> B["Problema: Atendimento manual, catálogo disperso e falta de controle"]
-    B --> C["Solução: E-commerce PWA + Painel de Gestão e Crediário"]
+    B --> C["Solução: E-commerce PWA + Painel da Loja"]
     C --> D["Resultado: Canal digital próprio em produção com regras de negócio reais"]
 ```
 
@@ -26,11 +26,11 @@ Antes da digitalização, a operação enfrentava os gargalos típicos do comér
 ### A Solução
 Desenvolvimento de uma **solução digital completa sob medida**:
 - **Loja Virtual Pública (PWA):** catálogo responsivo de produtos, busca otimizada, carrinho, checkout e área do cliente, funcionando com excelente desempenho no celular.
-- **Painel Administrativo:** controle de inventário, pedidos, importação de notas fiscais (NF-e) e gestão de clientes.
-- **Módulo de Crediário Próprio:** calculadora com regras de negócio adaptadas às práticas comerciais da loja.
+- **Painel Administrativo:** produtos, pedidos, clientes da loja online, cupons, importação de notas fiscais (NF-e) e margem por produto.
+- **Gestão do dia a dia (balcão, caixa, fiado, estoque físico):** fica fora deste repositório, no app interno AgendaEC.
 
 ### O Resultado
-Uma plataforma operacional em produção ([www.esdracosmeticos.com.br](https://www.esdracosmeticos.com.br/)), reduzindo o tempo de atendimento por cliente e proporcionando uma experiência de compra moderna, ágil e independente.
+Uma loja em produção ([www.esdracosmeticos.com.br](https://www.esdracosmeticos.com.br/)), com catálogo, carrinho e checkout próprios, independente de marketplace.
 
 ---
 
@@ -59,13 +59,13 @@ Para manter clareza de engenharia e foco em resultados comerciais, as escolhas d
 flowchart TD
     subgraph Produto ["1. Decisões de Produto"]
         P1["PWA instalável: sem atrito de app store"]
-        P2["Mobile-first: 85%+ do tráfego vindo do Instagram/WhatsApp"]
+        P2["Mobile-first: clientes chegam pelo Instagram e pelo WhatsApp"]
         P3["Área do cliente simples: consulta rápida de histórico e status"]
     end
     subgraph Negocio ["2. Regras de Negócio"]
-        N1["Crediário com limite dinâmico e desconto por pontualidade"]
+        N1["Custo escondido do público; margem visível só ao admin"]
         N2["Frete calculado por faixas regionais e retirada local"]
-        N3["Gestão de estoque integrada para pronta-entrega"]
+        N3["Estoque do site baixado a cada pedido online"]
     end
     subgraph Tecnologia ["3. Tecnologia Utilizada"]
         T1["React 18 + TypeScript + Vite"]
@@ -79,7 +79,6 @@ flowchart TD
 |---|---|---|
 | **Decisão de Produto** | Adoção de PWA (*Progressive Web App*) | Permite ao cliente fixar o ícone da loja na tela inicial do celular sem exigir download em lojas de aplicativos. |
 | **Decisão de Produto** | Checkout simplificado em poucas etapas | Redução de taxa de abandono de carrinho para clientes acostumados a compras rápidas via mensagem. |
-| **Regra de Negócio** | Calculadora de Crediário | Modelagem da política de parcelamento da loja com desconto condicional na data de vencimento e travas de inadimplência. |
 | **Regra de Negócio** | Importação de NF-e e CSV | Atualização rápida de estoque e custos de aquisição direto dos arquivos fiscais dos distribuidores. |
 | **Tecnologia** | React + Vite + Tailwind | Criação de interface limpa, de alta velocidade de carregamento e manutenção simples. |
 | **Tecnologia** | Supabase (Postgres + RLS) | Camada de dados relacional protegida por políticas de acesso por usuário (*Row Level Security*). |
@@ -98,7 +97,6 @@ flowchart TD
 - **Dashboard:** indicadores de vendas, produtos com estoque crítico e faturamento.
 - **Gestão de Catálogo:** cadastro com fotos, variações, marcas e categorias.
 - **Controle de Pedidos:** fluxo de status (recebido, pago, separado, despachado, entregue).
-- **Controle de Crediário:** acompanhamento de parcelas abertas, limites por cliente e histórico de quitação.
 
 ---
 

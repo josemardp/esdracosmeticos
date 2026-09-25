@@ -1,79 +1,10 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck, Check } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Facebook, ShieldCheck, CreditCard, Truck } from "lucide-react";
 import { whatsappUrl } from "@/lib/whatsapp";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleNewsletter = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !email.includes("@") || loading) return;
-    setLoading(true);
-    try {
-      const { error } = await supabase.from("newsletter_subscribers").insert({ email: email.trim(), source: "footer" });
-      if (error && error.code === "23505") {
-        // duplicate — show success to avoid leaking info
-      } else if (error) {
-        throw error;
-      }
-      setSubscribed(true);
-      setEmail("");
-      setTimeout(() => setSubscribed(false), 4000);
-    } catch (err) {
-      console.error("Newsletter subscription error:", err);
-      toast.error("Não foi possível concluir a inscrição. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <footer className="bg-foreground text-background">
-      {/* Newsletter */}
-      <div className="border-b border-background/10">
-        <div className="shell py-10 text-center lg:py-14">
-          <h3 className="mb-2 font-display text-[26px] display-md lg:text-[32px]">
-            Novidades e promoções no seu e-mail
-          </h3>
-          <p className="mx-auto mb-6 max-w-md font-body text-[15px] text-background/75">
-            Receba os lançamentos e as ofertas da Esdra.
-          </p>
-          {subscribed ? (
-            <div className="flex items-center justify-center gap-2 font-body text-[15px] font-medium text-rose animate-in fade-in slide-in-from-bottom-2 duration-300" role="status">
-              <Check className="w-5 h-5" />
-              <span>Pronto, seu e-mail está cadastrado.</span>
-            </div>
-          ) : (
-            <form className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row" onSubmit={handleNewsletter}>
-              <label htmlFor="newsletter-email" className="sr-only">Seu e-mail</label>
-              <input
-                id="newsletter-email"
-                type="email"
-                autoComplete="email"
-                placeholder="Seu e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-                className="h-12 w-full shrink-0 rounded-full sm:w-auto sm:flex-1 border border-background/35 bg-background/10 px-5 font-body text-base text-background placeholder:text-background/60 focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/60 disabled:opacity-50"
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="h-12 rounded-full bg-rose px-7 font-body text-[15px] font-medium text-foreground transition-colors hover:bg-background disabled:opacity-50"
-              >
-                {loading ? "Enviando..." : "Cadastrar e-mail"}
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-
       {/* Trust badges */}
       <div className="border-b border-background/10">
         <div className="shell py-5">
