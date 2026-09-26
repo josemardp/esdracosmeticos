@@ -1,3 +1,5 @@
+> **Retrato de 15/09/2026.** Parte do que está aqui foi corrigido entre 23 e 25/09/2026 (grants de `products`, `decrement_inventory`, remoção do ERP e da newsletter). O estado atual está no `STATUS.md`.
+
 # Relatório de Auditoria Completa — Esdra Cosméticos (Setembro/2026)
 
 **Data:** 15 de Setembro de 2026  

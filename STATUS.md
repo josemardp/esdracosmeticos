@@ -112,9 +112,7 @@ Como aplicar SQL neste projeto: a CLI do Supabase da máquina está logada na or
 
 ## Decisões que mudam o trabalho
 
-- **EC-001 (09/09/2026):** Cinco projetos independentes sob `C:\projetos\esdra` com repositórios e publicações próprios. Não criar monorepositório.
-- **EC-002 (09/09/2026):** Uma fonte documental por assunto. `central-ec` é a entrada do negócio; `STATUS.md` na raiz de cada projeto orienta a retomada imediata.
-- **EC-003 (09/09/2026 / 15/09/2026):** ERP da loja congelado desde julho/2026. As migrações de gestão/estoque (`stock_movements`, `cash_movements`) **não serão aplicadas em produção**. O módulo `/admin/gestao` permanece estritamente como legado e não recebe expansão nem correções de schema. **Superado em 25/09/2026:** o módulo foi removido; a gestão é só do AgendaEC.
+- **Decisões entre sistemas:** ficam só no repositório privado `central-ec` (`DECISOES.md`). As que valem para a loja: EC-005 (repositórios separados), EC-006 (a loja é dona de produto, preço, custo e pedido online; a gestão é só do AgendaEC; ERP removido em 25/09/2026) e EC-007 (pasta-mãe).
 - **Repositório Público (13/09/2026):** O repositório `josemardp/esdracosmeticos` é público para exibição como portfólio. Proibido commitar segredos (`service_role`, senhas), dados pessoais de clientes ou relatórios internos na raiz.
 - **Cupom Promocional (15/09/2026):** Não ativar cupom `ESDRA10` no banco (em 24/09 foi encontrado ativo e desativado a pedido do Josemar; `validate_coupon` público responde "Cupom inválido") e manter a vitrine focada em frete grátis regional acima de R$ 199.
 - **Grants em `products` (23/09/2026):** `anon` e `authenticated` têm SELECT só nas colunas listadas nas migrações `20260915120000` e `20260924000000`; custo só via `admin_product_costs()`. Coluna nova exige `GRANT SELECT (coluna) ON public.products TO anon, authenticated`. Consultas públicas com `select=*` em `products` falham.

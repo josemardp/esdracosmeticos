@@ -1,3 +1,14 @@
+# Loja virtual Esdra Cosméticos
+
+Site www.esdracosmeticos.com.br (Vite + React + Supabase `pehqvmaeehzfrsxkhlmt`), deploy automático na Vercel a cada push na main. **Repositório público** (conta josemardp).
+
+- Leia `STATUS.md` primeiro. Decisões entre sistemas: `../DECISOES.md` (EC-006, na central-ec, privada).
+- Papel: produto, preço, custo, margem, estoque do site (`inventory_count`), pedidos online, cupons. Gestão de balcão, caixa, fiado e estoque físico é do AgendaEC: o ERP `/admin/gestao` foi removido em 25/09/2026, não recriar.
+- Nunca versionar valor financeiro do negócio, estratégia de crédito, dossiê ou dado pessoal.
+- Tabela `products`: leitura liberada coluna a coluna (custo escondido); mudou RPC ou grant, rode `npm run test:db`.
+- Antes de push: `npx tsc --noEmit -p tsconfig.app.json`, `npm test`, `npm run lint`, `npm run build`. Mudança visual: conferir celular e desktop.
+- Gerenciador de pacotes: npm.
+
 <!-- PROJECT-MENTOR:START v1 -->
 ## Mentor de Projetos (protocolo v1)
 
