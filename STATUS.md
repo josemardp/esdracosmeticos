@@ -163,3 +163,29 @@ curl -i "https://pehqvmaeehzfrsxkhlmt.supabase.co/rest/v1/products?select=id,nam
 1. **Vitrine e Produtos:** Acessar [https://www.esdracosmeticos.com.br](https://www.esdracosmeticos.com.br), navegar para `/loja`, testar filtros por categoria e carregar a página de um produto individual.
 2. **Carrinho e Checkout:** Adicionar produto ao carrinho, prosseguir para `/checkout`, preencher CEP (ex: `16700-000`) e conferir o cálculo automático do frete.
 3. **PWA e Sitemap:** Conferir `https://www.esdracosmeticos.com.br/sitemap.xml` (deve retornar XML com produtos ativos) e `manifest.webmanifest`.
+
+## Pendências herdadas do Mentor de Projetos (importadas em 16/11/2026)
+
+O Mentor de Projetos foi aposentado em 16/11/2026. O que estava aberto nele veio para cá. Marque `- [x]` ao concluir.
+
+- Objetivo: Plataforma de e-commerce e catalogo online da Esdra Cosmeticos
+- Foco na última sessão: Esdra validar no celular a home, a loja, um produto, a sacola, o login e Minha conta (act-015).
+- Última entrega: act-013 fechada como duplicada da act-015, a pedido do Josemar
+
+### Pendências
+
+- [ ] Esdra validar no celular a home, a loja, um produto, a sacola, o login e Minha conta [act-015]
+- [ ] Consulta so de leitura das tabelas do ERP em producao (cash_movements, financial_categories, cost_centers, abandoned_carts); se existirem, exportar e apagar com o sim do Josemar; regenerar types.ts [act-018]
+
+### Decisões recentes registradas no Mentor
+
+- 2026-09-23: Google Analytics passa a carregar na primeira interação ou após 15 s (visitas de menos de 15 s sem toque deixam de contar). Reversível no index.html.
+- 2026-09-23: Supabase deste plano não redimensiona imagem (FeatureNotEnabled); versões menores geradas e enviadas manualmente.
+- 2026-09-24: Aparência antiga preservada no admin por classe .admin-ui, sem editar arquivos do admin.
+- 2026-09-24: Catálogo passa a mostrar 24 produtos por vez (parte da act-012).
+- 2026-09-24: Frete no topo escrito só como "acima de R$ 199", sem "para todo o Brasil".
+- 2026-09-24: Marcas da home trocadas pelas marcas reais do cadastro.
+- 2026-09-24: Prazo de troca é 7 dias depois do recebimento (antes 30).
+- 2026-09-24: Entrega escrita como "envio rápido para todo o Brasil", sem prazo em dias.
+- 2026-09-24: Frete grátis só "acima de R$ 199"; pagamentos só PIX, cartão e boleto.
+- 2026-09-24: Linha do tempo da página Sobre (2016 a 2026) confirmada pelo Josemar.
