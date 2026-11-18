@@ -2,6 +2,11 @@
   "redirects": [
     {
       "source": "/(.*)",
+      "destination": "https://esdracosmeticos1f0.estoqueproprio.com.br",
+      "permanent": false
+    },
+    {
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "esdracosmeticos.com.br" }],
       "destination": "https://www.esdracosmeticos.com.br/$1",
       "permanent": true
