@@ -1,10 +1,12 @@
 # STATUS.md — Loja Esdra Cosméticos
 
-> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 25/09/2026 (remoção do ERP)
+> Estado atual e próximo passo. Histórico vai para docs/HISTORICO.md. Última atualização: 18/11/2026 (redirecionamento para a vitrine)
 
 ---
 
 ## Onde estamos
+
+**18/11/2026: domínio redirecionado para a vitrine do Minha Revenda (T2.3 da central).** `vercel.json` ganhou um redirecionamento temporário (307) de todo caminho de `www.esdracosmeticos.com.br` (e do domínio sem www) para a vitrine do app. Conferido por `curl`: 307 para a vitrine e 200 no destino final, inclusive em `/loja` e `/sitemap.xml`. Temporário de propósito, para não fixar em cache a URL da vitrine antes da migração para a Loja PRO em 2027. Este repositório fica **congelado**: não evoluir a loja, só manter o redirecionamento. Backup do banco e das fotos feito no Drive privado da Esdra (328 fotos, tabelas e esquema, com SHA-256). **Falta:** pausar o projeto Supabase (sem comando na CLI; é pelo painel, ver STATUS da central) e arquivar o repositório em 2027.
 
 **25/09/2026: ERP removido.** Por decisão de Josemar, a gestão da Esdra (vendas de balcão, caixa, compras, contas, clientes, fiado, estoque físico) vive só no app AgendaEC. Saíram da loja as 27 telas de `/admin/gestao/*`, a Calculadora de Crediário, Exportações, o `admin.html` morto e as rewrites `/admin` do `vercel.json`. Margem e Reposição ficaram, agora em `/admin/margem` e `/admin/reposicao` (seção "Catálogo & Custos"); links antigos de `/admin/gestao/*` redirecionam. O menu do celular voltou a mostrar a seção E-commerce (Produtos, Pedidos etc.), que estava escondida. A newsletter do rodapé saiu: gravava numa tabela que não existe. Conferido: `tsc` 0 erros, 14/14 testes, lint 0 erros, build ok, rodapé no celular sem a faixa e sem erro no console.
 
